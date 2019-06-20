@@ -3,20 +3,16 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme() {
   return ThemeData(
     brightness: Brightness.light,
-    primaryColor: Colors.white,
+    primaryColor: Colors.indigo,
     primaryColorDark: Color(0xFFF5F5F5),
     accentColor: Colors.blue,
-
-    primaryIconTheme: IconThemeData(
-      color: Color(0x99000000)
-    )
   );
 }
 
 ThemeData darkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
-    primaryColor: Colors.black,
+    primaryColor: Colors.indigo,
     primaryColorLight: Colors.blue,
     accentColor: Colors.blue,
   );

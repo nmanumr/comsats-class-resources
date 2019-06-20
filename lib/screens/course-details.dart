@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CourseScreen extends StatefulWidget {
-  CourseScreen({Key key, @required this.index}) : super(key: key);
+  CourseScreen({Key key, @required this.code}) : super(key: key);
 
-  final int index;
+  final String code;
 
   @override
   _CourseScreenState createState() => _CourseScreenState();
@@ -12,7 +12,6 @@ class CourseScreen extends StatefulWidget {
 class _CourseScreenState extends State<CourseScreen> {
   @override
   Widget build(BuildContext context) {
-    final index = widget.index;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColorDark,
@@ -32,7 +31,7 @@ class _CourseScreenState extends State<CourseScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(75.0),
           child: Hero(
-            tag: 'courseHero$index',
+            tag: widget.code,
             child: Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Material(
