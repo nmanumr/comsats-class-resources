@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './course-details.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,13 +16,22 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildRow(int i) {
     return Material(
       child: InkWell(
-        onTap: () {},
-        child: ListTile(
-          leading: CircleAvatar(
-            child: Text("DS"),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+            return CourseScreen(index: i,);
+          }));
+        },
+        child: Hero(
+          tag: 'courseHero$i',
+          child: Material(
+            child: ListTile(
+              leading: CircleAvatar(
+                child: Text("DS"),
+              ),
+              title: Text('Descrete Structures'),
+              subtitle: Text("CSC103 - Muhammad Adnan"),
+            ),
           ),
-          title: Text('Descrete Structures'),
-          subtitle: Text("CSC103 - Muhammad Adnan"),
         ),
       ),
       color: Colors.transparent,

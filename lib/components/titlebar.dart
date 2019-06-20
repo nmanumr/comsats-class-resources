@@ -13,7 +13,6 @@ AppBar titleBar(BuildContext context) {
     ],
     bottom: TabBar(
       isScrollable: true,
-      indicatorWeight: 3,
       tabs: [
         Tab(text: "HOME"),
         Tab(text: "TIME TABLE"),
