@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "233194843749",
+    "firebase_url": "https://comsats-cr.firebaseio.com",
+    "project_id": "comsats-cr",
+    "storage_bucket": "comsats-cr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233194843749:android:6e81004932ed3b87",
+        "android_client_info": {
+          "package_name": "com.firebaseapp.comsats_cr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233194843749-tv5tqduqahalmqt1av1gotgvfp4mf2b5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5gyDQsEZt7yajsD2LYkNroDzAapz9Kro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233194843749-tv5tqduqahalmqt1av1gotgvfp4mf2b5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
