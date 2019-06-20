@@ -1,4 +1,4 @@
-package com.example.class_resources;
+package com.firebaseapp.comsats_cr;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
