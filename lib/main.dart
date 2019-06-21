@@ -1,4 +1,5 @@
 import 'package:class_resources/pages/login.dart';
+import 'package:class_resources/pages/reset-pass.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,7 @@ void main() {
 }
 
 enum AuthStatus {
+  RESET_PASS,
   NOT_DETERMINED,
   NOT_LOGGED_IN,
   LOGGED_IN,
@@ -60,6 +62,12 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void _onResetPass(){
+    setState(() {
+      authStatus = AuthStatus.RESET_PASS;
+    });
+  }
+
   Widget _buildWaitingScreen() {
     return Scaffold(
       body: Container(
@@ -81,19 +89,21 @@ class _MyAppState extends State<MyApp> {
         screen = new LoginPage(
           auth: widget.auth,
           onSignedIn: _onLoggedIn,
+          onResetPass: _onResetPass,
         );
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId.length > 0 && _userId != null) {
           screen = MainScreen(onSignOut: _onSignedOut);
-          // return new HomePage(
-          //   userId: _userId,
-          //   auth: widget.auth,
-          //   onSignedOut: _onSignedOut,
-          // );
         } else {
           screen = _buildWaitingScreen();
         }
+        break;
+      case AuthStatus.RESET_PASS:
+        screen = ResetPassPage(
+          auth: widget.auth,
+          toLogin: _onSignedOut,
+        );
         break;
       default:
         screen = _buildWaitingScreen();

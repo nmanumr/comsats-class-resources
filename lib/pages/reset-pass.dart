@@ -2,43 +2,24 @@ import 'package:class_resources/services/authentication.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  LoginPage({this.auth, this.onSignedIn, this.onResetPass});
+class ResetPassPage extends StatefulWidget {
+  ResetPassPage({this.auth, this.toLogin});
 
   final AuthService auth;
-  final VoidCallback onSignedIn;
-  final VoidCallback onResetPass;
+  final VoidCallback toLogin;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _ResetPassPageState createState() => _ResetPassPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ResetPassPageState extends State<ResetPassPage> {
   final _formKey = GlobalKey<FormState>();
   var controller = new MaskedTextController(mask: 'AA00-AAA-000');
 
   String email;
-  String password;
-  bool showPass = false;
 
   String rollNumValidator(String text) {
     return null;
-  }
-
-  String passValidator(String text) {
-    return null;
-  }
-
-  IconButton _getSuffixIcon(obscureText) {
-    if (!obscureText) return null;
-    return IconButton(
-      onPressed: () {
-        setState(() {
-          showPass = !showPass;
-        });
-      },
-      icon: Icon(Icons.visibility),
-    );
   }
 
   Widget paddedInput(label, validator, obscureText, controller, onSave) {
@@ -49,17 +30,23 @@ class _LoginPageState extends State<LoginPage> {
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(),
-          suffixIcon: _getSuffixIcon(obscureText),
         ),
         controller: controller,
-        obscureText: obscureText ? !showPass : false,
         onSaved: onSave,
       ),
     );
   }
 
-  void onLogin(_) {
-    widget.onSignedIn();
+  void onEmailSent(ctx) {
+    Scaffold.of(ctx).showSnackBar(
+      SnackBar(
+        content: Text('Email has been sent to "$email@cuilahore.edu.pk"'),
+        action: SnackBarAction(
+          label: 'Login',
+          onPressed: () => widget.toLogin(),
+        ),
+      ),
+    );
   }
 
   void onError(ctx, err) {
@@ -78,8 +65,8 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       widget.auth
-          .signIn(email + "@cuilahore.edu.pk", password)
-          .then(onLogin)
+          .resetPassword(email + "@cuilahore.edu.pk")
+          .then((val) => onEmailSent(ctx))
           .catchError((err) => onError(ctx, err));
     }
   }
@@ -88,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text("Reset Password"),
       ),
       body: Form(
         key: _formKey,
@@ -104,17 +91,10 @@ class _LoginPageState extends State<LoginPage> {
                 controller,
                 (value) => email = value,
               ),
-              paddedInput(
-                "Password",
-                passValidator,
-                true,
-                null,
-                (value) => password = value,
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
                 child: Text(
-                  "Please contact admins to get the passwords",
+                  "Password reset email will be sent to your university email (i.e., AA00-AAA-000@cuilahore.edu.pk)",
                   style: TextStyle(
                       fontStyle: FontStyle.italic,
                       color: Theme.of(context).textTheme.caption.color),
@@ -128,8 +108,8 @@ class _LoginPageState extends State<LoginPage> {
                       FlatButton(
                         padding: EdgeInsets.symmetric(
                             vertical: 12.0, horizontal: 25.0),
-                        onPressed: () => widget.onResetPass(),
-                        child: Text('Forget password?'),
+                        onPressed: () => widget.toLogin(),
+                        child: Text('Goto Login'),
                       ),
                       Expanded(
                         child: Text(" "),
@@ -140,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: EdgeInsets.symmetric(
                             vertical: 12.0, horizontal: 25.0),
                         onPressed: () => onSubmit(ctx),
-                        child: Text('Login'),
+                        child: Text('Send'),
                       ),
                     ],
                   );
