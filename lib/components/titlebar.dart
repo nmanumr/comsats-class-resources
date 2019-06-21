@@ -16,7 +16,7 @@ AppBar titleBar(BuildContext context) {
       indicatorColor: Colors.white,
       indicatorWeight: 3,
       tabs: [
-        Tab(text: "HOME"),
+        Tab(text: "COURSES"),
         Tab(text: "TIME TABLE"),
         Tab(text: "NOTIFICATIONS"),
         Tab(text: "LIBRARY"),

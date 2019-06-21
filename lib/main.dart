@@ -1,3 +1,5 @@
+import 'package:class_resources/pages/login.dart';
+import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
 import './themes.dart';
@@ -9,15 +11,99 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+enum AuthStatus {
+  NOT_DETERMINED,
+  NOT_LOGGED_IN,
+  LOGGED_IN,
+}
+
+class MyApp extends StatefulWidget {
+  final auth = new AuthService();
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
+  String _userId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    widget.auth.getCurrentUser().then((user) {
+      setState(() {
+        if (user != null) {
+          _userId = user?.uid;
+        }
+        authStatus =
+            user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+      });
+    });
+  }
+
+  void _onLoggedIn() {
+    widget.auth.getCurrentUser().then((user) {
+      setState(() {
+        _userId = user.uid.toString();
+      });
+    });
+    setState(() {
+      authStatus = AuthStatus.LOGGED_IN;
+    });
+  }
+
+  void _onSignedOut() {
+    setState(() {
+      authStatus = AuthStatus.NOT_LOGGED_IN;
+      _userId = "";
+    });
+  }
+
+  Widget _buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget screen;
+
+    switch (authStatus) {
+      case AuthStatus.NOT_DETERMINED:
+        screen = _buildWaitingScreen();
+        break;
+      case AuthStatus.NOT_LOGGED_IN:
+        screen = new LoginPage(
+          auth: widget.auth,
+          onSignedIn: _onLoggedIn,
+        );
+        break;
+      case AuthStatus.LOGGED_IN:
+        if (_userId.length > 0 && _userId != null) {
+          screen = MainScreen(onSignOut: _onSignedOut);
+          // return new HomePage(
+          //   userId: _userId,
+          //   auth: widget.auth,
+          //   onSignedOut: _onSignedOut,
+          // );
+        } else {
+          screen = _buildWaitingScreen();
+        }
+        break;
+      default:
+        screen = _buildWaitingScreen();
+    }
 
     return MaterialApp(
       title: 'Dynamic themes demo',
       theme: lightTheme(),
       darkTheme: darkTheme(),
-      home: MainScreen(),
+      home: screen,
       debugShowCheckedModeBanner: false,
     );
   }
