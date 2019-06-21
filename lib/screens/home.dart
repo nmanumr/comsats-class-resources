@@ -30,8 +30,11 @@ class _HomeScreenState extends State<HomeScreen>
           tag: document['code'],
           child: Material(
             child: ListTile(
-              leading:
-                  textCircularAvatar(document['title'] ?? document['code']),
+              leading: textCircularAvatar(
+                document['title'] ?? document['code'],
+                document['color'],
+                Colors.white
+              ),
               title: Text(document['title'] ?? ""),
               subtitle:
                   Text("${document['code']} - ${document['teacher']}" ?? ""),
@@ -41,6 +44,17 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       color: Colors.transparent,
     );
+  }
+
+  List<Widget> _buildCourseList(List<DocumentSnapshot> documents) {
+    List<Widget> rows = [];
+    documents.forEach((DocumentSnapshot document) {
+      rows.add(_buildCourseRow(document));
+      rows.add(Divider(
+        indent: 70.0,
+      ));
+    });
+    return rows;
   }
 
   @override
@@ -54,26 +68,8 @@ class _HomeScreenState extends State<HomeScreen>
             return new Text('Loading...');
           default:
             return new ListView(
-              children:
-                  snapshot.data.documents.map((DocumentSnapshot document) {
-                return _buildCourseRow(document);
-                //  new ListTile(
-                //   title: new Text(document['title']),
-                //   subtitle: new Text(document['author']),
-                // );
-              }).toList(),
-            );
+                children: _buildCourseList(snapshot.data.documents));
         }
-      },
-    );
-    return ListView.builder(
-      itemCount: numIter * 2,
-      padding: EdgeInsets.all(16.0),
-      itemBuilder: (BuildContext ctx, int i) {
-        if (i.isOdd) return Divider();
-
-        // final index = i ~/ 2 + 1;
-        // return _buildRow(index);
       },
     );
   }

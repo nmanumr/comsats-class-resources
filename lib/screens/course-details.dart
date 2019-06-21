@@ -1,3 +1,4 @@
+import 'package:class_resources/components/text-avatar.dart';
 import 'package:flutter/material.dart';
 
 class CourseScreen extends StatefulWidget {
@@ -12,9 +13,13 @@ class CourseScreen extends StatefulWidget {
 class _CourseScreenState extends State<CourseScreen> {
   @override
   Widget build(BuildContext context) {
+    final onPrimaryTextStyle =
+        TextStyle(color: Theme.of(context).colorScheme.onPrimary);
+    final onPrimaryTextStyleDull =
+        TextStyle(color: Theme.of(context).colorScheme.onPrimary.withAlpha(170));
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColorDark,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -35,13 +40,17 @@ class _CourseScreenState extends State<CourseScreen> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Material(
-                color: Theme.of(context).primaryColorDark,
+                color: Colors.transparent,
                 child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text("DS"),
+                  leading: textCircularAvatar('Descrete Structures'),
+                  title: Text(
+                    'Descrete Structures',
+                    style: onPrimaryTextStyle,
                   ),
-                  title: Text('Descrete Structures'),
-                  subtitle: Text("CSC103 - Muhammad Adnan"),
+                  subtitle: Text(
+                    "CSC103 - Muhammad Adnan",
+                    style: onPrimaryTextStyleDull,
+                  ),
                 ),
               ),
             ),
@@ -58,15 +67,13 @@ class _CourseScreenState extends State<CourseScreen> {
                 decoration: BoxDecoration(
                   border: BorderDirectional(
                     bottom: BorderSide(
-                      color: Theme.of(context)
-                          .primaryIconTheme
-                          .color
-                          .withAlpha(30),
+                      color: Theme.of(context).dividerColor,
                     ),
                   ),
                 ),
                 child: Center(
                   child: TabBar(
+                    labelColor: Theme.of(context).colorScheme.onSurface,
                     isScrollable: true,
                     tabs: [
                       Tab(text: "Resources"),

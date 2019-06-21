@@ -1,3 +1,4 @@
+import 'package:class_resources/components/drawer.dart';
 import 'package:flutter/material.dart';
 
 import '../components/titlebar.dart';
@@ -20,33 +21,7 @@ class _MainScreenState extends State<MainScreen> {
       length: 4,
       child: Scaffold(
         appBar: titleBar(context),
-        drawer: Drawer(
-          child: ListView(
-            children: <Widget>[
-              UserAccountsDrawerHeader(
-                accountName: Text("Nauman Umer"),
-                accountEmail: Text("FA18-BCS-162"),
-                currentAccountPicture: CircleAvatar(
-                  child: Text("NU"),
-                ),
-              ),
-              ListTile(title: Text("Item 1")),
-              ListTile(title: Text("Item 2")),
-              ListTile(title: Text("Item 3")),
-              ListTile(title: Text("Item 4")),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text("Settings")),
-              ListTile(
-                leading: Icon(Icons.apps),
-                title: Text("More Apps")),
-              ListTile(
-                leading: Icon(Icons.code),
-                title: Text("Source Code")),
-            ],
-          ),
-        ),
+        drawer: drawer("Nauman Umer", "FA18-BCS-162"),
         body: TabBarView(
           children: [
             HomeScreen(),

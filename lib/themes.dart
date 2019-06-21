@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme() {
   return ThemeData(
     brightness: Brightness.light,
-    primaryColor: Colors.indigo,
-    primaryColorDark: Color(0xFFF5F5F5),
-    accentColor: Colors.blue,
+    primaryColor: Color(0xFF0d47a1),
+    accentColor: Colors.lightBlue,
   );
 }
 
@@ -13,7 +12,6 @@ ThemeData darkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
     primaryColor: Colors.indigo,
-    primaryColorLight: Colors.blue,
-    accentColor: Colors.blue,
+    accentColor: Colors.indigo,
   );
 }
