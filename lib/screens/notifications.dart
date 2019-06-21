@@ -30,6 +30,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    
     return ListView.builder(
       itemCount: numIter * 2,
       padding: EdgeInsets.all(16.0),

@@ -59,15 +59,17 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('subjects').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-            return new Text('Loading...');
+            return Text('Loading...');
           default:
-            return new ListView(
+            return ListView(
                 children: _buildCourseList(snapshot.data.documents));
         }
       },

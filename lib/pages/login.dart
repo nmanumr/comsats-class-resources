@@ -57,6 +57,32 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void onLogin(_) {
+    widget.onSignedIn();
+  }
+
+  void onError(ctx, err) {
+    Scaffold.of(ctx).showSnackBar(
+      SnackBar(
+        content: Text('${err.message}'),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+
+  void onSubmit(ctx) {
+    _formKey.currentState.save();
+    if (_formKey.currentState.validate()) {
+      widget.auth
+          .signIn(email + "@cuilahore.edu.pk", password)
+          .then(onLogin)
+          .catchError((err) => onError(ctx, err));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,27 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Theme.of(context).primaryColor,
                     padding:
                         EdgeInsets.symmetric(vertical: 12.0, horizontal: 25.0),
-                    onPressed: () {
-                      // if (_formKey.currentState.validate())
-                      _formKey.currentState.save();
-                      if (_formKey.currentState.validate()) {
-                        widget.auth
-                            .signIn(email + "@cuilahore.edu.pk", password)
-                            .then((val) {
-                          widget.onSignedIn();
-                        }).catchError((err) {
-                          Scaffold.of(ctx).showSnackBar(
-                            SnackBar(
-                              content: Text('${err.message}'),
-                              action: SnackBarAction(
-                                label: 'Close',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                        });
-                      }
-                    },
+                    onPressed: () => onSubmit(ctx),
                     child: Text('Submit'),
                   );
                 }),
