@@ -74,7 +74,7 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
     return UserAccountsDrawerHeader(
       accountName: Text(name ?? ""),
       accountEmail: Text(rollNum ?? ""),
-      currentAccountPicture: textCircularAvatar(name.isEmpty ? rollNum: name),
+      currentAccountPicture: textCircularAvatar((name ?? "").isEmpty ? rollNum: name),
       onDetailsPressed: () {
         _showDrawerContents = !_showDrawerContents;
         if (_showDrawerContents)
