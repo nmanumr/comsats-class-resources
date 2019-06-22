@@ -3,9 +3,10 @@ import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatefulWidget {
-  final VoidCallback onSignOut;
+  AppDrawer({this.onSignOut, this.userProfile});
 
-  AppDrawer({this.onSignOut});
+  final VoidCallback onSignOut;
+  final dynamic userProfile;
 
   final AuthService auth = AuthService();
 
@@ -20,9 +21,6 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
   Animatable<Offset> _drawerDetailsTween;
   bool _showDrawerContents = true;
 
-  String name = "";
-  String rollNum = "";
-
   initState() {
     super.initState();
     controller = AnimationController(
@@ -35,14 +33,8 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
     ).chain(CurveTween(
       curve: Curves.fastOutSlowIn,
     ));
-    _drawerDetailsPosition = controller.drive(_drawerDetailsTween);
 
-    widget.auth.getCurrentUser().then((val) {
-      setState(() {
-        name = val.displayName;
-        rollNum = val.email.substring(0, 12);
-      });
-    });
+    _drawerDetailsPosition = controller.drive(_drawerDetailsTween);
   }
 
   Widget userActions() {
@@ -53,7 +45,6 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
           title: Text("Logout"),
           leading: Icon(Icons.exit_to_app),
           onTap: () {
-
             widget.onSignOut();
           },
         ),
@@ -73,7 +64,10 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
   }
 
   Widget accountHeader() {
+    String name = widget.userProfile['name'];
+    String rollNum = widget.userProfile['rollNum'];
     if (rollNum.isEmpty) return Text("");
+
     return UserAccountsDrawerHeader(
       accountName: Text(name ?? ""),
       accountEmail: Text(rollNum ?? ""),
@@ -91,6 +85,14 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // if (name.isEmpty)
+    //   widget.auth.getUserProfile().then((val) {
+    //     setState(() {
+    //       name = val.data['name'];
+    //       rollNum = val.data['rollNum'];
+    //     });
+    //   });
+
     return Drawer(
       child: Column(
         children: <Widget>[
