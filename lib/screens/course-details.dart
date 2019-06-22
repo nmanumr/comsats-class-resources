@@ -58,7 +58,7 @@ class _CourseScreenState extends State<CourseScreen> {
         ),
       ),
       body: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Column(
           children: [
             ConstrainedBox(
@@ -79,6 +79,7 @@ class _CourseScreenState extends State<CourseScreen> {
                       Tab(text: "Resources"),
                       Tab(text: "Assignments"),
                       Tab(text: "Stared"),
+                      Tab(text: "About"),
                     ],
                   ),
                 ),
@@ -95,6 +96,9 @@ class _CourseScreenState extends State<CourseScreen> {
                   ),
                   Center(
                     child: Text("data3"),
+                  ),
+                  Center(
+                    child: Text("About"),
                   ),
                 ],
               ),

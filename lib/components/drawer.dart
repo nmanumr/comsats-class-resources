@@ -52,7 +52,10 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
         ListTile(
           title: Text("Logout"),
           leading: Icon(Icons.exit_to_app),
-          onTap: widget.onSignOut,
+          onTap: () {
+
+            widget.onSignOut();
+          },
         ),
         Divider(),
       ],
@@ -74,7 +77,8 @@ class _DrawerState extends State<AppDrawer> with TickerProviderStateMixin {
     return UserAccountsDrawerHeader(
       accountName: Text(name ?? ""),
       accountEmail: Text(rollNum ?? ""),
-      currentAccountPicture: textCircularAvatar((name ?? "").isEmpty ? rollNum: name),
+      currentAccountPicture:
+          textCircularAvatar((name ?? "").isEmpty ? rollNum : name),
       onDetailsPressed: () {
         _showDrawerContents = !_showDrawerContents;
         if (_showDrawerContents)

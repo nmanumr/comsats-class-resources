@@ -1,32 +1,44 @@
+import 'dart:async';
+
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  LoginPage({this.auth, this.onSignedIn, this.onResetPass, this.toSignup});
+class SignupPage extends StatefulWidget {
+  SignupPage({this.auth, this.onSignedIn, this.toLogin});
 
   final AuthService auth;
   final VoidCallback onSignedIn;
-  final VoidCallback onResetPass;
-  final VoidCallback toSignup;
+  final VoidCallback toLogin;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   var controller = new MaskedTextController(mask: 'AA00-AAA-000');
 
-  String email;
-  String password;
+  Profile profile = Profile();
+
+  String password2;
+  String klass;
+  List<String> _klasses = <String>[
+    '',
+    'FA18-BCS-A',
+    'FA18-BCS-B',
+    'FA18-BCS-C',
+    'FA18-BCS-D',
+    'FA18-BCS-E'
+  ];
   bool showPass = false;
 
-  String rollNumValidator(String text) {
-    return null;
+  String notEmptyValidator(String val) {
+    return (val ?? "") != '' ? null : 'Field can not be empty';
   }
 
-  String passValidator(String text) {
+  String rePassValicator(String val) {
+    if (val != profile.password) return "Password not matched";
     return null;
   }
 
@@ -75,68 +87,111 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  FutureOr<dynamic> onSignedUp(void x) {
+    widget.onSignedIn();
+  }
+
   void onSubmit(ctx) {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
+      setState(() {
+        profile.email = profile.rollNum + "@cuilahore.edu.pk";
+      });
       widget.auth
-          .signIn(email + "@cuilahore.edu.pk", password)
-          .then(onLogin)
+          .signUp(profile)
+          // .then(onSignedUp)
           .catchError((err) => onError(ctx, err));
+      // widget.auth
+      //     .signIn(email + "@cuilahore.edu.pk", password)
+      //     .then(onLogin)
+      //     .catchError((err) => onError(ctx, err));
     }
+  }
+
+  Widget classesDropDown() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+      child: FormField(
+        validator: (_) {
+          return (klass ?? "") != '' ? null : 'Field can not be empty';
+        },
+        builder: (FormFieldState state) {
+          return InputDecorator(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Classes',
+              errorText: state.hasError ? state.errorText : null,
+            ),
+            isEmpty: klass == '' || klass == null,
+            child: new DropdownButtonHideUnderline(
+              child: new DropdownButton(
+                value: klass,
+                isDense: true,
+                onChanged: (String newValue) {
+                  setState(() {
+                    klass = newValue;
+                    profile.klass = newValue;
+                  });
+                },
+                items: _klasses.map((String value) {
+                  return new DropdownMenuItem(
+                    value: value,
+                    child: new Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
-        actions: <Widget>[
-          PopupMenuButton(
-            onSelected: (val) => widget.toSignup(),
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(
-                  value: "signup",
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 12),
-                        child: Icon(Icons.person_add),
-                      ),
-                      Text("Signup"),
-                    ],
-                  ),
-                )
-              ];
-            },
-          ),
-        ],
+        title: Text("Signup"),
       ),
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ListView(
             children: <Widget>[
               paddedInput(
                 "Roll Number (AA00-AAA-000)",
-                rollNumValidator,
+                notEmptyValidator,
                 false,
                 controller,
-                (value) => email = value,
+                (value) => profile.rollNum = value,
+              ),
+              paddedInput(
+                "Your Name",
+                notEmptyValidator,
+                false,
+                null,
+                (value) => profile.name = value,
               ),
               paddedInput(
                 "Password",
-                passValidator,
+                notEmptyValidator,
                 true,
                 null,
-                (value) => password = value,
+                (value) => profile.password = value,
               ),
+              paddedInput(
+                "Confirm Password",
+                rePassValicator,
+                true,
+                null,
+                (value) => password2 = value,
+              ),
+              classesDropDown(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
                 child: Text(
-                  "Please contact admins to get the passwords",
+                  "Class can not be changed once logged in.",
                   style: TextStyle(
                       fontStyle: FontStyle.italic,
                       color: Theme.of(context).textTheme.caption.color),
@@ -150,8 +205,8 @@ class _LoginPageState extends State<LoginPage> {
                       FlatButton(
                         padding: EdgeInsets.symmetric(
                             vertical: 12.0, horizontal: 25.0),
-                        onPressed: () => widget.onResetPass(),
-                        child: Text('Forget password?'),
+                        onPressed: () => widget.toLogin(),
+                        child: Text('Already have account?'),
                       ),
                       Expanded(
                         child: Text(" "),

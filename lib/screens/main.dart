@@ -15,13 +15,18 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  _onSignOut(context) {
+    Navigator.pop(context);
+    widget.onSignOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
         appBar: titleBar(context),
-        drawer: AppDrawer(onSignOut: widget.onSignOut),
+        drawer: AppDrawer(onSignOut: () => _onSignOut(context)),
         body: TabBarView(
           children: [
             HomeScreen(),

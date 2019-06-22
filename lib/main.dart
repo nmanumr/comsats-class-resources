@@ -1,5 +1,6 @@
 import 'package:class_resources/pages/login.dart';
 import 'package:class_resources/pages/reset-pass.dart';
+import 'package:class_resources/pages/signup.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ void main() {
 
 enum AuthStatus {
   RESET_PASS,
+  SIGNUP,
   NOT_DETERMINED,
   NOT_LOGGED_IN,
   LOGGED_IN,
@@ -57,14 +59,21 @@ class _MyAppState extends State<MyApp> {
 
   void _onSignedOut() {
     setState(() {
+      widget.auth.signOut();
       authStatus = AuthStatus.NOT_LOGGED_IN;
       _userId = "";
     });
   }
 
-  void _onResetPass(){
+  void _onResetPass() {
     setState(() {
       authStatus = AuthStatus.RESET_PASS;
+    });
+  }
+
+  void _toSignup() {
+    setState(() {
+      authStatus = AuthStatus.SIGNUP;
     });
   }
 
@@ -87,10 +96,10 @@ class _MyAppState extends State<MyApp> {
         break;
       case AuthStatus.NOT_LOGGED_IN:
         screen = new LoginPage(
-          auth: widget.auth,
-          onSignedIn: _onLoggedIn,
-          onResetPass: _onResetPass,
-        );
+            auth: widget.auth,
+            onSignedIn: _onLoggedIn,
+            onResetPass: _onResetPass,
+            toSignup: _toSignup);
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId.length > 0 && _userId != null) {
@@ -102,6 +111,13 @@ class _MyAppState extends State<MyApp> {
       case AuthStatus.RESET_PASS:
         screen = ResetPassPage(
           auth: widget.auth,
+          toLogin: _onSignedOut,
+        );
+        break;
+      case AuthStatus.SIGNUP:
+        screen = SignupPage(
+          auth: widget.auth,
+          onSignedIn: _onLoggedIn,
           toLogin: _onSignedOut,
         );
         break;
