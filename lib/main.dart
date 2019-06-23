@@ -5,7 +5,7 @@ import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
 import './themes.dart';
-import './screens/main.dart';
+import './pages/main.dart';
 
 void main() {
   return runApp(
