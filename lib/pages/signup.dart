@@ -99,12 +99,8 @@ class _SignupPageState extends State<SignupPage> {
       });
       widget.auth
           .signUp(profile)
-          // .then(onSignedUp)
+          .then(onSignedUp)
           .catchError((err) => onError(ctx, err));
-      // widget.auth
-      //     .signIn(email + "@cuilahore.edu.pk", password)
-      //     .then(onLogin)
-      //     .catchError((err) => onError(ctx, err));
     }
   }
 
