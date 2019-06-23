@@ -59,12 +59,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget onSuccess(data) {
-
     return ListView.builder(
       itemCount: data['subjects'].length * 2,
-      itemBuilder: (BuildContext ctx, int i){
-        if(i.isOdd) return Divider();
-        return RefItem(ref: data['subjects'][i ~/ 2]);
+      itemBuilder: (BuildContext ctx, int i) {
+        if (i.isOdd) return Divider();
+        return RefItem(
+          ref: data['subjects'][i ~/ 2],
+          userId: widget.userProfile['id'],
+        );
       },
     );
   }
@@ -76,9 +78,7 @@ class _HomeScreenState extends State<HomeScreen>
     return StreamBuilder<DocumentSnapshot>(
       stream: _courses.getUserCourses(widget.userProfile['id']),
       builder: (BuildContext ctx, AsyncSnapshot<DocumentSnapshot> snapshot) {
-
-        if (snapshot.hasError)
-          return onError(snapshot.error);
+        if (snapshot.hasError) return onError(snapshot.error);
 
         if (snapshot.connectionState == ConnectionState.waiting)
           return onLoading();
