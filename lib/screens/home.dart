@@ -1,10 +1,16 @@
+import 'package:class_resources/components/reference-item.dart';
 import 'package:class_resources/components/text-avatar.dart';
+import 'package:class_resources/services/courses.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import './course-details.dart';
 
 class HomeScreen extends StatefulWidget {
+  HomeScreen({this.userProfile});
+
+  final dynamic userProfile;
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -12,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin<HomeScreen> {
   final numIter = 6;
+  CoursesService _courses = CoursesService();
 
   @override
   bool get wantKeepAlive => true;
@@ -30,11 +37,8 @@ class _HomeScreenState extends State<HomeScreen>
           tag: document['code'],
           child: Material(
             child: ListTile(
-              leading: textCircularAvatar(
-                document['title'] ?? document['code'],
-                document['color'],
-                Colors.white
-              ),
+              leading: textCircularAvatar(document['title'] ?? document['code'],
+                  document['color'], Colors.white),
               title: Text(document['title'] ?? ""),
               subtitle:
                   Text("${document['code']} - ${document['teacher']}" ?? ""),
@@ -46,32 +50,40 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  List<Widget> _buildCourseList(List<DocumentSnapshot> documents) {
-    List<Widget> rows = [];
-    documents.forEach((DocumentSnapshot document) {
-      rows.add(_buildCourseRow(document));
-      rows.add(Divider(
-        indent: 70.0,
-      ));
-    });
-    return rows;
+  Widget onError(err) {
+    return Text('Error: $err');
+  }
+
+  Widget onLoading() {
+    return Text("loading..");
+  }
+
+  Widget onSuccess(data) {
+
+    return ListView.builder(
+      itemCount: data['subjects'].length * 2,
+      itemBuilder: (BuildContext ctx, int i){
+        if(i.isOdd) return Divider();
+        return RefItem(ref: data['subjects'][i ~/ 2]);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('subjects').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Text('Loading...');
-          default:
-            return ListView(
-                children: _buildCourseList(snapshot.data.documents));
-        }
+    return StreamBuilder<DocumentSnapshot>(
+      stream: _courses.getUserCourses(widget.userProfile['id']),
+      builder: (BuildContext ctx, AsyncSnapshot<DocumentSnapshot> snapshot) {
+
+        if (snapshot.hasError)
+          return onError(snapshot.error);
+
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return onLoading();
+
+        return onSuccess(snapshot.data);
       },
     );
   }

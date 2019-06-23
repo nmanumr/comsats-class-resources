@@ -17,21 +17,22 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   var userProfile;
+  bool isLoading = true;
 
   _onSignOut(context) {
     Navigator.pop(context);
     widget.onSignOut();
   }
 
-  initState(){
+  initState() {
     super.initState();
     widget.auth.getUserProfile().then((val) {
-        setState(() {
-          userProfile = val.data;
-        });
+      setState(() {
+        userProfile = val.data;
+        isLoading = false;
       });
+    });
   }
 
   @override
@@ -40,10 +41,11 @@ class _MainScreenState extends State<MainScreen> {
       length: 4,
       child: Scaffold(
         appBar: titleBar(context),
-        drawer: AppDrawer(onSignOut: () => _onSignOut(context), userProfile: userProfile),
+        drawer: AppDrawer(
+            onSignOut: () => _onSignOut(context), userProfile: userProfile),
         body: TabBarView(
           children: [
-            HomeScreen(),
+            isLoading ? Text("Loading") : HomeScreen(userProfile: userProfile),
             Center(child: Text("Page 2")),
             NotificationsScreen(),
             Center(child: Text("Page 2")),
