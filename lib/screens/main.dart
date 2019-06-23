@@ -1,4 +1,5 @@
 import 'package:class_resources/components/drawer.dart';
+import 'package:class_resources/pages/add-course.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   var userProfile;
   bool isLoading = true;
+  int _index = 0;
 
   _onSignOut(context) {
     Navigator.pop(context);
@@ -33,6 +35,37 @@ class _MainScreenState extends State<MainScreen> {
         isLoading = false;
       });
     });
+  }
+
+  Widget _getFab(BuildContext ctx) {
+    DefaultTabController.of(ctx).addListener(() {
+      setState(() {
+        _index = DefaultTabController.of(ctx).index;
+      });
+    });
+
+    List<IconData> icons = [
+      Icons.add,
+    ];
+
+    if (_index < 0 || _index > icons.length - 1) {
+      return Text("");
+    }
+
+    return FloatingActionButton.extended(
+      icon: Icon(icons[_index]),
+      label: Text("Add Course"),
+      elevation: 2,
+      foregroundColor: Theme.of(ctx).colorScheme.onPrimary,
+      backgroundColor: Theme.of(ctx).primaryColorDark,
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddCourse(userId: userProfile['id'])),
+        );
+      },
+    );
   }
 
   @override
@@ -50,6 +83,11 @@ class _MainScreenState extends State<MainScreen> {
             NotificationsScreen(),
             Center(child: Text("Page 2")),
           ],
+        ),
+        floatingActionButton: Builder(
+          builder: (BuildContext ctx) {
+            return _getFab(ctx);
+          },
         ),
       ),
     );
