@@ -19,9 +19,8 @@ class AuthService {
     return user;
   }
 
-  Future<DocumentSnapshot> getUserProfile() async {
-    FirebaseUser user = await getCurrentUser();
-    return await _firestore.collection("users").document(user.uid).get();
+  Stream<DocumentSnapshot> getProfile(userId) {
+    return _firestore.collection("users").document(userId).snapshots();
   }
 
   Future<void> signOut() async {

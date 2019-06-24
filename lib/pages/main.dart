@@ -9,7 +9,6 @@ import './notifications.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({this.onSignOut});
-
   final VoidCallback onSignOut;
   final AuthService auth = AuthService();
 
@@ -29,10 +28,14 @@ class _MainScreenState extends State<MainScreen> {
 
   initState() {
     super.initState();
-    widget.auth.getUserProfile().then((val) {
-      setState(() {
-        userProfile = val.data;
-        isLoading = false;
+
+    widget.auth.getCurrentUser().then((val) {
+      widget.auth.getProfile(val.uid).listen((val) {
+        if (val.data != null)
+          setState(() {
+            userProfile = val.data;
+            isLoading = false;
+          });
       });
     });
   }

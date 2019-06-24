@@ -1,16 +1,18 @@
+import 'package:class_resources/components/course-resources.dart';
 import 'package:class_resources/components/text-avatar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class CourseScreen extends StatefulWidget {
-  CourseScreen({Key key, @required this.code}) : super(key: key);
+class CourseDetailPage extends StatefulWidget {
+  CourseDetailPage({Key key, @required this.course}) : super(key: key);
 
-  final String code;
+  final DocumentSnapshot course;
 
   @override
-  _CourseScreenState createState() => _CourseScreenState();
+  _CourseDetailPageState createState() => _CourseDetailPageState();
 }
 
-class _CourseScreenState extends State<CourseScreen> {
+class _CourseDetailPageState extends State<CourseDetailPage> {
   @override
   Widget build(BuildContext context) {
     final onPrimaryTextStyle =
@@ -36,19 +38,22 @@ class _CourseScreenState extends State<CourseScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(75.0),
           child: Hero(
-            tag: widget.code,
+            tag: widget.course.data['code'],
             child: Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Material(
                 color: Colors.transparent,
                 child: ListTile(
-                  leading: textCircularAvatar('Descrete Structures'),
+                  leading: textCircularAvatar(
+                    widget.course.data['title'],
+                    widget.course.data['color']
+                  ),
                   title: Text(
-                    'Descrete Structures',
+                    widget.course.data['title'],
                     style: onPrimaryTextStyle,
                   ),
                   subtitle: Text(
-                    "CSC103 - Muhammad Adnan",
+                    "${widget.course.data['code']} - ${widget.course.data['teacher']}",
                     style: onPrimaryTextStyleDull,
                   ),
                 ),
@@ -88,9 +93,7 @@ class _CourseScreenState extends State<CourseScreen> {
             Expanded(
               child: TabBarView(
                 children: <Widget>[
-                  Center(
-                    child: Text("data1"),
-                  ),
+                  CourseResources(resources: widget.course.data['resources'],),
                   Center(
                     child: Text("data2"),
                   ),

@@ -1,4 +1,5 @@
 import 'package:class_resources/components/text-avatar.dart';
+import 'package:class_resources/pages/course-details.dart';
 import 'package:class_resources/services/courses.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,16 @@ class _RefItemState extends State<RefItem> {
           title: Text(doc.data['title'] ?? ""),
           subtitle: Text("${doc.data['code']} - ${doc.data['teacher']}" ?? ""),
           trailing: _getPopup(doc.reference),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              ctx,
+              MaterialPageRoute(
+                builder: (context) => CourseDetailPage(
+                  course: doc,
+                ),
+              )
+            );
+          },
           onLongPress: () {
             dynamic popUpMenustate = _menuKey.currentState;
             popUpMenustate.showButtonMenu();
