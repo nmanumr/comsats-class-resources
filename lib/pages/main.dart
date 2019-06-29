@@ -60,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
       label: Text("Add Course"),
       elevation: 2,
       foregroundColor: Theme.of(ctx).colorScheme.onPrimary,
-      backgroundColor: Theme.of(ctx).primaryColorDark,
+      backgroundColor: Theme.of(ctx).floatingActionButtonTheme.backgroundColor,
       onPressed: () {
         Navigator.push(
           context,

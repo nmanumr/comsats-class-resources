@@ -17,8 +17,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   Widget build(BuildContext context) {
     final onPrimaryTextStyle =
         TextStyle(color: Theme.of(context).colorScheme.onPrimary);
-    final onPrimaryTextStyleDull =
-        TextStyle(color: Theme.of(context).colorScheme.onPrimary.withAlpha(170));
+    final onPrimaryTextStyleDull = TextStyle(
+        color: Theme.of(context).colorScheme.onPrimary.withAlpha(170));
 
     return Scaffold(
       appBar: AppBar(
@@ -37,26 +37,20 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(75.0),
-          child: Hero(
-            tag: widget.course.data['code'],
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-              child: Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  leading: textCircularAvatar(
-                    widget.course.data['title'],
-                    widget.course.data['color']
-                  ),
-                  title: Text(
-                    widget.course.data['title'],
-                    style: onPrimaryTextStyle,
-                  ),
-                  subtitle: Text(
-                    "${widget.course.data['code']} - ${widget.course.data['teacher']}",
-                    style: onPrimaryTextStyleDull,
-                  ),
-                ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 10),
+            child: ListTile(
+              leading: textCircularAvatar(
+                widget.course.data['title'],
+                widget.course.data['color'],
+              ),
+              title: Text(
+                widget.course.data['title'],
+                style: onPrimaryTextStyle,
+              ),
+              subtitle: Text(
+                "${widget.course.data['code']} - ${widget.course.data['teacher']}",
+                style: onPrimaryTextStyleDull,
               ),
             ),
           ),
@@ -79,6 +73,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 child: Center(
                   child: TabBar(
                     labelColor: Theme.of(context).colorScheme.onSurface,
+                    indicatorColor: Theme.of(context).primaryColorDark,
                     isScrollable: true,
                     tabs: [
                       Tab(text: "Resources"),
@@ -93,7 +88,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             Expanded(
               child: TabBarView(
                 children: <Widget>[
-                  CourseResources(resources: widget.course.data['resources'],),
+                  CourseResources(
+                    resources: widget.course.data['resources'],
+                  ),
                   Center(
                     child: Text("data2"),
                   ),

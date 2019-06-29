@@ -66,12 +66,12 @@ class _RefItemState extends State<RefItem> {
               leading: CircleAvatar(
                 child: Icon(Icons.book),
               ),
-              title: Text(
-                doc.data['title'],
-                style: Theme.of(ctx).textTheme.subhead,
-              ),
+              onLongPress: () {
+                _settingModalBottomSheet(ctx);
+              },
+              title: Text(doc.data['title']),
               subtitle: Text("$formatted"),
-              onTap: () {},
+              trailing: Icon(Icons.offline_pin),
             );
         }
       },
@@ -92,4 +92,38 @@ class _RefItemState extends State<RefItem> {
       },
     );
   }
+}
+
+void _settingModalBottomSheet(context) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext bc) {
+      return Container(
+        child: new Wrap(
+          children: <Widget>[
+            new ListTile(
+              leading: new Icon(Icons.open_in_new),
+              title: new Text('Open...'),
+              onTap: () => {},
+            ),
+            new ListTile(
+              leading: new Icon(Icons.open_in_browser),
+              title: new Text('Open in browser...'),
+              onTap: () => {},
+            ),
+            new ListTile(
+              leading: new Icon(Icons.star),
+              title: new Text('Star this resource'),
+              onTap: () => {},
+            ),
+            new ListTile(
+              leading: new Icon(Icons.share),
+              title: new Text('Share...'),
+              onTap: () => {},
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
