@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     return MaterialApp(
-      title: 'Dynamic themes demo',
+      title: 'Class Resources',
       theme: lightTheme(),
       darkTheme: darkTheme(),
       home: screen,
