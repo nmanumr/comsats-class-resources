@@ -22,6 +22,7 @@ dependencies:
   firebase_core: 
   firebase_auth:
   cloud_firestore: 
+  scoped_model: 
   flutter_masked_text: ^0.8.0
   intl: ^0.15.8
 
