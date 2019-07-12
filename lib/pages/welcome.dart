@@ -57,7 +57,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "A plateform to share and manage your\n class learning resources.",
+                  "A platform to share and manage your\n class learning resources.",
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.body1.copyWith(
                         fontSize: 16,
