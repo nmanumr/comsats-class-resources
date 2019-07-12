@@ -14,10 +14,11 @@ ThemeData lightTheme() {
 ThemeData darkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
-    canvasColor: Color(0xFF121212),
-    primaryColor: Color(0xFF2C2C2C),
-    primaryColorDark: Color(0xFF0E397A),
-    accentColor: Color(0xFF0F2F60),
+    canvasColor: Color(0xFF202125),
+    primaryColor: Color(0xFF202125),
+    primaryColorLight: Color(0xFF2C2E2F),
+    primaryColorDark: Color(0xFF195BBC),
+    accentColor: Color(0xFF8CB5FE),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Color(0xFF0E397A),
       foregroundColor: Colors.white

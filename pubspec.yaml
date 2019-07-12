@@ -63,7 +63,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/ic_launcher.png
     - assets/images/google-logo.png
-    # Photo by !(Valery Rabchenyuk)[https://unsplash.com/@v2306?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText]
+    # Photo by ![Nathan Anderson](https://unsplash.com/@nathananderson) on Unsplash
     - assets/images/welcome-bg.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
