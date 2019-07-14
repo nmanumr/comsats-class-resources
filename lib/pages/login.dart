@@ -1,14 +1,10 @@
-import 'package:class_resources/services/authentication.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  LoginPage({this.auth, this.onSignedIn, this.onResetPass, this.toSignup});
+import 'package:class_resources/components/paddedInput.dart';
+import 'package:class_resources/services/authentication.dart';
 
-  final AuthService auth;
-  final VoidCallback onSignedIn;
-  final VoidCallback onResetPass;
-  final VoidCallback toSignup;
+class LoginPage extends StatefulWidget {
+  final AuthService auth = AuthService();
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -16,51 +12,17 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  var controller = new MaskedTextController(mask: 'AA00-AAA-000');
 
   String email;
   String password;
   bool showPass = false;
 
-  String rollNumValidator(String text) {
-    return null;
+  String notEmptyValidator(String val) {
+    return (val ?? "") != '' ? null : 'Field can not be empty';
   }
 
-  String passValidator(String text) {
-    return null;
-  }
-
-  IconButton _getSuffixIcon(obscureText) {
-    if (!obscureText) return null;
-    return IconButton(
-      onPressed: () {
-        setState(() {
-          showPass = !showPass;
-        });
-      },
-      icon: Icon(Icons.visibility),
-    );
-  }
-
-  Widget paddedInput(label, validator, obscureText, controller, onSave) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
-      child: TextFormField(
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-          suffixIcon: _getSuffixIcon(obscureText),
-        ),
-        controller: controller,
-        obscureText: obscureText ? !showPass : false,
-        onSaved: onSave,
-      ),
-    );
-  }
-
-  void onLogin(_) {
-    widget.onSignedIn();
+  void onLogin(ctx) {
+    Navigator.pushNamedAndRemoveUntil(ctx, '/dashboard', (r) => false);
   }
 
   void onError(ctx, err) {
@@ -79,10 +41,14 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       widget.auth
-          .signIn(email + "@cuilahore.edu.pk", password)
-          .then(onLogin)
+          .signIn(email, password)
+          .then((v) => onLogin(ctx))
           .catchError((err) => onError(ctx, err));
     }
+  }
+
+  void toSignup(ctx) {
+    Navigator.pushNamed(ctx, '/signup');
   }
 
   @override
@@ -90,9 +56,12 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColorDark,
+        elevation: 0,
         actions: <Widget>[
           PopupMenuButton(
-            onSelected: (val) => widget.toSignup(),
+            onSelected: (val) => toSignup(context),
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
@@ -119,28 +88,16 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              paddedInput(
-                "Roll Number (AA00-AAA-000)",
-                rollNumValidator,
-                false,
-                controller,
-                (value) => email = value,
+              PaddedInput(
+                label: "Email",
+                validator: notEmptyValidator,
+                onSave: (value) => email = value,
               ),
-              paddedInput(
-                "Password",
-                passValidator,
-                true,
-                null,
-                (value) => password = value,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Text(
-                  "Please contact admins to get the passwords",
-                  style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      color: Theme.of(context).textTheme.caption.color),
-                ),
+              PaddedInput(
+                label: "Password",
+                validator: notEmptyValidator,
+                obscureText: true,
+                onSave: (value) => password = value,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -150,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                       FlatButton(
                         padding: EdgeInsets.symmetric(
                             vertical: 12.0, horizontal: 25.0),
-                        onPressed: () => widget.onResetPass(),
+                        onPressed: () {},
                         child: Text('Forget password?'),
                       ),
                       Expanded(
