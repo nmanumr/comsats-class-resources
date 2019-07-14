@@ -1,9 +1,12 @@
+import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
 import '../components/bordered-button.dart';
 import '../components/google-button.dart';
 
 class WelcomePage extends StatelessWidget {
+  final AuthService _auth = AuthService();
+
   final textShadows = [
     Shadow(
       offset: Offset(0.0, 0.0),
@@ -21,6 +24,26 @@ class WelcomePage extends StatelessWidget {
       color: Color.fromARGB(255, 0, 0, 0),
     ),
   ];
+
+  void loginWithGoogle(context) {
+    print("\n\n\n");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+    
+    _auth.googleSignIn().then((val){
+      Navigator.pop(context);
+      print(val);
+    }).catchError((e){
+      Navigator.pop(context);
+      print(e);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +101,9 @@ class WelcomePage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 7),
                     child: SizedBox(
                       width: double.infinity,
-                      child: GoogleSignInButton(onPressed: () => {}),
+                      child: GoogleSignInButton(
+                        onPressed: () => loginWithGoogle(context),
+                      ),
                     ),
                   ),
                   Padding(
@@ -91,13 +116,14 @@ class WelcomePage extends StatelessWidget {
                           size: 20,
                           color: Colors.white.withOpacity(0.91),
                         ),
-                        onPressed: () => {},
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/signup'),
                       ),
                     ),
                   ),
                   FlatButton(
                     child: Text("Already have Account?"),
-                    onPressed: () => {},
+                    onPressed: () => Navigator.pushNamed(context, '/login'),
                   ),
                 ],
               ),

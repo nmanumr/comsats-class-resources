@@ -23,6 +23,7 @@ dependencies:
   firebase_auth:
   cloud_firestore: 
   shared_preferences: ^0.5.3+2
+  google_sign_in: ^4.0.4
   scoped_model: 
   flutter_masked_text: ^0.8.0
   intl: ^0.15.8
