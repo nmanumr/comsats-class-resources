@@ -15,9 +15,9 @@ ThemeData darkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
     canvasColor: Color(0xFF202125),
-    primaryColor: Color(0xFF202125),
+    primaryColor: Color(0xFF195BBC),
     primaryColorLight: Color(0xFF2C2E2F),
-    primaryColorDark: Color(0xFF195BBC),
+    primaryColorDark: Color(0xFF202125),
     accentColor: Color(0xFF8CB5FE),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Color(0xFF0E397A),
