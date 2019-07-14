@@ -1,4 +1,8 @@
+import 'package:class_resources/components/loader.dart';
+import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/pages/update-profile.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import './courses.dart';
 import './notifications.dart';
@@ -11,6 +15,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  ProfileModel _profileModel;
   int _cIndex = 0;
 
   final tabs = [
@@ -30,14 +35,19 @@ class _DashboardState extends State<Dashboard> {
       "page": NotificationPage(),
     },
     {
-      "name": "Library",
-      "icon": Icons.folder,
+      "name": "Menu",
+      "icon": Icons.menu,
       "page": LibraryPage(),
     },
   ];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    _profileModel = ProfileModel();
+    super.initState();
+  }
+
+  Widget build_dashboard(BuildContext context) {
     List<BottomNavigationBarItem> bottomNavItems = [];
 
     for (var tab in tabs) {
@@ -74,4 +84,28 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScopedModel(
+      model: _profileModel,
+      child: ScopedModelDescendant<ProfileModel>(
+        builder: (context, child, model) {
+          // Model not loaded yet
+          if (model.isLoading) {
+            return Loader();
+          }
+          // Profile not created
+          else if (!model.isProfileComplete) {
+            return UpdateProfile();
+          }
+          // build dashboard layout
+
+          return build_dashboard(context);
+        },
+      ),
+    );
+  }
 }
+
+//
