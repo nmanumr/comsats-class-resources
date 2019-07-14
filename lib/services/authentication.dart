@@ -1,21 +1,31 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Firestore _firestore = Firestore.instance;
+  
+
+  Future setUserId(uid) async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString("uid", uid);
+  }
 
   Future<String> signIn(String email, String password) async {
     FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
+    setUserId(user.uid);
     return user.uid;
   }
 
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser user = await _firebaseAuth.currentUser();
 
-    createUserProfileIfNotExists(user, Profile());
+    updateProfile(user.uid, Profile());
     return user;
   }
 
@@ -24,7 +34,8 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    return _firebaseAuth.signOut();
+    _firebaseAuth.signOut();
+    setUserId("");
   }
 
   Future<void> resetPassword(String email) async {
@@ -37,31 +48,57 @@ class AuthService {
   }
 
   Future<void> signUp(Profile profile) async {
-    DocumentReference x = _firestore.document("classes/${profile.klass}");
-    print("TEST: ${x.path}");
     FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
       email: profile.email,
       password: profile.password,
     );
-    return await createUserProfileIfNotExists(user, profile);
+
+    UserUpdateInfo info = new UserUpdateInfo();
+    info.displayName = profile.name;
+    await user.updateProfile(info);
+    await updateProfile(user.uid, profile);
+    setUserId(user.uid);
   }
 
-  createUserProfileIfNotExists(FirebaseUser user, Profile profile) async {
-    DocumentReference profileRef =
-        _firestore.collection("users").document(user.uid);
+  Future<FirebaseUser> googleSignIn() async {
+    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    final FirebaseUser user =
+        await _firebaseAuth.signInWithCredential(credential);
+    print("signed in " + user.displayName);
+    return user;
+  }
 
-    profileRef.get().then((doc) {
-      if (!doc.exists) {
-        _firestore.collection("users").document(user.uid).setData({
-          "rollNum": profile.rollNum ?? user.email.substring(0, 12),
-          "email": profile.email,
-          "id": user.uid,
-          "subjects": [],
-          "name": profile.name ?? "",
-          "class": _firestore.document("classes/${profile.klass}")
-        });
-      }
-    });
+  updateProfile(String uid, Profile profile) async {
+    DocumentReference profileRef = _firestore.document("users/${uid}");
+    DocumentSnapshot document = await profileRef.get();
+
+    if (document.exists) {
+      await profileRef.updateData({
+        "rollNum": profile.rollNum ?? "",
+        "email": profile.email,
+        "id": uid,
+        "subjects": [],
+        "name": profile.name ?? "",
+        "class": _firestore.document("classes/${profile.klass ?? 'null'}"),
+        "profile_completed": true
+      });
+    } else {
+      await profileRef.setData({
+        "rollNum": profile.rollNum ?? "",
+        "email": profile.email,
+        "id": uid,
+        "subjects": [],
+        "name": profile.name ?? "",
+        "class": _firestore.document("classes/${profile.klass ?? 'null'}"),
+        "profile_completed": false
+      });
+    }
+    return true;
   }
 }
 
