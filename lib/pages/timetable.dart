@@ -1,3 +1,4 @@
+import 'package:class_resources/components/centered-appbar.dart';
 import 'package:flutter/material.dart';
 
 class TimeTablePage extends StatefulWidget {
@@ -9,11 +10,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Time Table"),
-        centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: centeredAppBar(context, "Time Table")
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/paddedInput.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
@@ -59,12 +60,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Signup"),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColorDark,
-        elevation: 0,
-      ),
+      appBar: centeredAppBar(context, "Signup"),
       body: Form(
         key: _formKey,
         child: Padding(

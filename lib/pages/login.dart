@@ -1,3 +1,4 @@
+import 'package:class_resources/components/centered-appbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:class_resources/components/paddedInput.dart';
@@ -54,11 +55,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Login"),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColorDark,
-        elevation: 0,
+      appBar: centeredAppBar(
+        context,
+        "Login",
         actions: <Widget>[
           PopupMenuButton(
             onSelected: (val) => toSignup(context),
@@ -80,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
         ],
-      ),
+      ), 
       body: Form(
         key: _formKey,
         child: Padding(
