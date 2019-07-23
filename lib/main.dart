@@ -1,3 +1,4 @@
+import 'package:class_resources/pages/add-courses.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,6 +37,7 @@ class AppMain extends StatelessWidget {
         '/signup': (ctx) => SignupPage(),
         '/login': (ctx) => LoginPage(),
         '/edit-profile': (ctx) => UpdateProfile(),
+        '/add-course': (ctx) => AddCourses(),
       },
     );
   }
