@@ -4,7 +4,6 @@ import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/reference-item.dart';
-import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,15 +23,6 @@ class _CoursesPageState extends State<CoursesPage> {
         child: Text("Add Courses"),
         onPressed: () {},
       ),
-    );
-  }
-
-  Widget courseList(String name, String code, String teacher) {
-    return ListTile(
-      leading: TextAvatar(text: name),
-      title: Text(name),
-      subtitle: Text("$name - $teacher"),
-      onTap: () {},
     );
   }
 
@@ -74,7 +64,9 @@ class _CoursesPageState extends State<CoursesPage> {
             ),
             floatingActionButton: FloatingActionButton(
               child: Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, "/add-course");
+              },
             ),
           );
         },
@@ -82,27 +74,3 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 }
-
-// ListView(
-//         children: <Widget>[
-//           ListHeader(text: "Semester 03"),
-//           courseList("Object Oriented Programming", "CSC241", "4(3, 1)"),
-//           courseList("Digital Logic Design", "CSC241", "4(3, 1)"),
-//           courseList("Statistics & Probability Theory", "CSC241", "4(3, 1)"),
-//           courseList("Linear Algebra", "CSC241", "4(3, 1)"),
-//           courseList("Modern Physics", "CSC241", "4(3, 1)"),
-//           ListHeader(text: "Semester 02"),
-//           courseList("Programming Fundamentals	", "CSC241", "4(3, 1)"),
-//           courseList("Report Writing Skills", "CSC241", "4(3, 1)"),
-//           courseList("Multivaribale Calculus", "CSC241", "4(3, 1)"),
-//           courseList("Professional Practices for IT", "CSC241", "4(3, 1)"),
-//           courseList("Discrete Structures", "CSC241", "4(3, 1)"),
-//           courseList("Electricity, Magnetism & Optics", "CSC241", "4(3, 1)"),
-//           ListHeader(text: "Semester 01"),
-//           courseList("Introduction to ICT", "CSC241", "4(3, 1)"),
-//           courseList("English Comprehension & Composition", "CSC241", "4(3, 1)"),
-//           courseList("Islamic Studies", "CSC241", "4(3, 1)"),
-//           courseList("Calculus & Analytics Geometery", "CSC241", "4(3, 1)"),
-//           courseList("Applied Physics for Engineers", "CSC241", "4(3, 1)"),
-//         ],
-//       )
