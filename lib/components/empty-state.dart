@@ -32,7 +32,7 @@ class EmptyState extends StatelessWidget {
                   ),
                 ),
               ),
-              this.button
+              this.button ?? Center()
             ],
           ),
         ),
