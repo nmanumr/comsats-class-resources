@@ -1,15 +1,17 @@
 import 'package:class_resources/components/text-avatar.dart';
-import 'package:class_resources/pages/course-details.dart';
-import 'package:class_resources/services/courses.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RefItem extends StatefulWidget {
-  RefItem({this.ref, this.userId});
+  RefItem({
+    @required this.ref,
+    this.popupItems,
+    this.handlePopUpChanged,
+  });
 
   final DocumentReference ref;
-  final String userId;
-  final CoursesService coursesService = CoursesService();
+  final List<PopupMenuItem> popupItems;
+  final Function(dynamic val, DocumentReference docRef) handlePopUpChanged;
 
   @override
   _RefItemState createState() => _RefItemState();
@@ -18,28 +20,18 @@ class RefItem extends StatefulWidget {
 class _RefItemState extends State<RefItem> {
   final GlobalKey _menuKey = new GlobalKey();
 
-  handlePopUpChanged(val, docRef) {
-    widget.coursesService.removeCourse(widget.userId, docRef);
-  }
-
   Widget _getPopup(DocumentReference docRef) {
-    List<PopupMenuItem> popupItems = [
-      PopupMenuItem(
-        child: Text("Remove Course"),
-        value: "",
-      )
-    ];
-
     return PopupMenuButton(
-      icon: Icon(
-        Icons.error,
-        color: Colors.transparent,
-      ),
+      icon: Icon(Icons.more_vert, color: Colors.transparent),
       key: _menuKey,
-      onSelected: (val) => handlePopUpChanged(val, docRef),
-      itemBuilder: (BuildContext context) => popupItems,
+      onSelected: (val) => widget.handlePopUpChanged(val, docRef),
+      itemBuilder: (BuildContext context) => widget.popupItems,
       enabled: false,
     );
+  }
+
+  String className(DocumentReference classPath){
+    return classPath.path.substring(8);
   }
 
   Widget onError(err) {
@@ -48,7 +40,7 @@ class _RefItemState extends State<RefItem> {
 
   Widget onLoading() {
     return ListTile(
-      leading: textCircularAvatar("..."),
+      leading: TextAvatar(text: "..."),
       title: Text(widget.ref.documentID),
       subtitle: Text("loading.."),
     );
@@ -58,27 +50,20 @@ class _RefItemState extends State<RefItem> {
     return Builder(
       builder: (BuildContext ctx) {
         return ListTile(
-          leading: textCircularAvatar(
-            doc.data['title'] ?? doc.data['code'],
-            doc.data['color'],
-            Colors.white,
+          leading: TextAvatar(
+            text: doc.data['title'] ?? doc.data['code'],
+            colorCode: doc.data['color'],
+            foreground: Colors.white,
           ),
           title: Text(doc.data['title'] ?? ""),
-          subtitle: Text("${doc.data['code']} - ${doc.data['teacher']}" ?? ""),
+          subtitle: Text("${className(doc.data['class'])} - ${doc.data['teacher']}" ?? ""),
           trailing: _getPopup(doc.reference),
-          onTap: () {
-            Navigator.push(
-              ctx,
-              MaterialPageRoute(
-                builder: (context) => CourseDetailPage(
-                  course: doc,
-                ),
-              )
-            );
-          },
+          onTap: () {},
           onLongPress: () {
-            dynamic popUpMenustate = _menuKey.currentState;
-            popUpMenustate.showButtonMenu();
+            if ((widget.popupItems ?? []).isNotEmpty) {
+              dynamic popUpMenustate = _menuKey.currentState;
+              popUpMenustate.showButtonMenu();
+            }
           },
         );
       },
