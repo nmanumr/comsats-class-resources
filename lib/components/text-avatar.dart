@@ -1,18 +1,27 @@
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-CircleAvatar textCircularAvatar(String text, [colorCode, Color foreground]) {
-  Color color;
-  if (!(colorCode ?? "").isEmpty) color = HexColor(colorCode);
+class TextAvatar extends StatelessWidget {
+  TextAvatar({@required this.text});
 
-  final words = (text ?? "").split(" ");
-  String avatarText = words.map((f) => ((f.length > 0) ? f[0] : "")).join("");
+  final String text;
 
-  if (avatarText.length > 2) avatarText = avatarText.substring(0, 2);
+  String getAvatarText(String text) {
+    var words = (text ?? "").split(" ");
+    words.remove("&");
+    if (words.length > 2) words = words.sublist(0, 2);
+    return words.map((f) => ((f.length > 0) ? f[0] : "")).join("").toUpperCase();
+  }
 
-  return CircleAvatar(
-    child: Text(avatarText),
-    backgroundColor: color,
-    foregroundColor: foreground,
-  );
+  @override
+  Widget build(BuildContext context) {
+    String avatarText = getAvatarText(this.text);
+    Color color = HexColor(generateColor(text));
+
+    return CircleAvatar(
+      child: Text(avatarText),
+      backgroundColor: color.withAlpha(175),
+      foregroundColor: Colors.white,
+    );
+  }
 }
