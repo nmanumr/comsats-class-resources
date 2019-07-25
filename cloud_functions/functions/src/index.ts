@@ -1,25 +1,34 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { Course } from './models';
+import { deleteCollection } from './utils';
 
 admin.initializeApp();
 const db = admin.firestore();
 
 /**
  * Adds a course to class
- * @param data {course: Course, klass: string, semester: string}
+ * @param data Course
  */
 export const addCourseToClass = functions.https.onCall(async (data, _) => {
-    const course: Course = JSON.parse(data.course);
     const klass: string = data.klass;
+    const klassName = klass.split("/").pop();
     const semester: string = data.semester;
+    const semesterName = semester.split("/").pop();
+    const courseRef = db.doc(`/subjects/${klassName}--${data.code}`);
 
-    const courseRef = await db.collection('/subjects').add(course);
+    await courseRef.set({
+        "code": data.code,
+        "creditHours": data.creditHours,
+        "class": db.doc(klass),
+        "semester": db.doc(semester),
+        "teacher": data.teacher,
+        "title": data.title,
+        "resources": []
+    });
 
-    return db.doc(`/classes/${klass}/semesters/${semester}`).set({
-        name: semester,
-        courses: admin.firestore.FieldValue.arrayUnion([courseRef])
-    }, { merge: true });
+    return db.doc(`/classes/${klassName}/semesters/${semesterName}`).update({
+        courses: admin.firestore.FieldValue.arrayUnion(courseRef)
+    });
 });
 
 
@@ -42,15 +51,18 @@ export const addCourseToUser = functions.https.onCall(async (data, context) => {
 
 
 /**
- * Invokes when new user is created
+ * Synchronize user courses with user class courses
  */
-// export const addUserProfile = functions.auth.user().onCreate((user) => {
-//     return db.doc(`/users/${user.uid}`).set(<UserProfile>{
-//         class: db.doc("/classes/null"),
-//         email: user.email,
-//         name: user.displayName,
-//         id: user.uid,
-//         profile_completed: false,
-//         rollNum: ""
-//     }, { merge: true })
-// })
+export const syncUserCourses = functions.https.onCall(async (_, context) => {
+    if (!context.auth) return;
+
+    const userd: string = context.auth.uid;
+    const user = await db.doc(`/users/${userd}/`).get();
+
+    await deleteCollection(db, `/users/${userd}/semesters/`, 10);
+
+    const snapshot = await db.collection(`${user.get("class")["path"]}/semesters/`).get();
+    for (const doc of snapshot.docs) {
+        await db.doc(`/users/${userd}/semesters/${doc.get("name")}/`).set(doc.data());
+    }
+});
