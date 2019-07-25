@@ -6,8 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AddCourses extends StatelessWidget {
+  final CoursesService coursesService = CoursesService();
+
   String className(DocumentReference classPath) {
-    return classPath.path.substring(8);
+    if (classPath != null) return classPath.path.substring(8);
+    return "";
   }
 
   Widget onLoaded(List<DocumentSnapshot> courses, context) {
@@ -15,8 +18,6 @@ class AddCourses extends StatelessWidget {
         .map((course) => ListTile(
               leading: TextAvatar(
                 text: course['title'],
-                colorCode: course['color'],
-                foreground: Colors.white,
               ),
               title: Text(course["title"]),
               subtitle:
@@ -26,36 +27,40 @@ class AddCourses extends StatelessWidget {
         .toList();
 
     children = [
-      ListTile(
-        leading: CircleAvatar(
-          child: Icon(Icons.add),
-          backgroundColor: Theme.of(context).accentColor.withAlpha(85),
-          foregroundColor: Theme.of(context).accentColor,
-        ),
-        title: Text("Create new course"),
-        onTap: (){},
-      ),
-      ListTile(
-        leading: CircleAvatar(
-          child: Icon(Icons.sync),
-          backgroundColor: Theme.of(context).accentColor.withAlpha(85),
-          foregroundColor: Theme.of(context).accentColor,
-        ),
-        title: Text("Sync with class"),
-        onTap: (){},
-      ),
-      Divider()
-    ] + children;
+          ListTile(
+            leading: CircleAvatar(
+              child: Icon(Icons.add),
+              backgroundColor: Theme.of(context).accentColor.withAlpha(85),
+              foregroundColor: Theme.of(context).accentColor,
+            ),
+            title: Text("Create new course"),
+            onTap: () {
+              Navigator.popAndPushNamed(context, '/create-course');
+            },
+          ),
+          ListTile(
+            leading: CircleAvatar(
+              child: Icon(Icons.sync),
+              backgroundColor: Theme.of(context).accentColor.withAlpha(85),
+              foregroundColor: Theme.of(context).accentColor,
+            ),
+            title: Text("Sync with class"),
+            onTap: () {
+              coursesService.syncWithClass();
+            },
+          ),
+          Divider()
+        ] +
+        children;
     return ListView(children: children);
   }
 
   @override
   Widget build(BuildContext context) {
-    CoursesService courses = CoursesService();
     return Scaffold(
       appBar: centeredAppBar(context, "Courses"),
       body: StreamBuilder(
-        stream: courses.getAllCourses(),
+        stream: coursesService.getAllCourses(),
         builder: (builder, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');

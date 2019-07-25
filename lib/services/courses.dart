@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class Course {
   Course({this.code, this.color, this.creditHours, this.teacher, this.title});
@@ -34,5 +35,13 @@ class CoursesService {
 
   removeCourse(String uid, DocumentReference course) async {
     return await _updateUserCourses(uid, course, false);
+  }
+
+  syncWithClass() async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'syncUserCourses',
+    );
+
+    return await callable.call();
   }
 }
