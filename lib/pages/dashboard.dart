@@ -14,41 +14,51 @@ class Dashboard extends StatefulWidget {
   _DashboardState createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  final wantKeepAlive = true;
+
   ProfileModel _profileModel;
   int _cIndex = 0;
 
-  final tabs = [
-    {
-      "name": "Courses",
-      "icon": Icons.book,
-      "page": CoursesPage(),
-    },
-    {
-      "name": "Time Table",
-      "icon": Icons.calendar_today,
-      "page": TimeTablePage(),
-    },
-    {
-      "name": "Notifications",
-      "icon": Icons.add_alert,
-      "page": NotificationPage(),
-    },
-    {
-      "name": "Menu",
-      "icon": Icons.menu,
-      "page": LibraryPage(),
-    },
-  ];
+  List tabs = [];
+  List<BottomNavigationBarItem> bottomNavItems = [];
 
   @override
   void initState() {
-    _profileModel = ProfileModel();
     super.initState();
+    _profileModel = ProfileModel();
+    print("dashboard init called");
   }
 
-  Widget build_dashboard(BuildContext context) {
-    List<BottomNavigationBarItem> bottomNavItems = [];
+  initTabs(BuildContext context, ProfileModel model) {
+    if (tabs.isNotEmpty) return;
+
+    tabs = [
+      {
+        "name": "Courses",
+        "icon": Icons.book,
+        "page": CoursesPage(model: model),
+      },
+      {
+        "name": "Time Table",
+        "icon": Icons.calendar_today,
+        "page": TimeTablePage(),
+      },
+      {
+        "name": "My Tasks",
+        "icon": Icons.playlist_add_check,
+        "page": NotificationPage(),
+      },
+      {
+        "name": "Menu",
+        "icon": Icons.menu,
+        "page": LibraryPage(),
+      }
+    ];
+
+    bottomNavItems = [];
 
     for (var tab in tabs) {
       bottomNavItems.add(BottomNavigationBarItem(
@@ -64,8 +74,13 @@ class _DashboardState extends State<Dashboard> {
         ),
       ));
     }
+  }
+
+  Widget buildDashboard(BuildContext context, ProfileModel model) {
+    initTabs(context, model);
 
     return Scaffold(
+      key: PageStorageKey('BottomNavigationBar'),
       body: Builder(
         builder: (context) => tabs[_cIndex]["page"],
       ),
@@ -87,6 +102,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    print("dashboard build called");
+
     return ScopedModel(
       model: _profileModel,
       child: ScopedModelDescendant<ProfileModel>(
@@ -99,9 +117,9 @@ class _DashboardState extends State<Dashboard> {
           else if (!model.isProfileComplete) {
             return UpdateProfile();
           }
-          // build dashboard layout
 
-          return build_dashboard(context);
+          // build dashboard layout
+          return buildDashboard(context, model);
         },
       ),
     );

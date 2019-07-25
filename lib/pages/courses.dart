@@ -1,20 +1,16 @@
 import 'package:class_resources/components/buttons.dart';
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/empty-state.dart';
-import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/components/reference-item.dart';
 import 'package:class_resources/models/profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class CoursesPage extends StatefulWidget {
-  @override
-  _CoursesPageState createState() => _CoursesPageState();
-}
+class CoursesPage extends StatelessWidget {
+  CoursesPage({@required this.model});
 
-class _CoursesPageState extends State<CoursesPage> {
+  final ProfileModel model;
+
   Widget getEmptyState() {
     return EmptyState(
       icon: Icons.library_books,
@@ -26,40 +22,24 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 
-  Widget onError(error) {
-    return Text('Error: $error');
-  }
-
-  Widget onLoaded(List<DocumentSnapshot> semesters) {
-    List<Widget> children = [];
-    for (var semester in semesters.reversed) {
-      children.add(ListHeader(text: semester["name"]));
-      for (DocumentReference course in semester["courses"]) {
-        children.add(RefItem(ref: course));
-      }
-    }
-    return ListView(children: children);
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScopedModel(
-      model: ProfileModel(),
+      model: model,
       child: ScopedModelDescendant<ProfileModel>(
         builder: (context, child, model) {
           return Scaffold(
+            // key: PageStorageKey('courses'),
             appBar: centeredAppBar(context, "Courses"),
-            body: StreamBuilder(
-              stream: model.getUserSemester(),
-              builder: (builder, snapshot) {
-                if (snapshot.hasError) {
-                  return onError(snapshot.error);
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return Loader();
-                } else {
-                  return onLoaded(snapshot.data.documents);
-                }
+            body: Builder(
+              builder: (context) {
+                if (model.isCoursesLoading) return Loader();
+                if (model.coursesList.length == 1) return getEmptyState();
+
+                return ListView(
+                  key: PageStorageKey('courses'),
+                  children: model.coursesList,
+                );
               },
             ),
             floatingActionButton: FloatingActionButton(
