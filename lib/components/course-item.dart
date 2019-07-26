@@ -19,9 +19,9 @@ class CourseItem extends StatelessWidget {
   buildLoaded() {
     return ListTile(
       leading: TextAvatar(
-        text: model.title + model.klassName,
+        text: (model.title ?? "") + (model.klassName ?? ""),
       ),
-      title: Text(model.title),
+      title: Text(model.title ?? ""),
       subtitle: Text("${model.klassName} - ${model.teacher}" ?? ""),
       onTap: () {},
       onLongPress: () {},
