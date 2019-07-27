@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:class_resources/components/centered-appbar.dart';
-import 'package:class_resources/components/paddedInput.dart';
+import 'package:class_resources/components/input.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 
