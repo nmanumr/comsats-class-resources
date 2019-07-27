@@ -26,7 +26,6 @@ class WelcomePage extends StatelessWidget {
   ];
 
   void loginWithGoogle(context) {
-    print("\n\n\n");
     showDialog(
       context: context,
       builder: (BuildContext context) {

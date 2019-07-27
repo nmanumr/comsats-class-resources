@@ -29,7 +29,6 @@ class _DashboardState extends State<Dashboard>
   void initState() {
     super.initState();
     _profileModel = ProfileModel();
-    print("dashboard init called");
   }
 
   initTabs(BuildContext context, ProfileModel model) {
@@ -62,7 +61,7 @@ class _DashboardState extends State<Dashboard>
 
     for (var tab in tabs) {
       bottomNavItems.add(BottomNavigationBarItem(
-        backgroundColor: Theme.of(context).primaryColorLight,
+        backgroundColor: Theme.of(context).primaryColorDark,
         icon: Opacity(
           opacity: 0.5,
           child: Icon(tab['icon']),
@@ -86,7 +85,6 @@ class _DashboardState extends State<Dashboard>
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _cIndex,
-        backgroundColor: Theme.of(context).primaryColorDark,
         type: BottomNavigationBarType.shifting,
         selectedFontSize: 12,
         selectedItemColor: Theme.of(context).accentColor,
