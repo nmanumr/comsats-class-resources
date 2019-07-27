@@ -24,8 +24,6 @@ class AuthService {
 
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser user = await _firebaseAuth.currentUser();
-
-    updateProfile(user.uid, Profile());
     return user;
   }
 
