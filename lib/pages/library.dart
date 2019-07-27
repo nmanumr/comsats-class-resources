@@ -22,7 +22,7 @@ class LibraryPage extends StatelessWidget {
       );
     } else {
       return ListTile(
-        leading: TextAvatar(text: name, color: Theme.of(ctx).accentColor),
+        leading: TextAvatar(text: name),
         title: Text(model.name),
         subtitle: Text(model.rollNum),
       );

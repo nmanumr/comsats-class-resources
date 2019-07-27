@@ -86,7 +86,7 @@ class _DashboardState extends State<Dashboard>
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _cIndex,
-        backgroundColor: Theme.of(context).primaryColorLight,
+        backgroundColor: Theme.of(context).primaryColorDark,
         type: BottomNavigationBarType.shifting,
         selectedFontSize: 12,
         selectedItemColor: Theme.of(context).accentColor,
@@ -103,7 +103,6 @@ class _DashboardState extends State<Dashboard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print("dashboard build called");
 
     return ScopedModel(
       model: _profileModel,

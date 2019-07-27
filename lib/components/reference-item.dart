@@ -51,9 +51,7 @@ class _RefItemState extends State<RefItem> {
       builder: (BuildContext ctx) {
         return ListTile(
           leading: TextAvatar(
-            text: doc.data['title'] ?? doc.data['code'],
-            colorCode: doc.data['color'],
-            foreground: Colors.white,
+            text: doc.data['title'] + className(doc.data['class']),
           ),
           title: Text(doc.data['title'] ?? ""),
           subtitle: Text("${className(doc.data['class'])} - ${doc.data['teacher']}" ?? ""),
