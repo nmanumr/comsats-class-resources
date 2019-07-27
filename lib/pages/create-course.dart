@@ -3,7 +3,6 @@ import 'package:class_resources/components/input.dart';
 import 'package:class_resources/services/class.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 
 class CreateCourse extends StatefulWidget {
   @override
