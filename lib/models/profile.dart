@@ -1,9 +1,6 @@
-import 'package:class_resources/components/course-item.dart';
-import 'package:class_resources/components/list-header.dart';
-import 'package:class_resources/models/course.dart';
+import 'package:class_resources/models/semester.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ProfileModel extends Model {
@@ -14,19 +11,20 @@ class ProfileModel extends Model {
   String klass;
   bool isProfileComplete;
   DocumentReference klassRef;
+  DocumentReference crntSemesterRef;
 
   final AuthService auth = AuthService();
   final Firestore _firestore = Firestore.instance;
-  bool isLoading = true;
 
-  bool isCoursesLoading = true;
-  List<Widget> coursesList = [];
+  List<SemesterModel> semesters = [];
+
+  bool isProfileLoading = true;
+  bool isSemestersLoading = true;
 
   ProfileModel() {
     auth.getCurrentUser().then((val) {
       id = val.uid;
       _loadProfile(id);
-      _buildCoursesList();
     });
   }
 
@@ -39,29 +37,26 @@ class ProfileModel extends Model {
       klass = val.data['class'].path;
       rollNum = val.data['rollNum'];
       isProfileComplete = val.data['profile_completed'];
+      crntSemesterRef = val.data["currentSemester"];
 
-      isLoading = false;
+      isProfileLoading = false;
+      _loadSemesters();
       notifyListeners();
     });
   }
 
-  void _buildCoursesList() {
-    getUserSemester().listen((query) {
-      for (var semester in query.documents.reversed) {
-        coursesList.add(ListHeader(text: semester["name"]));
-        for (DocumentReference course in semester["courses"]) {
-          coursesList.add(CourseItem(
-            model: CourseModel(ref: course),
-          ));
-        }
+  void _loadSemesters() {
+    _firestore.collection('users/$id/semesters').snapshots().listen((data) {
+      for (var document in data.documents) {
+        semesters.add(SemesterModel(
+          doc: document,
+          isCurrent: document.reference.path == crntSemesterRef.path,
+        ));
       }
-      isCoursesLoading = false;
+
+      this.isSemestersLoading = false;
       notifyListeners();
     });
-  }
-
-  Stream<QuerySnapshot> getUserSemester() {
-    return _firestore.collection('users/$id/semesters').snapshots();
   }
 
   Future updateProfile({String name, String rollNum, String klass}) async {

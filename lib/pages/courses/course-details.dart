@@ -1,11 +1,11 @@
-import 'package:class_resources/components/course-resources.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/course.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:class_resources/pages/courses/about.dart';
+import 'package:class_resources/pages/courses/resources.dart';
 import 'package:flutter/material.dart';
 
 class CourseDetail extends StatelessWidget {
-  CourseDetail({this.model, this.tag});
+  CourseDetail({@required this.model, this.tag});
 
   final CourseModel model;
   final String tag;
@@ -16,6 +16,7 @@ class CourseDetail extends StatelessWidget {
     final double statusBarHeight = mediaQueryData.padding.top;
 
     return Scaffold(
+      key: PageStorageKey("Course Details"),
       body: DefaultTabController(
         length: 4,
         child: Column(
@@ -79,18 +80,14 @@ class CourseDetail extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: <Widget>[
-                  Center(
-                    child: Text("data1"),
-                  ),
+                  CourseResources(model: model),
                   Center(
                     child: Text("data2"),
                   ),
                   Center(
                     child: Text("data3"),
                   ),
-                  Center(
-                    child: Text("About"),
-                  ),
+                  CourseAbout(model: model),
                 ],
               ),
             ),

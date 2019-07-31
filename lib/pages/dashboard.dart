@@ -4,7 +4,7 @@ import 'package:class_resources/pages/update-profile.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import './courses.dart';
+import './courses/courses.dart';
 import './notifications.dart';
 import './timetable.dart';
 import './library.dart';
@@ -43,7 +43,7 @@ class _DashboardState extends State<Dashboard>
       {
         "name": "Time Table",
         "icon": Icons.calendar_today,
-        "page": TimeTablePage(),
+        "page": TimeTablePage(userModel: model),
       },
       {
         "name": "My Tasks",
@@ -107,7 +107,7 @@ class _DashboardState extends State<Dashboard>
       child: ScopedModelDescendant<ProfileModel>(
         builder: (context, child, model) {
           // Model not loaded yet
-          if (model.isLoading) {
+          if (model.isProfileLoading) {
             return Loader();
           }
           // Profile not created
@@ -122,5 +122,3 @@ class _DashboardState extends State<Dashboard>
     );
   }
 }
-
-//

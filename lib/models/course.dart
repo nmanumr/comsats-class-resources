@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
+
+import 'event.dart';
 
 class CourseModel extends Model {
   String code;
@@ -12,12 +16,12 @@ class CourseModel extends Model {
 
   bool isLoading = true;
   final DocumentReference ref;
+  Firestore _firestore = Firestore.instance;
 
   CourseModel({this.ref}) {
     loadCourse();
   }
 
-  /// loads course data from firestore db
   loadCourse() {
     this.ref.snapshots().listen((document) {
       code = document.data["code"];
@@ -27,9 +31,29 @@ class CourseModel extends Model {
       semester = document.data["semester"];
       creditHours = document.data["creditHours"];
 
-      klassName = klass.path.split("/").last;
+      klassName = klass.documentID;
       isLoading = false;
       notifyListeners();
     });
+  }
+
+  getCourseResources() {
+    return _firestore.collection("${ref.path}/resources").snapshots();
+  }
+
+  Future<List<EventModel>> getAllEvents(){
+    var completer = new Completer<List<EventModel>>();
+    List<EventModel> events = [];
+
+    _firestore.collection("${ref.path}/timetable").snapshots().listen(
+      (data) {
+        for (var document in data.documents) {
+          events.add(EventModel.eventFromDocument(document));
+        }
+        completer.complete(events);
+      },
+    );
+
+    return completer.future;
   }
 }

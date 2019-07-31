@@ -1,17 +1,16 @@
 import 'package:class_resources/components/centered-appbar.dart';
-import 'package:date_utils/date_utils.dart';
+import 'package:class_resources/components/loader.dart';
+import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/models/timetable.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-final Map<DateTime, List> _holidays = {
-  DateTime(2019, 1, 1): ['New Year\'s Day'],
-  DateTime(2019, 1, 6): ['Epiphany'],
-  DateTime(2019, 2, 14): ['Valentine\'s Day'],
-  DateTime(2019, 4, 21): ['Easter Sunday'],
-  DateTime(2019, 4, 22): ['Easter Monday'],
-};
-
 class TimeTablePage extends StatefulWidget {
+  TimeTablePage({this.userModel});
+
+  final ProfileModel userModel;
+
   @override
   _TimeTablePageState createState() => _TimeTablePageState();
 }
@@ -21,80 +20,27 @@ class _TimeTablePageState extends State<TimeTablePage>
   DateTime _selectedDay = DateTime.now();
   Map<DateTime, List> _events;
   Map<DateTime, List> _visibleEvents;
-  Map<DateTime, List> _visibleHolidays;
   List _selectedEvents;
-  AnimationController _controller;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      new GlobalKey<RefreshIndicatorState>();
+  CalendarController _calendarController;
+
+  TimeTableModel model;
 
   @override
   void initState() {
     super.initState();
+    model = TimeTableModel(user: widget.userModel);
+    _calendarController = CalendarController();
     _selectedDay = DateTime.now();
-    _events = {
-      _selectedDay.subtract(Duration(days: 30)): [
-        'Event A0',
-        'Event B0',
-        'Event C0'
-      ],
-      _selectedDay.subtract(Duration(days: 27)): ['Event A1'],
-      _selectedDay.subtract(Duration(days: 20)): [
-        'Event A2',
-        'Event B2',
-        'Event C2',
-        'Event D2'
-      ],
-      _selectedDay.subtract(Duration(days: 16)): ['Event A3', 'Event B3'],
-      _selectedDay.subtract(Duration(days: 10)): [
-        'Event A4',
-        'Event B4',
-        'Event C4'
-      ],
-      _selectedDay.subtract(Duration(days: 4)): [
-        'Event A5',
-        'Event B5',
-        'Event C5'
-      ],
-      _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
-      _selectedDay: ['Event A7', 'Event B7', 'Event C7', 'Event D7'],
-      _selectedDay.add(Duration(days: 1)): [
-        'Event A8',
-        'Event B8',
-        'Event C8',
-        'Event D8'
-      ],
-      _selectedDay.add(Duration(days: 3)):
-          Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-      _selectedDay.add(Duration(days: 7)): [
-        'Event A10',
-        'Event B10',
-        'Event C10'
-      ],
-      _selectedDay.add(Duration(days: 11)): ['Event A11', 'Event B11'],
-      _selectedDay.add(Duration(days: 17)): [
-        'Event A12',
-        'Event B12',
-        'Event C12',
-        'Event D12'
-      ],
-      _selectedDay.add(Duration(days: 22)): ['Event A13', 'Event B13'],
-      _selectedDay.add(Duration(days: 26)): [
-        'Event A14',
-        'Event B14',
-        'Event C14'
-      ],
-    };
+    _events = {};
 
     _selectedEvents = _events[_selectedDay] ?? [];
     _visibleEvents = _events;
-    _visibleHolidays = _holidays;
+  }
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-
-    _controller.forward();
+  @override
+  void dispose() {
+    _calendarController.dispose();
+    super.dispose();
   }
 
   void _onDaySelected(DateTime day, List events) {
@@ -109,14 +55,6 @@ class _TimeTablePageState extends State<TimeTablePage>
     setState(() {
       _visibleEvents = Map.fromEntries(
         _events.entries.where(
-          (entry) =>
-              entry.key.isAfter(first.subtract(const Duration(days: 1))) &&
-              entry.key.isBefore(last.add(const Duration(days: 1))),
-        ),
-      );
-
-      _visibleHolidays = Map.fromEntries(
-        _holidays.entries.where(
           (entry) =>
               entry.key.isAfter(first.subtract(const Duration(days: 1))) &&
               entry.key.isBefore(last.add(const Duration(days: 1))),
@@ -139,13 +77,21 @@ class _TimeTablePageState extends State<TimeTablePage>
           },
         )
       ]),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          _buildTableCalendar(),
-          const SizedBox(height: 8.0),
-          Expanded(child: _buildEventList()),
-        ],
+      body: ScopedModel(
+        model: model,
+        child: ScopedModelDescendant<TimeTableModel>(
+          builder: (context, child, model) {
+            if (model.isLoading) return Loader();
+            return Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                _buildTableCalendar(),
+                const SizedBox(height: 8.0),
+                Expanded(child: _buildEventList()),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -164,14 +110,13 @@ class _TimeTablePageState extends State<TimeTablePage>
 
   Widget _buildTableCalendar() {
     return TableCalendar(
-      selectedDay: _selectedDay,
+      calendarController: _calendarController,
       events: _visibleEvents,
-      holidays: _visibleHolidays,
       startingDayOfWeek: StartingDayOfWeek.monday,
-      initialCalendarFormat: CalendarFormat.twoWeeks,
+      initialCalendarFormat: CalendarFormat.week,
       availableCalendarFormats: const {
         CalendarFormat.month: 'Month',
-        CalendarFormat.twoWeeks: '2 weeks',
+        CalendarFormat.week: 'Week',
       },
       calendarStyle: CalendarStyle(
           selectedColor: Theme.of(context).accentColor.withAlpha(155),
@@ -218,21 +163,29 @@ class _TimeTablePageState extends State<TimeTablePage>
   }
 
   Widget _buildEventList() {
-    return ListView(
-      children: _selectedEvents
-          .map((event) => Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0.8),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: ListTile(
-                  title: Text(event.toString()),
-                  onTap: () => print('$event tapped!'),
-                ),
-              ))
-          .toList(),
+    print(DateTime.now().weekday);
+    return PageView.builder(
+      controller: PageController(initialPage: DateTime.now().weekday - 1),
+      itemCount: 7,
+      itemBuilder: (context, position) {
+        return Text("$position");
+        // return ListView(
+        //   children: _selectedEvents
+        //       .map((event) => Container(
+        //             decoration: BoxDecoration(
+        //               border: Border.all(width: 0.8),
+        //               borderRadius: BorderRadius.circular(12.0),
+        //             ),
+        //             margin: const EdgeInsets.symmetric(
+        //                 horizontal: 8.0, vertical: 4.0),
+        //             child: ListTile(
+        //               title: Text(event.toString()),
+        //               onTap: () => print('$event tapped!'),
+        //             ),
+        //           ))
+        //       .toList(),
+        // );
+      },
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:class_resources/components/buttons.dart';
 import 'package:class_resources/components/centered-appbar.dart';
+import 'package:class_resources/components/course-item.dart';
 import 'package:class_resources/components/empty-state.dart';
+import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +35,20 @@ class CoursesPage extends StatelessWidget {
             appBar: centeredAppBar(context, "Courses"),
             body: Builder(
               builder: (context) {
-                if (model.isCoursesLoading) return Loader();
-                if (model.coursesList.length == 1) return getEmptyState();
+                if(model.isSemestersLoading) return Loader();
+                if(model.semesters.isEmpty) return getEmptyState();
+
+                List<Widget> children = [];
+                for(var semester in model.semesters){
+                  children.add(ListHeader(text: semester.name));
+                  
+                  for(var course in semester.courses)
+                    children.add(CourseItem(model: course));
+                }
 
                 return ListView(
                   key: PageStorageKey('courses'),
-                  children: model.coursesList,
+                  children: children,
                 );
               },
             ),
