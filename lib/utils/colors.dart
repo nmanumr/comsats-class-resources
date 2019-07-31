@@ -60,7 +60,7 @@ String hslToHex(List<num> hsl) {
   return rgbToHex(rgb[0], rgb[1], rgb[2]);
 }
 
-String generateColor(String text){
+String generateColor(String text, {s: 80, l: 55}) {
   var code = text.hashCode;
-  return hslToHex([code % 360, 80, 55]);
+  return hslToHex([code % 360, s, l]);
 }

@@ -2,6 +2,7 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:class_resources/models/timetable.dart';
+import 'package:class_resources/pages/timetable/calender-day.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -115,9 +116,9 @@ class _TimeTablePageState extends State<TimeTablePage>
       startingDayOfWeek: StartingDayOfWeek.monday,
       initialCalendarFormat: CalendarFormat.week,
       availableCalendarFormats: const {
-        CalendarFormat.month: 'Month',
         CalendarFormat.week: 'Week',
       },
+      headerVisible: false,
       calendarStyle: CalendarStyle(
           selectedColor: Theme.of(context).accentColor.withAlpha(155),
           todayColor: Theme.of(context).accentColor.withAlpha(40),
@@ -168,7 +169,7 @@ class _TimeTablePageState extends State<TimeTablePage>
       controller: PageController(initialPage: DateTime.now().weekday - 1),
       itemCount: 7,
       itemBuilder: (context, position) {
-        return Text("$position");
+        return CalendarDay();
         // return ListView(
         //   children: _selectedEvents
         //       .map((event) => Container(
