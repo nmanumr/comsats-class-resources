@@ -27,17 +27,17 @@ class AddCourses extends StatelessWidget {
         .toList();
 
     children = [
-          ListTile(
-            leading: CircleAvatar(
-              child: Icon(Icons.add),
-              backgroundColor: Theme.of(context).accentColor.withAlpha(85),
-              foregroundColor: Theme.of(context).accentColor,
-            ),
-            title: Text("Create new course"),
-            onTap: () {
-              Navigator.popAndPushNamed(context, '/create-course');
-            },
-          ),
+          // ListTile(
+          //   leading: CircleAvatar(
+          //     child: Icon(Icons.add),
+          //     backgroundColor: Theme.of(context).accentColor.withAlpha(85),
+          //     foregroundColor: Theme.of(context).accentColor,
+          //   ),
+          //   title: Text("Create new course"),
+          //   onTap: () {
+          //     Navigator.popAndPushNamed(context, '/create-course');
+          //   },
+          // ),
           ListTile(
             leading: CircleAvatar(
               child: Icon(Icons.sync),
