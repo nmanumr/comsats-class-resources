@@ -1,6 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -8,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LibraryPage extends StatelessWidget {
   final String name = "Nauman Umer";
+  final AuthService auth = AuthService();
 
   _launchURL(String url) async {
     if (await canLaunch(url)) {
@@ -71,18 +73,24 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Logout"),
                       leading: Icon(Icons.exit_to_app),
-                      onTap: () {},
+                      onTap: () {
+                        auth.signOut();
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/welcome', (_) => true);
+                      },
                     ),
                     Divider(),
                     ListTile(
                       title: Text("Share this app"),
                       leading: Icon(Icons.share),
-                      onTap: () => Share.share('Hi, checkout this Class Resource Management app https://ccrr.page.link/app'),
+                      onTap: () => Share.share(
+                          'Hi, checkout this Class Resource Management app https://ccrr.page.link/app'),
                     ),
                     ListTile(
                       title: Text("Source Code"),
                       leading: Icon(Icons.code),
-                      onTap: () => _launchURL("https://github.com/nmanumr/comsats-class-resources"),
+                      onTap: () => _launchURL(
+                          "https://github.com/nmanumr/comsats-class-resources"),
                     ),
                     ListTile(
                       title: Text("More Apps"),
