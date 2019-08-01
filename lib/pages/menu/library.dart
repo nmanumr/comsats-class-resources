@@ -3,9 +3,18 @@ import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LibraryPage extends StatelessWidget {
   final String name = "Nauman Umer";
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   ListTile profileTile(BuildContext ctx, ProfileModel model) {
     if ((model.name ?? "").isEmpty) {
@@ -72,7 +81,7 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Source Code"),
                       leading: Icon(Icons.code),
-                      onTap: () {},
+                      onTap: () => _launchURL("https://github.com/nmanumr/comsats-class-resources"),
                     ),
                     ListTile(
                       title: Text("More Apps"),
@@ -82,12 +91,13 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("License"),
                       leading: Icon(Icons.receipt),
-                      onTap: ()=> Navigator.pushNamed(context, '/license'),
+                      onTap: () => Navigator.pushNamed(context, '/license'),
                     ),
                     ListTile(
                       title: Text("Privacy Policy"),
                       leading: Icon(Icons.security),
-                      onTap: () => Navigator.pushNamed(context, '/privacypolicy'),
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/privacypolicy'),
                     ),
                     ListTile(
                       title: Text("About App"),
@@ -97,7 +107,8 @@ class LibraryPage extends StatelessWidget {
                         applicationName: "COMSATS Class Resources",
                         applicationVersion: "v0.1",
                         applicationLegalese: "(c) 2019 Nauman Umer",
-                        applicationIcon: Image.asset("assets/images/logo.png", width: 50),
+                        applicationIcon:
+                            Image.asset("assets/images/logo.png", width: 50),
                       ),
                     ),
                   ],
