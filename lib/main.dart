@@ -1,5 +1,6 @@
 import 'package:class_resources/pages/auth/add-courses.dart';
 import 'package:class_resources/pages/auth/create-course.dart';
+import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,8 @@ class AppMain extends StatelessWidget {
         '/edit-profile': (ctx) => UpdateProfile(),
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
-        '/license': (ctx) => AppLicensePage()
+        '/license': (ctx) => AppLicensePage(),
+        '/privacypolicy': (ctx) => PrivacyPolicyPage()
       },
     );
   }

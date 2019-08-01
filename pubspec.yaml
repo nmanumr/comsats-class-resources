@@ -30,6 +30,7 @@ dependencies:
   intl: ^0.15.8
   table_calendar: ^2.0.0
   clipboard_manager: ^0.0.1
+  webview_flutter: ^0.3.10+4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -69,6 +70,7 @@ flutter:
     - assets/images/google-logo.png
     # Photo by ![Nathan Anderson](https://unsplash.com/@nathananderson) on Unsplash
     - assets/images/welcome-bg.jpeg
+    - assets/privacy_policy.html
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

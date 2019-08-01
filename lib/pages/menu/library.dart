@@ -87,7 +87,7 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Privacy Policy"),
                       leading: Icon(Icons.security),
-                      onTap: () {},
+                      onTap: () => Navigator.pushNamed(context, '/privacypolicy'),
                     ),
                     ListTile(
                       title: Text("About App"),
