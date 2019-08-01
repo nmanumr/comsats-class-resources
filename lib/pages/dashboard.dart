@@ -6,7 +6,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import './courses/courses.dart';
 import './notifications.dart';
-import './timetable.dart';
+import './timetable/timetable.dart';
 import './library.dart';
 
 class Dashboard extends StatefulWidget {
