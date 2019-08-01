@@ -2,6 +2,7 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -76,7 +77,7 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Share this app"),
                       leading: Icon(Icons.share),
-                      onTap: () {},
+                      onTap: () => Share.share('Hi, checkout this Class Resource Management app https://ccrr.page.link/app'),
                     ),
                     ListTile(
                       title: Text("Source Code"),
