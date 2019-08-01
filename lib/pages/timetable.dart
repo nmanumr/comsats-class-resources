@@ -21,8 +21,13 @@ class _TimeTablePageState extends State<TimeTablePage>
   DateTime _selectedDay = DateTime.now();
   Map<DateTime, List> _events;
   Map<DateTime, List> _visibleEvents;
-  List _selectedEvents;
   CalendarController _calendarController;
+  PageController _pageController;
+
+  num initialPosition;
+  num lastPos;
+  bool posUpdated = true;
+  bool pageUpdatedLocally = false;
 
   TimeTableModel model;
 
@@ -32,9 +37,10 @@ class _TimeTablePageState extends State<TimeTablePage>
     model = TimeTableModel(user: widget.userModel);
     _calendarController = CalendarController();
     _selectedDay = DateTime.now();
+    initialPosition = _selectedDay.weekday;
+    lastPos = _selectedDay.weekday;
+    print(_selectedDay);
     _events = {};
-
-    _selectedEvents = _events[_selectedDay] ?? [];
     _visibleEvents = _events;
   }
 
@@ -46,8 +52,10 @@ class _TimeTablePageState extends State<TimeTablePage>
 
   void _onDaySelected(DateTime day, List events) {
     setState(() {
+      pageUpdatedLocally = true;
       _selectedDay = day;
-      _selectedEvents = events;
+      _pageController.animateToPage(day.weekday,
+          duration: Duration(milliseconds: 700), curve: Curves.easeOut);
     });
   }
 
@@ -73,7 +81,6 @@ class _TimeTablePageState extends State<TimeTablePage>
           onPressed: () {
             setState(() {
               _selectedDay = DateTime.now();
-              _selectedEvents = _events[_selectedDay] ?? [];
             });
           },
         )
@@ -164,28 +171,53 @@ class _TimeTablePageState extends State<TimeTablePage>
   }
 
   Widget _buildEventList() {
-    print(DateTime.now().weekday);
+    _pageController = PageController(initialPage: initialPosition);
+
     return PageView.builder(
-      controller: PageController(initialPage: DateTime.now().weekday - 1),
-      itemCount: 7,
-      itemBuilder: (context, position) {
-        return CalendarDay();
-        // return ListView(
-        //   children: _selectedEvents
-        //       .map((event) => Container(
-        //             decoration: BoxDecoration(
-        //               border: Border.all(width: 0.8),
-        //               borderRadius: BorderRadius.circular(12.0),
-        //             ),
-        //             margin: const EdgeInsets.symmetric(
-        //                 horizontal: 8.0, vertical: 4.0),
-        //             child: ListTile(
-        //               title: Text(event.toString()),
-        //               onTap: () => print('$event tapped!'),
-        //             ),
-        //           ))
-        //       .toList(),
-        // );
+      controller: _pageController,
+      onPageChanged: (pos) {
+        var newDate = _selectedDay, crntPos = lastPos;
+        if (pos > lastPos) {
+          newDate = _selectedDay.add(Duration(days: 1));
+          if (!pageUpdatedLocally) crntPos += 1;
+        } else if (pos < lastPos && !pageUpdatedLocally) {
+          newDate = _selectedDay.subtract(Duration(days: 1));
+          if (!pageUpdatedLocally) crntPos -= 1;
+        }
+
+        if (pos == 0 && !pageUpdatedLocally) {
+          newDate = _selectedDay.subtract(Duration(days: 1));
+          _pageController.jumpToPage(7);
+          crntPos = 7;
+        } else if (pos == 8 && !pageUpdatedLocally) {
+          newDate = _selectedDay.add(Duration(days: 1));
+          _pageController.jumpToPage(1);
+          crntPos = 1;
+        }
+        _calendarController.setSelectedDay(newDate);
+
+        setState(() {
+          pageUpdatedLocally = false;
+          lastPos = crntPos;
+          posUpdated = true;
+          _selectedDay = newDate;
+        });
+      },
+      itemCount: 9,
+      itemBuilder: (context, pos) {
+        var date = _selectedDay;
+        if ((lastPos > pos && !posUpdated) ||
+            (posUpdated && lastPos == pos + 1))
+          date = date.subtract(Duration(days: 1));
+        else if ((lastPos < pos && !posUpdated) ||
+            (posUpdated && lastPos == pos - 1))
+          date = date.add(Duration(days: 1));
+
+        posUpdated = false;
+        return CalendarDay(
+          model: model,
+          day: date,
+        );
       },
     );
   }

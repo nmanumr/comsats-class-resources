@@ -39,7 +39,7 @@ class CoursesPage extends StatelessWidget {
                 if(model.semesters.isEmpty) return getEmptyState();
 
                 List<Widget> children = [];
-                for(var semester in model.semesters){
+                for(var semester in model.semesters.reversed){
                   children.add(ListHeader(text: semester.name));
                   
                   for(var course in semester.courses)

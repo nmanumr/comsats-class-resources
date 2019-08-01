@@ -59,6 +59,13 @@ class ProfileModel extends Model {
     });
   }
 
+  SemesterModel getCrntSemester() {
+    int index = semesters.indexWhere((smtr)=> smtr.isCurrent);
+    if (index >= 0) 
+      return semesters[index];
+    return null;
+  }
+
   Future updateProfile({String name, String rollNum, String klass}) async {
     await auth.updateProfile(
       id,

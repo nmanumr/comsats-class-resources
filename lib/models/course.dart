@@ -45,7 +45,7 @@ class CourseModel extends Model {
     var completer = new Completer<List<EventModel>>();
     List<EventModel> events = [];
 
-    _firestore.collection("${ref.path}/timetable").snapshots().listen(
+    _firestore.collection("${ref.path}/events").snapshots().listen(
       (data) {
         for (var document in data.documents) {
           events.add(EventModel.eventFromDocument(document));

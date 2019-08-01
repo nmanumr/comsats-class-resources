@@ -1,10 +1,15 @@
 import 'package:class_resources/models/event.dart';
+import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/utils/colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CalendarDay extends StatelessWidget {
+  final TimeTableModel model;
+  final DateTime day;
+
+  CalendarDay({@required this.model, @required this.day});
+
   String getTimeFromIdx(num idx) => idx < 13 ? "$idx AM" : "${idx - 12} PM";
 
   Widget paddedText(text) {
@@ -95,31 +100,13 @@ class CalendarDay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var events = model.getEventForDay(day);
+    List<Widget> children = [Column(children: buildColumns(context))];
+    children.addAll(events.map((event) => buildEventWidget(event)).toList());
+
     return SingleChildScrollView(
       child: Stack(
-        children: [
-          Column(
-            children: buildColumns(context),
-          ),
-          buildEventWidget(EventModel(
-            startTime: Timestamp.fromDate(DateTime(2019, 7, 31, 11, 30)),
-            endTime: Timestamp.fromDate(DateTime(2019, 7, 31, 13)),
-            title: "Programming Fundamentals",
-            location: "N-6",
-          )),
-          buildEventWidget(EventModel(
-            startTime: Timestamp.fromDate(DateTime(2019, 7, 31, 14, 30)),
-            endTime: Timestamp.fromDate(DateTime(2019, 7, 31, 16)),
-            title: "Professional Practices for IT",
-            location: "N-2",
-          )),
-          buildEventWidget(EventModel(
-            startTime: Timestamp.fromDate(DateTime(2019, 7, 31, 16)),
-            endTime: Timestamp.fromDate(DateTime(2019, 7, 31, 17, 30)),
-            title: "Multivaribale Calculus",
-            location: "C-6",
-          )),
-        ],
+        children: children,
       ),
     );
   }
