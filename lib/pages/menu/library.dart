@@ -82,7 +82,7 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("License"),
                       leading: Icon(Icons.receipt),
-                      onTap: () {},
+                      onTap: ()=> Navigator.pushNamed(context, '/license'),
                     ),
                     ListTile(
                       title: Text("Privacy Policy"),
@@ -92,7 +92,13 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("About App"),
                       leading: Icon(Icons.info_outline),
-                      onTap: () {},
+                      onTap: () => showAboutDialog(
+                        context: context,
+                        applicationName: "COMSATS Class Resources",
+                        applicationVersion: "v0.1",
+                        applicationLegalese: "(c) 2019 Nauman Umer",
+                        applicationIcon: Image.asset("assets/images/logo.png", width: 50),
+                      ),
                     ),
                   ],
                 ),

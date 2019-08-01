@@ -10,6 +10,7 @@ import './pages/welcome.dart';
 import './pages/auth/signup.dart';
 import './pages/auth/login.dart';
 import './pages/auth/update-profile.dart';
+import 'pages/menu/license.dart';
 
 void main() async {
   try {
@@ -40,6 +41,7 @@ class AppMain extends StatelessWidget {
         '/edit-profile': (ctx) => UpdateProfile(),
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
+        '/license': (ctx) => AppLicensePage()
       },
     );
   }
