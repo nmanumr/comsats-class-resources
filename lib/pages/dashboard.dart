@@ -1,13 +1,13 @@
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.dart';
-import 'package:class_resources/pages/update-profile.dart';
+import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import './courses/courses.dart';
 import './notifications.dart';
 import './timetable/timetable.dart';
-import './library.dart';
+import './menu/library.dart';
 
 class Dashboard extends StatefulWidget {
   @override

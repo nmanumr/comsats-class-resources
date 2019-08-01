@@ -1,5 +1,5 @@
-import 'package:class_resources/pages/add-courses.dart';
-import 'package:class_resources/pages/create-course.dart';
+import 'package:class_resources/pages/auth/add-courses.dart';
+import 'package:class_resources/pages/auth/create-course.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './themes.dart';
 import './pages/dashboard.dart';
 import './pages/welcome.dart';
-import './pages/signup.dart';
-import './pages/login.dart';
-import './pages/update-profile.dart';
+import './pages/auth/signup.dart';
+import './pages/auth/login.dart';
+import './pages/auth/update-profile.dart';
 
 void main() async {
   try {
