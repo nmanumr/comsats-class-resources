@@ -1,16 +1,38 @@
-# class_resources
+# COMSATS Class Resources
 
-A new Flutter project.
+This app provides a plateform to share class learning resources specially for COMSATS Students. Includes following features:
 
-## Getting Started
+* Share class resources
+* Share course timetable, events and reminders like assignments deadlines etc
+* Get notified about upcomming deadline or events
 
-This project is a starting point for a Flutter application.
+## Running locally
+Assuming flutter is setuped locally
 
-A few resources to get you started if this is your first Flutter project:
+```
+# Running in debugging mode
+flutter run
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+# Running in release mode
+flutter run --release
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+# Cloud functions
+cd ./cloud_functions/functions
+npm install
+
+# Running shell for functions testing
+npm run shell
+
+# Invoking a function in shell
+func_name(data)
+```
+
+## TODO
+
+- [ ] Improve README
+- [ ] Implement custom timetable widget
+- [ ] Improve user profile related tasks
+- [ ] Implement in-app theme switcher
+- [ ] Implement user roles and privileges
+- [ ] Implement tasks and push notifications
+- [ ] Add license, privacy policies, about and more apps pages
