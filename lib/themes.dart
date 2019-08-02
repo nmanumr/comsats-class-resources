@@ -3,36 +3,44 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme() {
   // return ThemeData(
   //   brightness: Brightness.light,
-  //   primaryColor: Color(0xFF0d47a1),
-  //   accentColor: Colors.lightBlue,
+  //   canvasColor: Color(0xFFFFFFFF),
+  //   primaryColor: Color(0xFF3F83B1),
+  //   primaryColorLight: Color(0xFF3F83B1),
+  //   primaryColorDark: Color(0xFF346C92),
+  //   accentColor: Color(0xFF4FA9E6),
   //   floatingActionButtonTheme: FloatingActionButtonThemeData(
-  //     backgroundColor: Color(0xFF0d47a1)
-  //   )
+  //     backgroundColor: Color(0xFF4FA9E6),
+  //     foregroundColor: Colors.white,
+  //   ),
+  //   dividerColor: Color(0xFFDEE3EA),
   // );
   return ThemeData(
     brightness: Brightness.dark,
-    canvasColor: Color(0xFF202125),
+    canvasColor: Color(0xFF1C2733),
     primaryColor: Color(0xFF195BBC),
-    primaryColorLight: Color(0xFF2C2E2F),
-    primaryColorDark: Color(0xFF202125),
-    accentColor: Color(0xFF8CB5FE),
+    primaryColorLight: Color(0xFF222E3C),
+    primaryColorDark: Color(0xFF151D26),
+    accentColor: Color(0xFF61A9E1),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: Color(0xFF0E397A), foregroundColor: Colors.white),
+      backgroundColor: Color(0xFF61A9E1),
+      foregroundColor: Colors.white,
+    ),
+    dividerColor: Color(0xFF10171E),
   );
 }
 
 ThemeData darkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
-    canvasColor: Color(0xFF2B333D),
+    canvasColor: Color(0xFF1C2733),
     primaryColor: Color(0xFF195BBC),
-    primaryColorLight: Color(0xFF272C36),
-    primaryColorDark: Color(0xFF272C36),
-    accentColor: Color(0xFF53A5B0),
+    primaryColorLight: Color(0xFF222E3C),
+    primaryColorDark: Color(0xFF151D26),
+    accentColor: Color(0xFF61A9E1),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Color(0xFF53A5B0),
+      backgroundColor: Color(0xFF61A9E1),
       foregroundColor: Colors.white,
     ),
-    dividerColor: Color(0xFFA19FB1).withAlpha(150),
+    dividerColor: Color(0xFF10171E),
   );
 }
