@@ -92,12 +92,15 @@ class LibraryPage extends StatelessWidget {
                       title: Text("Source Code"),
                       leading: Icon(Icons.code),
                       onTap: () => _launchURL(
-                          "https://github.com/nmanumr/comsats-class-resources"),
+                        "https://github.com/nmanumr/comsats-class-resources",
+                      ),
                     ),
                     ListTile(
                       title: Text("More Apps"),
                       leading: Icon(Icons.apps),
-                      onTap: () {},
+                      onTap: () => _launchURL(
+                        "https://play.google.com/store/apps/developer?id=A-Plus+Developers",
+                      ),
                     ),
                     ListTile(
                       title: Text("License"),
