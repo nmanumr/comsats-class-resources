@@ -83,8 +83,10 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Share this app"),
                       leading: Icon(Icons.share),
-                      onTap: () => Share.share(
-                          'Hi, checkout this Class Resource Management app https://ccrr.page.link/app'),
+                      onTap: () => Share.plainText(
+                        text:
+                            'Hi, checkout this Class Resource Management app https://ccrr.page.link/app',
+                      ).share(),
                     ),
                     ListTile(
                       title: Text("Source Code"),

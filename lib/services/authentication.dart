@@ -71,7 +71,7 @@ class AuthService {
   }
 
   updateProfile(String uid, Profile profile) async {
-    DocumentReference profileRef = _firestore.document("users/${uid}");
+    DocumentReference profileRef = _firestore.document("users/$uid");
     DocumentSnapshot document = await profileRef.get();
 
     if (document.exists) {

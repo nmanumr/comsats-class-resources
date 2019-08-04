@@ -38,7 +38,7 @@ class CourseModel extends Model {
   }
 
   getCourseResources() {
-    return _firestore.collection("${ref.path}/resources").snapshots();
+    return _firestore.collection("${ref.path}/resources").orderBy("index").snapshots();
   }
 
   Future<List<EventModel>> getAllEvents(){

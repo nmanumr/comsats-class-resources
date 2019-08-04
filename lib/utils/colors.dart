@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
