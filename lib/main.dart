@@ -1,6 +1,6 @@
-import 'package:class_resources/pages/auth/add-courses.dart';
 import 'package:class_resources/pages/auth/create-course.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
+import 'package:class_resources/pages/courses/add-courses.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
