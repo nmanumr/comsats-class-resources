@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 class DownloadManager {
-  Future<String> startDownload(String url, String saveDir, String fileName) async {
+  Future<String> startDownload(
+      String url, String saveDir, String fileName) async {
     var tasks = await getTasksByUrl(url);
-    if(tasks.isNotEmpty) return tasks[0].taskId;
+    if (tasks.isNotEmpty) return tasks[0].taskId;
 
     return await FlutterDownloader.enqueue(
       url: url,
@@ -17,7 +18,7 @@ class DownloadManager {
   }
 
   Stream<DownloadStatus> listenDownloadTask(String task) {
-    var controller = StreamController<DownloadStatus>();    
+    var controller = StreamController<DownloadStatus>();
     FlutterDownloader.registerCallback((id, status, progress) {
       if (task == id) {
         controller.add(DownloadStatus(progress: progress, status: status));
@@ -30,13 +31,30 @@ class DownloadManager {
 
   Future<List<DownloadTask>> getTasksByUrl(String url) async {
     return await FlutterDownloader.loadTasksWithRawQuery(
-      query: 'SELECT * FROM task WHERE url="$url" AND (status=2 OR status=6 OR status=1);'
-    );
+        query:
+            'SELECT * FROM task WHERE url="$url" AND (status=2 OR status=6 OR status=1);');
   }
 
   Future<DownloadTaskStatus> getDownloadStatus(String url) async {
     var tasks = await getTasksByUrl(url);
-    return (tasks ?? []).isNotEmpty ? tasks[0].status : DownloadTaskStatus.undefined;
+    return (tasks ?? []).isNotEmpty
+        ? tasks[0].status
+        : DownloadTaskStatus.undefined;
+  }
+
+  Future<Null> cancelTask(String taskId) async {
+    print("cancelTask: $taskId");
+    return await FlutterDownloader.remove(taskId: taskId);
+  }
+
+  Future<Null> pauseTask(String taskId) async {
+    print("pausing: $taskId");
+    return await FlutterDownloader.pause(taskId: taskId);
+  }
+
+  Future<String> resumeTask(String taskId) async {
+    print("resumeTask: $taskId");
+    return await FlutterDownloader.resume(taskId: taskId);
   }
 }
 

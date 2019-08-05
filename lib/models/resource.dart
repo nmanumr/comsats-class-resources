@@ -131,13 +131,28 @@ class ResourceModel extends Model {
     notifyListeners();
   }
 
-  getDownloadStatusStream(){
+  getDownloadStatusStream() {
     return downloadManager.listenDownloadTask(_downloadTaskId);
   }
 
-  markDownloadStatus(DownloadTaskStatus status){
+  markDownloadStatus(DownloadTaskStatus status) {
     downloadStatus = status;
     notifyListeners();
+  }
+
+  pauseDownloading() async {
+    await downloadManager.pauseTask(_downloadTaskId);
+    markDownloadStatus(DownloadTaskStatus.paused);
+  }
+
+  resumeDownloading() async {
+    _downloadTaskId = await downloadManager.resumeTask(_downloadTaskId);
+    markDownloadStatus(DownloadTaskStatus.enqueued);
+  }
+
+  cancelDownloading() async {
+    await downloadManager.cancelTask(_downloadTaskId);
+    markDownloadStatus(DownloadTaskStatus.undefined);
   }
 
   download() async {
@@ -145,11 +160,8 @@ class ResourceModel extends Model {
     bool hasExisted = await savedDir.exists();
     if (!hasExisted) savedDir.create();
 
-    _downloadTaskId =  await downloadManager.startDownload(
-      this.getDownloadUrl(),
-      _localPath,
-      "${this.ref.documentID}.${this.ext}"
-    );
+    _downloadTaskId = await downloadManager.startDownload(this.getDownloadUrl(),
+        _localPath, "${this.ref.documentID}.${this.ext}");
 
     downloadStatus = DownloadTaskStatus.enqueued;
     notifyListeners();

@@ -52,21 +52,24 @@ class CourseResource extends StatelessWidget {
     ];
 
     if (downloadRunning) {
+      // bool paused = model.downloadStatus == DownloadTaskStatus.paused;
       children.addAll([
-        ListTile(
-          leading: Icon(Icons.pause),
-          title: Text('Pause'),
-          onTap: () {
-            Navigator.pop(context);
-            // model.share();
-          },
-        ),
+        // Disabled Pause we cannot check if the
+        // download is resumable or not
+        // ListTile(
+        //   leading: Icon(paused ? Icons.play_arrow : Icons.pause),
+        //   title: Text(paused ? 'Resume' : 'Pause'),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //     paused ? model.resumeDownloading() : model.pauseDownloading();
+        //   },
+        // ),
         ListTile(
           leading: Icon(Icons.clear),
           title: Text('Cancel'),
           onTap: () {
             Navigator.pop(context);
-            model.delete();
+            model.cancelDownloading();
           },
         )
       ]);
