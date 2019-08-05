@@ -3,14 +3,29 @@ import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/course.dart';
 import 'package:class_resources/models/resource.dart';
+import 'package:class_resources/services/download-manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class CourseResource extends StatelessWidget {
   final ResourceModel model;
 
-  CourseResource({this.model});
+  CourseResource({
+    @required this.model,
+  });
+
+  progressIndicator({double value}) {
+    return SizedBox(
+      child: CircularProgressIndicator(
+        strokeWidth: 3,
+        value: value,
+      ),
+      height: 20,
+      width: 20,
+    );
+  }
 
   showBottomAction(context) {
     showModalBottomSheet(
@@ -20,39 +35,97 @@ class CourseResource extends StatelessWidget {
           child: Wrap(
             children: <Widget>[
               ListTile(
-                  title:
-                      Text(model.name ?? "", overflow: TextOverflow.ellipsis),
-                  subtitle: Text(model.formateDate())),
+                title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
+                subtitle: Text(model.formateDate()),
+              ),
               Divider(),
-              model.isDownloaded
+              model.downloadStatus == DownloadTaskStatus.complete
                   ? ListTile(
                       leading: Icon(Icons.open_in_new),
                       title: Text('Open'),
-                      onTap: () => model.open(),
+                      onTap: () {
+                        Navigator.pop(context);
+                        model.open();
+                      },
                     )
                   : ListTile(
                       leading: Icon(Icons.file_download),
                       title: Text('Download'),
-                      onTap: () => model.download(),
+                      onTap: () {
+                        Navigator.pop(context);
+                        model.download();
+                      },
                     ),
               ListTile(
                 leading: Icon(Icons.open_in_browser),
                 title: Text('Open in Browser'),
-                onTap: () => model.openInBrowser(),
+                onTap: () {
+                  Navigator.pop(context);
+                  model.openInBrowser();
+                },
               ),
-              model.isDownloaded ?ListTile(
-                leading: Icon(Icons.share),
-                title: Text('Share'),
-                onTap: () => model.share(),
-              ): Text(""),
-              model.isDownloaded ?ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('Delete'),
-                onTap: () => model.delete(),
-              ): Text(""),
+              model.downloadStatus == DownloadTaskStatus.complete
+                  ? ListTile(
+                      leading: Icon(Icons.share),
+                      title: Text('Share'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        model.share();
+                      },
+                    )
+                  : Text(""),
+              model.downloadStatus == DownloadTaskStatus.complete
+                  ? ListTile(
+                      leading: Icon(Icons.delete),
+                      title: Text('Delete'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        model.delete();
+                      },
+                    )
+                  : Text(""),
             ],
           ),
         );
+      },
+    );
+  }
+
+  getTrailingWidget() {
+    if (model.isHeading || model.downloadStatus == DownloadTaskStatus.undefined)
+      return null;
+
+    if (model.downloadStatus == DownloadTaskStatus.complete)
+      return Icon(Icons.offline_pin);
+
+    return StreamBuilder(
+      stream: model.getDownloadStatusStream(),
+      builder: (context, AsyncSnapshot<DownloadStatus> snap) {
+        if (snap.connectionState == ConnectionState.waiting)
+          return progressIndicator();
+
+        print("Status: ${snap.data.status}");
+        if (snap.data.status == DownloadTaskStatus.paused)
+          return Icon(Icons.pause);
+
+        if (snap.data.status == DownloadTaskStatus.complete) {
+          model.markDownloadStatus(DownloadTaskStatus.complete);
+          return Icon(Icons.offline_pin);
+        }
+
+        if (snap.data.status == DownloadTaskStatus.enqueued)
+          return progressIndicator();
+
+        if (snap.data.status == DownloadTaskStatus.failed)
+          model.markDownloadStatus(DownloadTaskStatus.undefined);
+
+        if (snap.data.status == DownloadTaskStatus.running) {
+          if (snap.data.progress >= 0 && snap.data.progress <= 100)
+            return progressIndicator(value: snap.data.progress.toDouble());
+          return progressIndicator();
+        }
+
+        return Text("");
       },
     );
   }
@@ -70,9 +143,9 @@ class CourseResource extends StatelessWidget {
             ),
             title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
             subtitle: Text(model.formateDate()),
-            trailing: model.isDownloaded ? Icon(Icons.cloud_done) : Text(""),
+            trailing: getTrailingWidget(),
             onTap: () {
-              if (model.isDownloaded)
+              if (model.downloadStatus == DownloadTaskStatus.complete)
                 model.open();
               else
                 showBottomAction(context);
@@ -91,6 +164,7 @@ class CourseResources extends StatelessWidget {
   CourseResources({this.model});
 
   final CourseModel model;
+  final DownloadManager _downloadManager = DownloadManager();
 
   Widget onError(err) {
     return Text('Error: $err');
@@ -99,7 +173,7 @@ class CourseResources extends StatelessWidget {
   Widget onSuccess(QuerySnapshot query) {
     List<Widget> children = query.documents
         .map((doc) => CourseResource(
-              model: ResourceModel.fromDocument(doc),
+              model: ResourceModel.fromDocument(doc, _downloadManager),
             ))
         .toList();
 

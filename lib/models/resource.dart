@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:class_resources/services/download-manager.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,21 +21,17 @@ class ResourceModel extends Model {
   bool isHeading;
 
   DocumentReference ref;
+  DownloadManager downloadManager;
   bool loading = true;
-  bool isDownloaded = false;
+  DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
+  String _downloadTaskId;
   String _localPath;
 
   ResourceModel({this.ref}) {
     loadPath();
   }
 
-  static fromReferance(DocumentReference ref) {
-    var resource = ResourceModel(ref: ref);
-    resource.loadRef();
-    return resource;
-  }
-
-  static fromDocument(DocumentSnapshot doc) {
+  static fromDocument(DocumentSnapshot doc, DownloadManager downloadManager) {
     var res = ResourceModel(ref: doc.reference);
     res.date = doc.data["date"];
     res.driveFileId = doc.data["driveFileId"];
@@ -47,13 +44,25 @@ class ResourceModel extends Model {
     res.isHeading = doc.data["isHeading"];
 
     res.loading = false;
+    res.downloadManager = downloadManager;
+
     return res;
+  }
+
+  loadDownloadStatus() async {
+    if (await File("$_localPath/${this.ref.documentID}.${this.ext}").exists()) {
+      this.downloadStatus = DownloadTaskStatus.complete;
+    } else {
+      this.downloadStatus =
+          await downloadManager.getDownloadStatus(this.getDownloadUrl());
+    }
+    notifyListeners();
   }
 
   loadPath() async {
     Directory appDocDir = await getExternalStorageDirectory();
     _localPath = appDocDir.path + '/Download';
-    loadIsDownloaded();
+    loadDownloadStatus();
   }
 
   loadRef() async {
@@ -88,12 +97,6 @@ class ResourceModel extends Model {
     return "https://drive.google.com/file/d/$driveFileId/view";
   }
 
-  loadIsDownloaded() async {
-    isDownloaded =
-        await File("$_localPath/${this.ref.documentID}.${this.ext}").exists();
-    notifyListeners();
-  }
-
   open() {
     OpenFile.open("$_localPath/${this.ref.documentID}.${this.ext}",
         type: this.mimeType);
@@ -121,9 +124,19 @@ class ResourceModel extends Model {
   }
 
   delete() {
-    File downloadedFile = File("$_localPath/${this.ref.documentID}.${this.ext}");
+    File downloadedFile =
+        File("$_localPath/${this.ref.documentID}.${this.ext}");
     downloadedFile.deleteSync();
-    isDownloaded = false;
+    downloadStatus = DownloadTaskStatus.undefined;
+    notifyListeners();
+  }
+
+  getDownloadStatusStream(){
+    return downloadManager.listenDownloadTask(_downloadTaskId);
+  }
+
+  markDownloadStatus(DownloadTaskStatus status){
+    downloadStatus = status;
     notifyListeners();
   }
 
@@ -132,12 +145,15 @@ class ResourceModel extends Model {
     bool hasExisted = await savedDir.exists();
     if (!hasExisted) savedDir.create();
 
-    await FlutterDownloader.enqueue(
-      url: this.getDownloadUrl(),
-      savedDir: _localPath,
-      showNotification: true,
-      openFileFromNotification: true,
-      fileName: "${this.ref.documentID}.${this.ext}",
+    _downloadTaskId =  await downloadManager.startDownload(
+      this.getDownloadUrl(),
+      _localPath,
+      "${this.ref.documentID}.${this.ext}"
     );
+
+    print(_downloadTaskId);
+
+    downloadStatus = DownloadTaskStatus.enqueued;
+    notifyListeners();
   }
 }
