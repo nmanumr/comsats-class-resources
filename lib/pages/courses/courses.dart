@@ -35,14 +35,17 @@ class CoursesPage extends StatelessWidget {
             appBar: centeredAppBar(context, "Courses"),
             body: Builder(
               builder: (context) {
-                if(model.isSemestersLoading) return Loader();
-                if(model.semesters.isEmpty) return getEmptyState();
+                if (model.isSemestersLoading) return Loader();
+                if (model.semesters.isEmpty) return getEmptyState();
 
                 List<Widget> children = [];
-                for(var semester in model.semesters.reversed){
+                var added = [];
+                for (var semester in model.semesters.reversed) {
+                  if (added.contains(semester.ref.documentID)) continue;
                   children.add(ListHeader(text: semester.name));
-                  
-                  for(var course in semester.courses)
+                  added.add(semester.ref.documentID);
+
+                  for (var course in semester.courses)
                     children.add(CourseItem(model: course));
                 }
 
