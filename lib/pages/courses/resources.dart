@@ -134,7 +134,6 @@ class CourseResource extends StatelessWidget {
         if (snap.connectionState == ConnectionState.waiting)
           return progressIndicator();
 
-        print("Status: ${snap.data.status}");
         if (snap.data.status == DownloadTaskStatus.paused)
           return Icon(Icons.pause);
 
@@ -168,9 +167,7 @@ class CourseResource extends StatelessWidget {
         builder: (context, child, model) {
           if (model.isHeading) return ListHeader(text: model.name);
           return ListTile(
-            leading: TextAvatar(
-              text: model.name,
-            ),
+            leading: FileTypeAvatar(fileType: model.ext),
             title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
             subtitle: Text(model.formateDate()),
             trailing: getTrailingWidget(),

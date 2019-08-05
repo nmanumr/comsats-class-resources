@@ -43,17 +43,14 @@ class DownloadManager {
   }
 
   Future<Null> cancelTask(String taskId) async {
-    print("cancelTask: $taskId");
     return await FlutterDownloader.remove(taskId: taskId);
   }
 
   Future<Null> pauseTask(String taskId) async {
-    print("pausing: $taskId");
     return await FlutterDownloader.pause(taskId: taskId);
   }
 
   Future<String> resumeTask(String taskId) async {
-    print("resumeTask: $taskId");
     return await FlutterDownloader.resume(taskId: taskId);
   }
 }

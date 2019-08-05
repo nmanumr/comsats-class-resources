@@ -39,7 +39,6 @@ class _TimeTablePageState extends State<TimeTablePage>
     _selectedDay = DateTime.now();
     initialPosition = _selectedDay.weekday;
     lastPos = _selectedDay.weekday;
-    print(_selectedDay);
     _events = {};
     _visibleEvents = _events;
   }
