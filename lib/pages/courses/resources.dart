@@ -28,63 +28,89 @@ class CourseResource extends StatelessWidget {
   }
 
   showBottomAction(context) {
+    var downloadCompleted = model.downloadStatus == DownloadTaskStatus.complete;
+    var downloadRunning = [
+      DownloadTaskStatus.running,
+      DownloadTaskStatus.enqueued,
+      DownloadTaskStatus.paused,
+    ].contains(model.downloadStatus);
+
+    List<Widget> children = [
+      ListTile(
+        title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
+        subtitle: Text(model.formateDate()),
+      ),
+      Divider(),
+      ListTile(
+        leading: Icon(Icons.open_in_browser),
+        title: Text('Open in Browser'),
+        onTap: () {
+          Navigator.pop(context);
+          model.openInBrowser();
+        },
+      ),
+    ];
+
+    if (downloadRunning) {
+      children.addAll([
+        ListTile(
+          leading: Icon(Icons.pause),
+          title: Text('Pause'),
+          onTap: () {
+            Navigator.pop(context);
+            // model.share();
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.clear),
+          title: Text('Cancel'),
+          onTap: () {
+            Navigator.pop(context);
+            model.delete();
+          },
+        )
+      ]);
+    } else {
+      children.insert(
+        2,
+        ListTile(
+          leading:
+              Icon(downloadCompleted ? Icons.open_in_new : Icons.file_download),
+          title: Text(downloadCompleted ? 'Open File' : 'Download'),
+          onTap: () {
+            downloadCompleted ? model.open() : model.download();
+            Navigator.pop(context);
+          },
+        ),
+      );
+      if (downloadCompleted) {
+        children.addAll([
+          ListTile(
+            leading: Icon(Icons.share),
+            title: Text('Share'),
+            onTap: () {
+              Navigator.pop(context);
+              model.share();
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.delete),
+            title: Text('Delete'),
+            onTap: () {
+              Navigator.pop(context);
+              model.delete();
+            },
+          )
+        ]);
+      }
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
         return Container(
           child: Wrap(
-            children: <Widget>[
-              ListTile(
-                title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
-                subtitle: Text(model.formateDate()),
-              ),
-              Divider(),
-              model.downloadStatus == DownloadTaskStatus.complete
-                  ? ListTile(
-                      leading: Icon(Icons.open_in_new),
-                      title: Text('Open'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        model.open();
-                      },
-                    )
-                  : ListTile(
-                      leading: Icon(Icons.file_download),
-                      title: Text('Download'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        model.download();
-                      },
-                    ),
-              ListTile(
-                leading: Icon(Icons.open_in_browser),
-                title: Text('Open in Browser'),
-                onTap: () {
-                  Navigator.pop(context);
-                  model.openInBrowser();
-                },
-              ),
-              model.downloadStatus == DownloadTaskStatus.complete
-                  ? ListTile(
-                      leading: Icon(Icons.share),
-                      title: Text('Share'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        model.share();
-                      },
-                    )
-                  : Text(""),
-              model.downloadStatus == DownloadTaskStatus.complete
-                  ? ListTile(
-                      leading: Icon(Icons.delete),
-                      title: Text('Delete'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        model.delete();
-                      },
-                    )
-                  : Text(""),
-            ],
+            children: children,
           ),
         );
       },
@@ -120,12 +146,12 @@ class CourseResource extends StatelessWidget {
           model.markDownloadStatus(DownloadTaskStatus.undefined);
 
         if (snap.data.status == DownloadTaskStatus.running) {
-          if (snap.data.progress >= 0 && snap.data.progress <= 100)
+          if (snap.data.progress > 0 && snap.data.progress <= 100)
             return progressIndicator(value: snap.data.progress.toDouble());
           return progressIndicator();
         }
 
-        return Text("");
+        return progressIndicator();
       },
     );
   }

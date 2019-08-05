@@ -151,8 +151,6 @@ class ResourceModel extends Model {
       "${this.ref.documentID}.${this.ext}"
     );
 
-    print(_downloadTaskId);
-
     downloadStatus = DownloadTaskStatus.enqueued;
     notifyListeners();
   }

@@ -21,7 +21,6 @@ class DownloadManager {
     FlutterDownloader.registerCallback((id, status, progress) {
       if (task == id) {
         controller.add(DownloadStatus(progress: progress, status: status));
-        print(status);
 
         if (status != DownloadTaskStatus.running) controller.close();
       }
