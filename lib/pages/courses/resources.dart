@@ -1,3 +1,4 @@
+import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
@@ -206,8 +207,14 @@ class CourseResources extends StatelessWidget {
             ))
         .toList();
 
-    return ListView(
-      children: children,
+    if (children.isNotEmpty)
+      return ListView(
+        children: children,
+      );
+
+    return EmptyState(
+      text: "No resource found",
+      icon: Icons.collections_bookmark,
     );
   }
 

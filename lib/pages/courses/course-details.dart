@@ -1,3 +1,4 @@
+import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/course.dart';
 import 'package:class_resources/pages/courses/about.dart';
@@ -18,7 +19,7 @@ class CourseDetail extends StatelessWidget {
     return Scaffold(
       key: PageStorageKey("Course Details"),
       body: DefaultTabController(
-        length: 4,
+        length: 3,
         child: Column(
           children: <Widget>[
             Padding(
@@ -66,7 +67,6 @@ class CourseDetail extends StatelessWidget {
                             tabs: [
                               Tab(text: "Resources"),
                               Tab(text: "Assignments"),
-                              Tab(text: "Stared"),
                               Tab(text: "About"),
                             ],
                           ),
@@ -79,13 +79,12 @@ class CourseDetail extends StatelessWidget {
             ),
             Expanded(
               child: TabBarView(
+                key: PageStorageKey("Course-${model.code}"),
                 children: <Widget>[
                   CourseResources(model: model),
-                  Center(
-                    child: Text("data2"),
-                  ),
-                  Center(
-                    child: Text("data3"),
+                  EmptyState(
+                    text: "No assignment found",
+                    icon: Icons.assignment,
                   ),
                   CourseAbout(model: model),
                 ],
