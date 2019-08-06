@@ -11,7 +11,7 @@ class PaddedInput extends StatefulWidget {
     this.initialValue,
     this.isBordered = true,
     this.inputType,
-    this.errorText
+    this.errorText,
   });
 
   final Function validator;
@@ -31,6 +31,20 @@ class PaddedInput extends StatefulWidget {
 
 class _PaddedInputState extends State<PaddedInput> {
   bool showText = true;
+  TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialValue != null) {
+      if (widget.controller != null)
+        _controller = (widget.controller..text = widget.initialValue);
+      else
+        _controller = TextEditingController(text: widget.initialValue);
+    } else {
+      _controller = widget.controller ?? TextEditingController();
+    }
+  }
 
   IconButton _getSuffixIcon(obscureText) {
     if (!obscureText) return null;
@@ -59,7 +73,7 @@ class _PaddedInputState extends State<PaddedInput> {
           suffixIcon: _getSuffixIcon(widget.obscureText),
           errorText: widget.errorText,
         ),
-        controller: widget.controller,
+        controller: _controller,
         obscureText: widget.obscureText ? showText : false,
         onSaved: widget.onSave,
         onChanged: widget.onChanged,
