@@ -42,5 +42,11 @@ ThemeData darkTheme() {
       foregroundColor: Colors.white,
     ),
     dividerColor: Color(0xFF10171E),
+    buttonTheme: ButtonThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(6))
+      ),
+    ),
+    textSelectionHandleColor: Color(0xFF61A9E1),
   );
 }
