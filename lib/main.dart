@@ -1,4 +1,3 @@
-import 'package:class_resources/pages/auth/create-course.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:class_resources/pages/courses/add-courses.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import './pages/welcome.dart';
 import './pages/auth/signup.dart';
 import './pages/auth/login.dart';
 import './pages/auth/update-profile.dart';
+import './pages/courses/create-course.dart';
 import 'pages/menu/license.dart';
 
 void main() async {
