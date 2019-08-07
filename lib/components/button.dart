@@ -43,9 +43,9 @@ class StretchableButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             side: bs,
           ),
-          colorScheme: Theme.of(context).buttonTheme.colorScheme.copyWith(
-                brightness: this.isBordered ? Brightness.dark: Brightness.light,
-              ),
+          // colorScheme: Theme.of(context).buttonTheme.colorScheme.copyWith(
+          //       brightness: this.isBordered ? Brightness.dark: Brightness.light,
+          //     ),
           child: this.isBordered
               ? OutlineButton(
                   onPressed: onPressed,

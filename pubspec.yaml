@@ -80,6 +80,9 @@ flutter:
     - assets/images/ic_launcher.png
     - assets/images/google-logo.png
     - assets/images/google-drive.png
+    - assets/images/forget.png
+    - assets/images/sent.png
+    - assets/images/Login.png
     # Photo by ![Nathan Anderson](https://unsplash.com/@nathananderson) on Unsplash
     - assets/images/welcome-bg.jpeg
     - assets/privacy_policy.html

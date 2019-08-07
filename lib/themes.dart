@@ -46,7 +46,6 @@ ThemeData darkTheme() {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(6))
       ),
-      colorScheme: ColorScheme.dark()
     ),
     textSelectionHandleColor: Color(0xFF61A9E1),
   );

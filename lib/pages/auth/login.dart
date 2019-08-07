@@ -79,53 +79,49 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
         ],
-      ), 
+      ),
       body: Form(
         key: _formKey,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              PaddedInput(
-                label: "Email",
-                validator: notEmptyValidator,
-                onSave: (value) => email = value,
-              ),
-              PaddedInput(
-                label: "Password",
-                validator: notEmptyValidator,
-                obscureText: true,
-                onSave: (value) => password = value,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Builder(builder: (ctx) {
-                  return Row(
-                    children: <Widget>[
-                      FlatButton(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 25.0),
-                        onPressed: () {},
-                        child: Text('Forget password?'),
-                      ),
-                      Expanded(
-                        child: Text(" "),
-                      ),
-                      RaisedButton(
-                        textColor: Colors.white,
-                        color: Theme.of(context).primaryColor,
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 25.0),
-                        onPressed: () => onSubmit(ctx),
-                        child: Text('Login'),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-            ],
-          ),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(height: 30),
+            Image.asset(
+              "assets/images/Login.png",
+              height: 230,
+            ),
+            SizedBox(height: 30),
+            PaddedInput(
+              label: "Email",
+              validator: notEmptyValidator,
+              onSave: (value) => email = value,
+            ),
+            PaddedInput(
+              label: "Password",
+              validator: notEmptyValidator,
+              obscureText: true,
+              onSave: (value) => password = value,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+              child: Builder(builder: (ctx) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    FlatButton(
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/resetpass'),
+                      child: Text('Forget password?'),
+                    ),
+                    RaisedButton(
+                      onPressed: () => onSubmit(ctx),
+                      child: Text('Login'),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ],
         ),
       ),
     );

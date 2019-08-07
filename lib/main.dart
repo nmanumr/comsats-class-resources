@@ -1,3 +1,4 @@
+import 'package:class_resources/pages/auth/reset-pass.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:class_resources/pages/courses/add-courses.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class AppMain extends StatelessWidget {
         '/dashboard': (ctx) => Dashboard(),
         '/signup': (ctx) => SignupPage(),
         '/login': (ctx) => LoginPage(),
+        '/resetpass': (ctx) => ResetPassPage(),
         '/edit-profile': (ctx) => UpdateProfile(),
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
