@@ -30,16 +30,8 @@ class AppMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    //Using Future References to avoid Re-instantiation on any event (i.e. Keyboard Popup)
-    final updateProfile = UpdateProfile(),
-        welcomePage = WelcomePage(),
-        signupPage = SignupPage(),
-        loginPage = LoginPage(),
-        dashboard = Dashboard(),
-        addCourses = AddCourses(),
-        createCourse = CreateCourse(),
-        appLicensePage = AppLicensePage(),
-        privacyPolicyPage = PrivacyPolicyPage();
+    //Using Future Reference to avoid Re-instantiation on any event (i.e. Keyboard Popup)
+    final updateProfile = UpdateProfile();
 
     return MaterialApp(
       title: 'Class Resources',
@@ -47,15 +39,15 @@ class AppMain extends StatelessWidget {
       darkTheme: darkTheme(),
       routes: {
         '/': (ctx) => this.uid == "" ? WelcomePage() : Dashboard(),
-        '/welcome': (ctx) => welcomePage,
-        '/dashboard': (ctx) => dashboard,
-        '/signup': (ctx) => signupPage,
-        '/login': (ctx) => loginPage,
+        '/welcome': (ctx) => WelcomePage(),
+        '/dashboard': (ctx) => Dashboard(),
+        '/signup': (ctx) => SignupPage(),
+        '/login': (ctx) => LoginPage(),
         '/edit-profile': (ctx) => updateProfile,
-        '/add-course': (ctx) => addCourses,
-        '/create-course': (ctx) => createCourse,
-        '/license': (ctx) => appLicensePage,
-        '/privacypolicy': (ctx) => privacyPolicyPage
+        '/add-course': (ctx) => AddCourses(),
+        '/create-course': (ctx) => CreateCourse(),
+        '/license': (ctx) => AppLicensePage(),
+        '/privacypolicy': (ctx) => PrivacyPolicyPage()
       },
     );
   }

@@ -34,7 +34,7 @@ class LibraryPage extends StatelessWidget {
       );
     } else {
       return ListTile(
-        leading: TextAvatar(text: name),
+        leading: TextAvatar(text: model.name),
         title: Text(model.name),
         subtitle: Text(model.rollNum),
       );

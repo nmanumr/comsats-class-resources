@@ -62,7 +62,7 @@ class _PaddedInputState extends State<PaddedInput> {
         controller: widget.controller,
         obscureText: widget.obscureText ? showText : false,
         onSaved: widget.onSave,
-        onChanged: widget.onChanged,
+//        onChanged: widget.onChanged,
       ),
     );
   }

@@ -109,7 +109,7 @@ class _SignupPageState extends State<SignupPage> {
                         padding: EdgeInsets.symmetric(
                             vertical: 12.0, horizontal: 25.0),
                         onPressed: () => onSubmit(ctx),
-                        child: Text('Login'),
+                        child: Text('Signup'),
                       ),
                     ],
                   );
