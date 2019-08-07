@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'package:class_resources/models/profile.dart';
+import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -11,14 +12,16 @@ class CourseModel extends Model {
   String teacher;
   String creditHours;
   String klassName;
+  List maintainers;
   DocumentReference klass;
-  DocumentReference semester;
+  DocumentReference semester;  
 
   bool isLoading = true;
   final DocumentReference ref;
   Firestore _firestore = Firestore.instance;
+  final ProfileModel user;
 
-  CourseModel({this.ref}) {
+  CourseModel({@required this.ref, @required this.user}) {
     loadCourse();
   }
 
@@ -29,6 +32,8 @@ class CourseModel extends Model {
       klass = document.data["class"];
       teacher = document.data["teacher"];
       semester = document.data["semester"];
+      semester = document.data["semester"];
+      maintainers = document.data["maintainers"] ?? [];
       creditHours = document.data["creditHours"];
 
       klassName = klass.documentID;
@@ -38,7 +43,7 @@ class CourseModel extends Model {
   }
 
   getCourseResources() {
-    return _firestore.collection("${ref.path}/resources").orderBy("index").snapshots();
+    return _firestore.collection("${ref.path}/resources").orderBy("date").snapshots();
   }
 
   Future<List<EventModel>> getAllEvents(){

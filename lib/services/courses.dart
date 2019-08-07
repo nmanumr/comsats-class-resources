@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -43,5 +44,26 @@ class CoursesService {
     );
 
     return await callable.call();
+  }
+
+  addResourceToCourse({
+    @required String courseId,
+    @required String name,
+    bool isHeading = false,
+    DateTime date,
+    String driveFileId,
+    String ext,
+    String mimeType,
+    String uploadedBy,
+  }) async {
+    await _firestore.collection('subjects/$courseId/resources').add({
+      "date": Timestamp.fromDate(date),
+      "driveFileId": driveFileId,
+      "ext": ext,
+      "isHeading": isHeading,
+      "mimeType": mimeType,
+      "name": name,
+      "uploadedBy": uploadedBy
+    });
   }
 }

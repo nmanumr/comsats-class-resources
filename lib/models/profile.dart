@@ -51,6 +51,7 @@ class ProfileModel extends Model {
         semesters.add(SemesterModel(
           doc: document,
           isCurrent: document.reference.path == crntSemesterRef.path,
+          user: this
         ));
       }
 
