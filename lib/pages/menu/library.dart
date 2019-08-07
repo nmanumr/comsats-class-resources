@@ -76,7 +76,7 @@ class LibraryPage extends StatelessWidget {
                       onTap: () {
                         auth.signOut();
                         Navigator.pushNamedAndRemoveUntil(
-                            context, '/welcome', (_) => true);
+                            context, '/welcome', (_) => false);
                       },
                     ),
                     Divider(),
