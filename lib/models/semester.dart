@@ -19,4 +19,10 @@ class SemesterModel extends Model {
       courses.add(CourseModel(ref: courseRef, user: this.user));
     }
   }
+
+  void close(){
+    for(var course in courses){
+      course.close();
+    }
+  }
 }

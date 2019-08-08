@@ -31,6 +31,12 @@ class _DashboardState extends State<Dashboard>
     _profileModel = ProfileModel();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _profileModel.close();
+  }
+
   initTabs(BuildContext context, ProfileModel model) {
     if (tabs.isNotEmpty) return;
 

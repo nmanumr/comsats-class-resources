@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:class_resources/models/semester.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,6 +23,9 @@ class ProfileModel extends Model {
   bool isProfileLoading = true;
   bool isSemestersLoading = true;
 
+  StreamSubscription _profileStreamlistener;
+  StreamSubscription _semesterStreamlistener;
+
   ProfileModel() {
     auth.getCurrentUser().then((val) {
       id = val.uid;
@@ -28,8 +33,17 @@ class ProfileModel extends Model {
     });
   }
 
+  void close(){
+    _profileStreamlistener.cancel();
+    _semesterStreamlistener.cancel();
+    
+    for(var semester in semesters){
+      semester.close();
+    }
+  }
+
   void _loadProfile(String id) {
-    auth.getProfile(id).listen((val) {
+    _profileStreamlistener = auth.getProfile(id).listen((val) {
       rollNum = val.data['rollNum'];
       name = val.data['name'];
       email = val.data['email'];
@@ -46,7 +60,7 @@ class ProfileModel extends Model {
   }
 
   void _loadSemesters() {
-    _firestore.collection('users/$id/semesters').snapshots().listen((data) {
+    _semesterStreamlistener = _firestore.collection('users/$id/semesters').snapshots().listen((data) {
       for (var document in data.documents) {
         semesters.add(SemesterModel(
           doc: document,

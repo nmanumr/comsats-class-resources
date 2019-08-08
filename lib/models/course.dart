@@ -14,19 +14,29 @@ class CourseModel extends Model {
   String klassName;
   List maintainers;
   DocumentReference klass;
-  DocumentReference semester;  
+  DocumentReference semester;
 
   bool isLoading = true;
   final DocumentReference ref;
   Firestore _firestore = Firestore.instance;
   final ProfileModel user;
 
+  StreamSubscription _courseStreamlistener;
+  StreamSubscription _eventsStreamlistener;
+
   CourseModel({@required this.ref, @required this.user}) {
     loadCourse();
   }
 
+  void close() {
+    _courseStreamlistener.cancel();
+    if (_eventsStreamlistener != null) {
+      _eventsStreamlistener.cancel();
+    }
+  }
+
   loadCourse() {
-    this.ref.snapshots().listen((document) {
+    _courseStreamlistener = this.ref.snapshots().listen((document) {
       code = document.data["code"];
       title = document.data["title"];
       klass = document.data["class"];
@@ -43,21 +53,23 @@ class CourseModel extends Model {
   }
 
   getCourseResources() {
-    return _firestore.collection("${ref.path}/resources").orderBy("date").snapshots();
+    return _firestore
+        .collection("${ref.path}/resources")
+        .orderBy("date")
+        .snapshots();
   }
 
-  Future<List<EventModel>> getAllEvents(){
+  Future<List<EventModel>> getAllEvents() {
     var completer = new Completer<List<EventModel>>();
     List<EventModel> events = [];
 
-    _firestore.collection("${ref.path}/events").snapshots().listen(
-      (data) {
-        for (var document in data.documents) {
-          events.add(EventModel.eventFromDocument(document));
-        }
-        completer.complete(events);
-      },
-    );
+    _eventsStreamlistener =
+        _firestore.collection("${ref.path}/events").snapshots().listen((data) {
+      for (var document in data.documents) {
+        events.add(EventModel.eventFromDocument(document));
+      }
+      completer.complete(events);
+    });
 
     return completer.future;
   }
