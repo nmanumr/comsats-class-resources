@@ -1,3 +1,4 @@
+import 'package:class_resources/pages/auth/change-email.dart';
 import 'package:class_resources/pages/auth/change-pass.dart';
 import 'package:class_resources/pages/auth/reset-pass.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
@@ -47,6 +48,7 @@ class AppMain extends StatelessWidget {
         '/login': (ctx) => LoginPage(),
         '/resetpass': (ctx) => ResetPassPage(),
         '/changepass': (ctx) => ChangePass(),
+        '/changeEmail': (ctx) => ChangeEmail(),
         '/edit-profile': (ctx) => updateProfile,
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
