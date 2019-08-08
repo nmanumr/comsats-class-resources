@@ -1,3 +1,4 @@
+import 'package:class_resources/pages/auth/change-pass.dart';
 import 'package:class_resources/pages/auth/reset-pass.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:class_resources/pages/courses/add-courses.dart';
@@ -45,6 +46,7 @@ class AppMain extends StatelessWidget {
         '/signup': (ctx) => SignupPage(),
         '/login': (ctx) => LoginPage(),
         '/resetpass': (ctx) => ResetPassPage(),
+        '/changepass': (ctx) => ChangePass(),
         '/edit-profile': (ctx) => updateProfile,
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
