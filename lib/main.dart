@@ -30,6 +30,10 @@ class AppMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    //Using Future Reference to avoid Re-instantiation on any event (i.e. Keyboard Popup)
+    final updateProfile = UpdateProfile();
+
     return MaterialApp(
       title: 'Class Resources',
       theme: lightTheme(),
@@ -41,7 +45,7 @@ class AppMain extends StatelessWidget {
         '/signup': (ctx) => SignupPage(),
         '/login': (ctx) => LoginPage(),
         '/resetpass': (ctx) => ResetPassPage(),
-        '/edit-profile': (ctx) => UpdateProfile(),
+        '/edit-profile': (ctx) => updateProfile,
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
         '/license': (ctx) => AppLicensePage(),

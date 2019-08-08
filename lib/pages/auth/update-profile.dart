@@ -14,7 +14,7 @@ class UpdateProfile extends StatefulWidget {
 
 class _UpdateProfileState extends State<UpdateProfile> {
   final _formKey = GlobalKey<FormState>();
-  var controller = new MaskedTextController(mask: 'AA00-AAA-000');
+  var controller = MaskedTextController(mask: 'AA00-AAA-000');
 
   String name = "";
   String rollNum = "";
