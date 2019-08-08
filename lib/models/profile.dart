@@ -11,7 +11,6 @@ class ProfileModel extends Model {
   String email;
   String id;
   String klass;
-  bool isProfileComplete;
   DocumentReference klassRef;
   DocumentReference crntSemesterRef;
 
@@ -48,9 +47,8 @@ class ProfileModel extends Model {
       name = val.data['name'];
       email = val.data['email'];
       klassRef = val.data['class'];
-      klass = val.data['class'].path;
+      klass = val.data['class']?.path;
       rollNum = val.data['rollNum'];
-      isProfileComplete = val.data['profile_completed'];
       crntSemesterRef = val.data["currentSemester"];
 
       isProfileLoading = false;
@@ -79,16 +77,5 @@ class ProfileModel extends Model {
     if (index >= 0) 
       return semesters[index];
     return null;
-  }
-
-  Future updateProfile({String name, String rollNum, String klass}) async {
-    await auth.updateProfile(
-      id,
-      Profile(
-        name: name ?? this.name,
-        rollNum: rollNum ?? this.rollNum,
-        klass: klass ?? this.klass,
-      ),
-    );
   }
 }

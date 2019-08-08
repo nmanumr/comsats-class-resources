@@ -8,9 +8,8 @@ class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Firestore _firestore = Firestore.instance;
-  
 
-  Future setUserId(uid) async{
+  Future setUserId(uid) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString("uid", uid);
   }
@@ -55,16 +54,11 @@ class AuthService {
     return user.isEmailVerified;
   }
 
-  Future<void> signUp(Profile profile) async {
+  Future<void> signUp(String email, String password) async {
     FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: profile.email,
-      password: profile.password,
+      email: email,
+      password: password,
     );
-
-    UserUpdateInfo info = new UserUpdateInfo();
-    info.displayName = profile.name;
-    await user.updateProfile(info);
-    await updateProfile(user.uid, profile);
     setUserId(user.uid);
   }
 
@@ -80,53 +74,19 @@ class AuthService {
     return user;
   }
 
-  updateProfile(String uid, Profile profile) async {
-    DocumentReference profileRef = _firestore.document("users/$uid");
+  updateProfile(String name, String rollNum) async {
+    var user = await getCurrentUser();
+    DocumentReference profileRef = _firestore.document("users/${user.uid}");
     DocumentSnapshot document = await profileRef.get();
 
-    if (document.exists) {
-      await profileRef.updateData({
-        "rollNum": profile.rollNum ?? "",
-        "email": profile.email,
-        "id": uid,
-        "subjects": [],
-        "name": profile.name ?? "",
-        "class": _firestore.document("classes/${profile.klass ?? 'null'}"),
-        "profile_completed": true
-      });
-    } else {
-      await profileRef.setData({
-        "rollNum": profile.rollNum ?? "",
-        "email": profile.email,
-        "id": uid,
-        "subjects": [],
-        "name": profile.name ?? "",
-        "class": _firestore.document("classes/${profile.klass ?? 'null'}"),
-        "profile_completed": false
-      });
-    }
-    return true;
+    profileUpdate(Map<String, dynamic> data) => document.exists
+        ? profileRef.updateData(data)
+        : profileRef.setData(data, merge: true);
+
+    profileUpdate({
+      "rollNum": rollNum,
+      "id": user.uid,
+      "name": name,
+    });
   }
-}
-
-class Profile {
-  Profile({
-    this.rollNum,
-    this.email,
-    this.password,
-    this.id,
-    this.klass,
-    this.klassRef,
-    this.name,
-    this.subjects,
-  });
-
-  String rollNum;
-  String password;
-  String email;
-  String id;
-  String name;
-  String klass;
-  DocumentReference klassRef;
-  List<DocumentReference> subjects;
 }

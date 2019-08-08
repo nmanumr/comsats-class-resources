@@ -23,7 +23,6 @@ class _DashboardState extends State<Dashboard>
   int _cIndex = 0;
 
   List tabs = [];
-  List<BottomNavigationBarItem> bottomNavItems = [];
 
   @override
   void initState() {
@@ -37,10 +36,9 @@ class _DashboardState extends State<Dashboard>
     _profileModel.close();
   }
 
-  initTabs(BuildContext context, ProfileModel model) {
-    if (tabs.isNotEmpty) return;
-
-    tabs = [
+  List<BottomNavigationBarItem> initTabs(ProfileModel model) {
+    List<BottomNavigationBarItem> bottomNavItems = [];
+    var tabs = [
       {
         "name": "Courses",
         "icon": Icons.book,
@@ -63,8 +61,6 @@ class _DashboardState extends State<Dashboard>
       }
     ];
 
-    bottomNavItems = [];
-
     for (var tab in tabs) {
       bottomNavItems.add(BottomNavigationBarItem(
         backgroundColor: Theme.of(context).primaryColorDark,
@@ -79,10 +75,12 @@ class _DashboardState extends State<Dashboard>
         ),
       ));
     }
+
+    return bottomNavItems;
   }
 
   Widget buildDashboard(BuildContext context, ProfileModel model) {
-    initTabs(context, model);
+    var bottomNavItems = initTabs(model);
 
     return Scaffold(
       key: PageStorageKey('BottomNavigationBar'),
@@ -115,10 +113,6 @@ class _DashboardState extends State<Dashboard>
           // Model not loaded yet
           if (model.isProfileLoading) {
             return Loader();
-          }
-          // Profile not created
-          else if (!model.isProfileComplete) {
-            return UpdateProfile();
           }
 
           // build dashboard layout

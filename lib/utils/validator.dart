@@ -68,6 +68,7 @@ FormFieldValidator<String> emailValidator = chainedValidator([
 ]);
 
 /// Validates username field
+/// unused but left for future reference
 FormFieldValidator<String> usernameValidator = chainedValidator([
   notEmptyValidator,
   (String val) {
@@ -87,5 +88,26 @@ FormFieldValidator<String> courseCodeValidator = chainedValidator([
   (String val) {
     if (val.contains(RegExp(r'[A-Za-z]{3}\d{3}'))) return null;
     return "Not a valid course code";
+  }
+]);
+
+/// Validates roll number field
+FormFieldValidator<String> rollNumValidator = chainedValidator([
+  notEmptyValidator,
+  (String val) {
+    if (val
+        .contains(RegExp(r'(FA|SP)\d{2}-[A-Z]{3}-\d{3}', caseSensitive: false)))
+      return null;
+    return "Not a valid roll number";
+  }
+]);
+
+/// Validates name field
+FormFieldValidator<String> nameValidator = chainedValidator([
+  notEmptyValidator,
+  (String val) {
+    if (val.length < 8 || val.split(" ").length < 2)
+      return "Please enter your full name";
+    return null;
   }
 ]);

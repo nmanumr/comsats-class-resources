@@ -83,6 +83,7 @@ flutter:
     - assets/images/forget.png
     - assets/images/sent.png
     - assets/images/Login.png
+    - assets/images/profile.png
     # Photo by ![Nathan Anderson](https://unsplash.com/@nathananderson) on Unsplash
     - assets/images/welcome-bg.jpeg
     - assets/privacy_policy.html
