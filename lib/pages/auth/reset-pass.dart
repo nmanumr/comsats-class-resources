@@ -1,5 +1,6 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/input.dart';
+import 'package:class_resources/components/success-view.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
@@ -103,61 +104,6 @@ class _ResetPassPageState extends State<ResetPassPage> {
     );
   }
 
-  Widget emailSent() {
-    return Builder(
-      builder: (context) => ListView(
-        children: <Widget>[
-          SizedBox(height: 50),
-          Image.asset(
-            "assets/images/sent.png",
-            height: 230,
-          ),
-          SizedBox(height: 50),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Reset email sent",
-              style: Theme.of(context).textTheme.headline,
-            ),
-          ),
-          SizedBox(height: 20),
-          Align(
-            alignment: Alignment.center,
-            child: Opacity(
-              opacity: .7,
-              child: Text(
-                "Password reset email has been sent to the provided email.",
-                style: Theme.of(context).textTheme.subhead,
-              ),
-            ),
-          ),
-          SizedBox(height: 40),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                RaisedButton.icon(
-                  label: Text("Back"),
-                  icon: Icon(Icons.keyboard_arrow_left),
-                  onPressed: () => _pageController.previousPage(
-                    curve: Curves.easeOutExpo,
-                    duration: Duration(milliseconds: 700),
-                  ),
-                ),
-                RaisedButton.icon(
-                  label: Text("OK"),
-                  icon: Icon(Icons.done),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,7 +120,25 @@ class _ResetPassPageState extends State<ResetPassPage> {
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           forgetPage(),
-          emailSent(),
+          SuccessView(
+            headingText: "Reset email sent",
+            subheadingText:
+                "Password reset email has been sent to the provided email.",
+            imagePath: "assets/images/sent.png",
+            backButton: RaisedButton.icon(
+              label: Text("Back"),
+              icon: Icon(Icons.keyboard_arrow_left),
+              onPressed: () => _pageController.previousPage(
+                curve: Curves.easeOutExpo,
+                duration: Duration(milliseconds: 700),
+              ),
+            ),
+            nextButton: RaisedButton.icon(
+              label: Text("OK"),
+              icon: Icon(Icons.done),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
         ],
       ),
     );
