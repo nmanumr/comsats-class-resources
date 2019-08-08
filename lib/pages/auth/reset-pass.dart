@@ -1,6 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/input.dart';
 import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 class ResetPassPage extends StatefulWidget {
@@ -77,7 +78,7 @@ class _ResetPassPageState extends State<ResetPassPage> {
           PaddedInput(
             label: "Email",
             controller: _controller,
-            validator: notEmptyValidator,
+            validator: emailValidator,
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),

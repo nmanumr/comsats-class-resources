@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/input.dart';
 import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -14,22 +15,10 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
-  
+  TextEditingController _controller = TextEditingController();
 
   Profile profile = Profile();
-
   String password2;
-  
-  bool showPass = false;
-
-  String notEmptyValidator(String val) {
-    return (val ?? "") != '' ? null : 'Field can not be empty';
-  }
-
-  String rePassValidator(String val) {
-    if (val != profile.password) return "Password not matched";
-    return null;
-  }
 
   void onError(ctx, err) {
     Scaffold.of(ctx).showSnackBar(
@@ -69,7 +58,7 @@ class _SignupPageState extends State<SignupPage> {
             children: <Widget>[
               PaddedInput(
                 label: "Email",
-                validator: notEmptyValidator,
+                validator: emailValidator,
                 onSave: (value) => profile.email = value,
               ),
               PaddedInput(
@@ -79,13 +68,14 @@ class _SignupPageState extends State<SignupPage> {
               ),
               PaddedInput(
                 label: "Password",
-                validator: notEmptyValidator,
+                validator: passwordValidator,
+                controller: _controller,
                 obscureText: true,
                 onSave: (value) => profile.password = value,
               ),
               PaddedInput(
                 label: "Confirm Password",
-                validator: rePassValidator,
+                validator: repasswordValidator(_controller),
                 obscureText: true,
                 onSave: (value) => password2 = value,
               ),

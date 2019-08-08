@@ -1,4 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
+import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
@@ -27,10 +28,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
     'FA18-BCS-D',
     'FA18-BCS-E'
   ];
-
-  String notEmptyValidator(String val) {
-    return (val ?? "") != '' ? null : 'Field can not be empty';
-  }
 
   void onError(ctx, err) {
     Scaffold.of(ctx).showSnackBar(

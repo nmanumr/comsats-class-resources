@@ -68,7 +68,7 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Change Password"),
                       leading: Icon(Icons.vpn_key),
-                      onTap: () {},
+                      onTap: () => Navigator.pushNamed(context, '/changepass'),
                     ),
                     ListTile(
                       title: Text("Logout"),

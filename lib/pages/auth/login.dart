@@ -1,4 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
+import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:class_resources/components/input.dart';
@@ -17,10 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   String email;
   String password;
   bool showPass = false;
-
-  String notEmptyValidator(String val) {
-    return (val ?? "") != '' ? null : 'Field can not be empty';
-  }
 
   void onLogin(ctx) {
     Navigator.pushNamedAndRemoveUntil(ctx, '/dashboard', (r) => false);
@@ -92,34 +89,31 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 30),
             PaddedInput(
               label: "Email",
-              validator: notEmptyValidator,
+              validator: emailValidator,
               onSave: (value) => email = value,
             ),
             PaddedInput(
               label: "Password",
-              validator: notEmptyValidator,
+              validator: passwordValidator,
               obscureText: true,
               onSave: (value) => password = value,
             ),
             Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
-              child: Builder(builder: (ctx) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    FlatButton(
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/resetpass'),
-                      child: Text('Forget password?'),
-                    ),
-                    RaisedButton(
-                      onPressed: () => onSubmit(ctx),
-                      child: Text('Login'),
-                    ),
-                  ],
-                );
-              }),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  FlatButton(
+                    onPressed: () => Navigator.pushNamed(context, '/resetpass'),
+                    child: Text('Forget password?'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => onSubmit(context),
+                    child: Text('Login'),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
