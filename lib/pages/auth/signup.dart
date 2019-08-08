@@ -16,12 +16,13 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _controller = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Profile profile = Profile();
   String password2;
 
   void onError(ctx, err) {
-    Scaffold.of(ctx).showSnackBar(
+    _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text('${err.message}'),
         action: SnackBarAction(
@@ -49,6 +50,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: centeredAppBar(context, "Signup"),
       body: Form(
         key: _formKey,

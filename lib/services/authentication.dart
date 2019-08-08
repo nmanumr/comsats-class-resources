@@ -45,6 +45,11 @@ class AuthService {
     await user.updatePassword(password);
   }
 
+  Future<void> changeEmail(String email) async {
+    var user = await getCurrentUser();
+    await user.updateEmail(email);
+  }
+
   Future<bool> isEmailVerified() async {
     FirebaseUser user = await _firebaseAuth.currentUser();
     return user.isEmailVerified;

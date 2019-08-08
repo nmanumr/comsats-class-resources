@@ -17,6 +17,7 @@ class _ChangePassState extends State<ChangePass> {
   final _formKey = GlobalKey<FormState>();
   PageController _pageController = PageController();
   AuthService _authService = AuthService();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _password2Controller = TextEditingController();
@@ -31,7 +32,7 @@ class _ChangePassState extends State<ChangePass> {
           duration: Duration(milliseconds: 700),
         );
       } catch (err) {
-        Scaffold.of(ctx).showSnackBar(
+        _scaffoldKey.currentState.showSnackBar(
           SnackBar(
             content: Text('${err.message}'),
             action: SnackBarAction(
@@ -47,6 +48,7 @@ class _ChangePassState extends State<ChangePass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: centeredAppBar(context, "Change Password"),
       body: PageView(
         controller: _pageController,
@@ -77,14 +79,6 @@ class _ChangePassState extends State<ChangePass> {
           SuccessView(
             headingText: "Password Changed",
             imagePath: "assets/images/sent.png",
-            backButton: RaisedButton.icon(
-              label: Text("Back"),
-              icon: Icon(Icons.keyboard_arrow_left),
-              onPressed: () => _pageController.previousPage(
-                curve: Curves.easeOutExpo,
-                duration: Duration(milliseconds: 700),
-              ),
-            ),
             nextButton: RaisedButton.icon(
               label: Text("OK"),
               icon: Icon(Icons.done),

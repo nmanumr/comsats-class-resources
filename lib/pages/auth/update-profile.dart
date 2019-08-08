@@ -16,6 +16,7 @@ class UpdateProfile extends StatefulWidget {
 class _UpdateProfileState extends State<UpdateProfile> {
   final _formKey = GlobalKey<FormState>();
   var controller = MaskedTextController(mask: 'AA00-AAA-000');
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String name = "";
   String rollNum = "";
@@ -30,7 +31,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   ];
 
   void onError(ctx, err) {
-    Scaffold.of(ctx).showSnackBar(
+    _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text('${err.message}'),
         action: SnackBarAction(
@@ -100,6 +101,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     return ScopedModel(
       model: ProfileModel(),
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: centeredAppBar(context, "Profile"),
         body: ScopedModelDescendant<ProfileModel>(
           builder: (context, child, model) {

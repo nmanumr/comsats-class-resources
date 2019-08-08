@@ -63,7 +63,7 @@ class LibraryPage extends StatelessWidget {
                     ListTile(
                       title: Text("Update Email"),
                       leading: Icon(Icons.email),
-                      onTap: () {},
+                      onTap: () => Navigator.pushNamed(context, '/changeEmail'),
                     ),
                     ListTile(
                       title: Text("Change Password"),

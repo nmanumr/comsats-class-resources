@@ -15,7 +15,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String email;
   String password;
@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void onError(ctx, err) {
-    Scaffold.of(ctx).showSnackBar(
+    _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text('${err.message}'),
         action: SnackBarAction(
@@ -54,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: centeredAppBar(
         context,
         "Login",

@@ -17,13 +17,14 @@ class _ResetPassPageState extends State<ResetPassPage> {
   PageController _pageController = PageController();
   AuthService _authService = AuthService();
   TextEditingController _controller = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String notEmptyValidator(String val) {
     return (val ?? "") != '' ? null : 'Field can not be empty';
   }
 
   void onError(ctx, err) {
-    Scaffold.of(ctx).showSnackBar(
+    _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text('${err.message}'),
         action: SnackBarAction(
@@ -97,6 +98,7 @@ class _ResetPassPageState extends State<ResetPassPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: centeredAppBar(
         context,
         "",
