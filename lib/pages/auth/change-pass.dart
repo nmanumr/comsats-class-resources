@@ -1,4 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
+import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/input.dart';
 import 'package:class_resources/components/success-view.dart';
 import 'package:class_resources/services/authentication.dart';
@@ -51,44 +52,30 @@ class _ChangePassState extends State<ChangePass> {
         controller: _pageController,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
-          Form(
+          illustratedForm(
             key: _formKey,
-            child: ListView(
-              children: <Widget>[
-                SizedBox(height: 30),
-                Image.asset(
-                  "assets/images/Login.png",
-                  height: 230,
-                ),
-                SizedBox(height: 30),
-                PaddedInput(
-                  label: "New Password",
-                  controller: _passwordController,
-                  validator: passwordValidator,
-                  obscureText: true,
-                ),
-                PaddedInput(
-                  label: "Password Again",
-                  controller: _password2Controller,
-                  obscureText: true,
-                  validator: repasswordValidator(_passwordController),
-                ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    RaisedButton(
-                      child: Text("Change Password"),
-                      onPressed: ()=> onSubmit(context),
-                    ),
-                    SizedBox(width: 20)
-                  ],
-                )
-              ],
+            imagePath: "assets/images/Login.png",
+            children: [
+              PaddedInput(
+                label: "New Password",
+                controller: _passwordController,
+                validator: passwordValidator,
+                obscureText: true,
+              ),
+              PaddedInput(
+                label: "Password Again",
+                controller: _password2Controller,
+                obscureText: true,
+                validator: repasswordValidator(_passwordController),
+              ),
+            ],
+            primaryButton: RaisedButton(
+              child: Text("Change Password"),
+              onPressed: () => onSubmit(context),
             ),
           ),
           SuccessView(
-            headingText: "PassWord Changes",
+            headingText: "Password Changed",
             imagePath: "assets/images/sent.png",
             backButton: RaisedButton.icon(
               label: Text("Back"),

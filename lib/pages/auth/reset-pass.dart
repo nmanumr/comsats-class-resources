@@ -1,4 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
+import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/input.dart';
 import 'package:class_resources/components/success-view.dart';
 import 'package:class_resources/services/authentication.dart';
@@ -49,58 +50,47 @@ class _ResetPassPageState extends State<ResetPassPage> {
 
   Widget forgetPage() {
     return Builder(
-      builder: (context) => ListView(
-        children: <Widget>[
-          SizedBox(height: 30),
-          Image.asset(
-            "assets/images/forget.png",
-            height: 230,
-          ),
-          SizedBox(height: 30),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Forget Password?",
-              style: Theme.of(context).textTheme.headline,
-            ),
-          ),
-          SizedBox(height: 20),
-          Align(
-            alignment: Alignment.center,
-            child: Opacity(
-              opacity: .7,
+      builder: (context) {
+        return illustratedForm(
+          imagePath: "assets/images/forget.png",
+          children: [
+            Align(
+              alignment: Alignment.center,
               child: Text(
-                "Write your email below and we will contact you shortly.",
-                style: Theme.of(context).textTheme.subhead,
+                "Forget Password?",
+                style: Theme.of(context).textTheme.headline,
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          PaddedInput(
-            label: "Email",
-            controller: _controller,
-            validator: emailValidator,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                RaisedButton.icon(
-                  label: Text("Back"),
-                  icon: Icon(Icons.keyboard_arrow_left),
-                  onPressed: () => Navigator.pop(context),
+            SizedBox(height: 20),
+            Align(
+              alignment: Alignment.center,
+              child: Opacity(
+                opacity: .7,
+                child: Text(
+                  "Write your email below and we will contact you shortly.",
+                  style: Theme.of(context).textTheme.subhead,
                 ),
-                RaisedButton.icon(
-                  label: Text("Submit"),
-                  icon: Icon(Icons.send),
-                  onPressed: () => onSubmit(context),
-                ),
-              ],
+              ),
             ),
-          )
-        ],
-      ),
+            SizedBox(height: 20),
+            PaddedInput(
+              label: "Email",
+              controller: _controller,
+              validator: emailValidator,
+            ),
+          ],
+          secandaryButton: RaisedButton.icon(
+            label: Text("Back"),
+            icon: Icon(Icons.keyboard_arrow_left),
+            onPressed: () => Navigator.pop(context),
+          ),
+          primaryButton: RaisedButton.icon(
+            label: Text("Submit"),
+            icon: Icon(Icons.send),
+            onPressed: () => onSubmit(context),
+          ),
+        );
+      },
     );
   }
 
