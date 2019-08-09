@@ -1,6 +1,5 @@
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.dart';
-import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -22,7 +21,7 @@ class _DashboardState extends State<Dashboard>
   ProfileModel _profileModel;
   int _cIndex = 0;
 
-  List tabs = [];
+  List tabs;
 
   @override
   void initState() {
@@ -38,7 +37,7 @@ class _DashboardState extends State<Dashboard>
 
   List<BottomNavigationBarItem> initTabs(ProfileModel model) {
     List<BottomNavigationBarItem> bottomNavItems = [];
-    var tabs = [
+    tabs = [
       {
         "name": "Courses",
         "icon": Icons.book,

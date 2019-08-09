@@ -15,7 +15,7 @@ class TimeTableModel extends Model {
   }
 
   loadEvents() async {
-    var courses = user.getCrntSemester().courses;
+    var courses = user.getCrntSemester()?.courses ?? [];
     for (var course in courses) {
       var courseEvents = await course.getAllEvents();
       events.addAll(courseEvents);
