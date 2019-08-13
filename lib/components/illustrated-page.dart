@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
-class SuccessView extends StatelessWidget {
+class IllustartedPage extends StatelessWidget {
   final String imagePath;
   final String headingText;
   final String subheadingText;
   final Widget backButton;
+  final Widget centerButton;
   final Widget nextButton;
 
-  SuccessView({
+  IllustartedPage({
     @required this.imagePath,
     @required this.headingText,
+    this.centerButton,
     this.subheadingText,
     this.backButton,
     this.nextButton,
@@ -19,31 +21,32 @@ class SuccessView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        SizedBox(height: 50),
         Image.asset(
           imagePath,
           height: 230,
         ),
-        SizedBox(height: 50),
-        Align(
-          alignment: Alignment.center,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
           child: Text(
             headingText,
             style: Theme.of(context).textTheme.headline,
+            textAlign: TextAlign.center,
           ),
         ),
-        SizedBox(height: 20),
-        Align(
-          alignment: Alignment.center,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
           child: Opacity(
             opacity: .7,
             child: Text(
               subheadingText ?? " ",
               style: Theme.of(context).textTheme.subhead,
+              textAlign: TextAlign.center,
             ),
           ),
         ),
-        SizedBox(height: 40),
+        Center(
+          child: centerButton != null ? centerButton : Text(""),
+        ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Row(
@@ -53,23 +56,8 @@ class SuccessView extends StatelessWidget {
               nextButton ?? Text(" "),
             ],
           ),
-        )
+        ),
       ],
     );
   }
 }
-
-// RaisedButton.icon(
-//                 label: Text("Back"),
-//                 icon: Icon(Icons.keyboard_arrow_left),
-//                 onPressed: () => _pageController.previousPage(
-//                   curve: Curves.easeOutExpo,
-//                   duration: Duration(milliseconds: 700),
-//                 ),
-//               )
-
-// RaisedButton.icon(
-//                 label: Text("OK"),
-//                 icon: Icon(Icons.done),
-//                 onPressed: () => Navigator.pop(context),
-//               )

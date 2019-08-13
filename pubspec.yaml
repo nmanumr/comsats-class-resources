@@ -84,6 +84,7 @@ flutter:
     - assets/images/sent.png
     - assets/images/Login.png
     - assets/images/profile.png
+    - assets/images/warning.png
     # Photo by ![Nathan Anderson](https://unsplash.com/@nathananderson) on Unsplash
     - assets/images/welcome-bg.jpeg
     - assets/privacy_policy.html

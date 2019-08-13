@@ -20,6 +20,8 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController _passwordController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool isLoading = false;
+
   void onError(err) {
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
@@ -33,10 +35,12 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   void onSubmit() async {
+    setState(() => isLoading = true);
     if (_formKey.currentState.validate()) {
       try {
         await widget.auth
             .signUp(_emailController.text, _passwordController.text);
+        setState(() => isLoading = false);
         Navigator.push(
           context,
           EnterExitRoute(
@@ -45,6 +49,7 @@ class _SignupPageState extends State<SignupPage> {
           ),
         );
       } catch (e) {
+        setState(() => isLoading = false);
         onError(e);
       }
     }
@@ -57,6 +62,7 @@ class _SignupPageState extends State<SignupPage> {
       appBar: centeredAppBar(context, "Signup"),
       body: illustratedForm(
         imagePath: "assets/images/Login.png",
+        isLoading: isLoading,
         key: _formKey,
         children: [
           PaddedInput(

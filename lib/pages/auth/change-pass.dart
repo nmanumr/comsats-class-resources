@@ -1,7 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
+import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/components/success-view.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +18,13 @@ class _ChangePassState extends State<ChangePass> {
   PageController _pageController = PageController();
   AuthService _authService = AuthService();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool isLoading = false;
 
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _password2Controller = TextEditingController();
 
   void onSubmit(ctx) async {
+    setState(() => isLoading = true);
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
@@ -43,6 +45,7 @@ class _ChangePassState extends State<ChangePass> {
         );
       }
     }
+    setState(() => isLoading = false);
   }
 
   @override
@@ -55,6 +58,7 @@ class _ChangePassState extends State<ChangePass> {
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           illustratedForm(
+            isLoading: isLoading,
             key: _formKey,
             imagePath: "assets/images/Login.png",
             children: [
@@ -76,7 +80,7 @@ class _ChangePassState extends State<ChangePass> {
               onPressed: () => onSubmit(context),
             ),
           ),
-          SuccessView(
+          IllustartedPage(
             headingText: "Password Changed",
             imagePath: "assets/images/sent.png",
             nextButton: RaisedButton.icon(

@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   String email;
   String password;
   bool showPass = false;
+  bool isLoading = false;
 
   void onLogin(ctx) {
     Navigator.pushNamedAndRemoveUntil(ctx, '/dashboard', (r) => false);
@@ -37,14 +38,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void onSubmit(ctx) {
+  void onSubmit(ctx) async {
+    setState(() => isLoading = true);
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
-      widget.auth
-          .signIn(email, password)
-          .then((v) => onLogin(ctx))
-          .catchError((err) => onError(ctx, err));
+      try {
+        await widget.auth.signIn(email, password);
+        onLogin(ctx);
+      } catch (e) {
+        onError(ctx, e);
+      }
     }
+    setState(() => isLoading = false);
   }
 
   void toSignup(ctx) {
@@ -81,6 +86,7 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
       body: illustratedForm(
+        isLoading: isLoading,
         imagePath: "assets/images/Login.png",
         key: _formKey,
         children: <Widget>[

@@ -1,7 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
+import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/components/success-view.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +18,8 @@ class _ResetPassPageState extends State<ResetPassPage> {
   AuthService _authService = AuthService();
   TextEditingController _controller = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool isLoading = false;
 
   String notEmptyValidator(String val) {
     return (val ?? "") != '' ? null : 'Field can not be empty';
@@ -42,11 +44,15 @@ class _ResetPassPageState extends State<ResetPassPage> {
     );
   }
 
-  void onSubmit(ctx) {
-    _authService
-        .resetPassword(_controller.text)
-        .then((val) => onEmailSent())
-        .catchError((err) => onError(ctx, err));
+  void onSubmit(ctx) async {
+    setState(() => isLoading = true);
+    try {
+      await _authService.resetPassword(_controller.text);
+      onEmailSent();
+    } catch (err) {
+      onError(ctx, err);
+    }
+    setState(() => isLoading = false);
   }
 
   Widget forgetPage() {
@@ -54,6 +60,7 @@ class _ResetPassPageState extends State<ResetPassPage> {
       builder: (context) {
         return illustratedForm(
           imagePath: "assets/images/forget.png",
+          isLoading: isLoading,
           children: [
             Align(
               alignment: Alignment.center,
@@ -112,7 +119,7 @@ class _ResetPassPageState extends State<ResetPassPage> {
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           forgetPage(),
-          SuccessView(
+          IllustartedPage(
             headingText: "Reset email sent",
             subheadingText:
                 "Password reset email has been sent to the provided email.",

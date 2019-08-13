@@ -1,3 +1,4 @@
+import 'package:class_resources/models/profile.dart';
 import 'package:class_resources/pages/auth/change-email.dart';
 import 'package:class_resources/pages/auth/change-pass.dart';
 import 'package:class_resources/pages/auth/reset-pass.dart';
@@ -17,13 +18,13 @@ import './pages/courses/create-course.dart';
 import 'pages/menu/license.dart';
 
 void main() async {
+  String uid = "";
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String uid = prefs.getString('uid') ?? "";
-    return runApp(AppMain(uid: uid));
-  } catch (_) {
-    return runApp(AppMain(uid: ""));
-  }
+    uid = prefs.getString('uid') ?? "";
+  } catch (_) {}
+
+  return runApp(AppMain(uid: uid));
 }
 
 class AppMain extends StatelessWidget {
@@ -32,10 +33,6 @@ class AppMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    //Using Future Reference to avoid Re-instantiation on any event (i.e. Keyboard Popup)
-    final updateProfile = UpdateProfile();
-
     return MaterialApp(
       title: 'Class Resources',
       theme: lightTheme(),
@@ -49,7 +46,8 @@ class AppMain extends StatelessWidget {
         '/resetpass': (ctx) => ResetPassPage(),
         '/changepass': (ctx) => ChangePass(),
         '/changeEmail': (ctx) => ChangeEmail(),
-        '/edit-profile': (ctx) => updateProfile,
+        '/edit-profile': (ctx) => UpdateProfile(),
+        '/create-profile': (ctx) => UpdateProfile(navigateToDashboard: true),
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
         '/license': (ctx) => AppLicensePage(),

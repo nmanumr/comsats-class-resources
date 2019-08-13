@@ -43,6 +43,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
       MaskedTextController(mask: 'AA00-AAA-000');
   TextEditingController _nameController = TextEditingController();
   KlassModel _klass;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }
 
   void submit() async {
+    setState(() => isLoading = true);
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
@@ -75,6 +77,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
           _nameController.text,
           _rollumController.text,
         );
+        setState(() => isLoading = false);
         if (widget.navigateToDashboard)
           Navigator.push(
             context,
@@ -86,6 +89,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         else
           Navigator.pop(context);
       } catch (e) {
+        setState(() => isLoading = true);
         onError(e);
       }
     }
@@ -96,10 +100,11 @@ class _UpdateProfileState extends State<UpdateProfile> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: centeredAppBar(context,
-          widget.navigateToDashboard ? "Update Profile" : "Create Profile"),
+          widget.navigateToDashboard ? "Create Profile" : "Update Profile"),
       body: illustratedForm(
         key: _formKey,
         imagePath: "assets/images/profile.png",
+        isLoading: isLoading,
         children: [
           PaddedInput(
             label: "Your Name",

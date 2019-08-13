@@ -8,12 +8,14 @@ Widget illustratedForm({
   @required List<Widget> children,
   @required Widget primaryButton,
   Widget secandaryButton,
+  bool isLoading = false,
   Key key,
 }) {
   return Form(
     key: key,
     child: ListView(
       children: <Widget>[
+        isLoading ? LinearProgressIndicator() : SizedBox(height: 6),
         SizedBox(height: 30),
         Image.asset(
           imagePath,

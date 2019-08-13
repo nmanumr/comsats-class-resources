@@ -1,3 +1,5 @@
+import 'package:class_resources/components/centered-appbar.dart';
+import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import './courses/courses.dart';
 import './notifications.dart';
 import './timetable/timetable.dart';
 import './menu/library.dart';
+import 'auth/update-profile.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -110,8 +113,47 @@ class _DashboardState extends State<Dashboard>
       child: ScopedModelDescendant<ProfileModel>(
         builder: (context, child, model) {
           // Model not loaded yet
-          if (model.isProfileLoading) {
+          if (model.profileStatus == ProfileStatus.Loading) {
             return Loader();
+          }
+
+          if (model.profileStatus == ProfileStatus.AuthError) {
+            return Scaffold(
+              appBar: centeredAppBar(context, ""),
+              body: IllustartedPage(
+                imagePath: "assets/images/warning.png",
+                headingText: "Account not found",
+                subheadingText:
+                    "You account not found may be deleted or disabled by admin.",
+                centerButton: RaisedButton(
+                  child: Text("Goto Home"),
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "/welcome", (_) => false);
+                  },
+                ),
+              ),
+            );
+          }
+
+          if (model.profileStatus == ProfileStatus.ProfileError) {
+            return Scaffold(
+              appBar: centeredAppBar(context, ""),
+              body: Center(
+                child: IllustartedPage(
+                  imagePath: "assets/images/warning.png",
+                  headingText: "Profile not found",
+                  subheadingText:
+                      "No profile found corresponding your ID. Either its deleted or hadn't created yet.",
+                  centerButton: RaisedButton(
+                    child: Text("Create Profile"),
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/create-profile");
+                    },
+                  ),
+                ),
+              ),
+            );
           }
 
           // build dashboard layout

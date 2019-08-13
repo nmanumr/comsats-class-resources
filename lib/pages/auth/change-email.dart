@@ -1,7 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
+import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/components/success-view.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
@@ -18,17 +18,17 @@ class _ChangeEmailState extends State<ChangeEmail> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   PageController _pageController = PageController();
   AuthService _authService = AuthService();
+  bool isLoading = false;
 
   TextEditingController _emailController = TextEditingController();
 
   void onSubmit(ctx) async {
+    setState(() => isLoading = true);
     _formKey.currentState.save();
-    print("fsdf");
     if (_formKey.currentState.validate()) {
-      print("fsdfdas");
       try {
         await _authService.changePassword(_emailController.text);
-        _pageController.nextPage(
+        await _pageController.nextPage(
           curve: Curves.easeOutExpo,
           duration: Duration(milliseconds: 700),
         );
@@ -44,6 +44,7 @@ class _ChangeEmailState extends State<ChangeEmail> {
         );
       }
     }
+    setState(() => isLoading = false);
   }
 
   @override
@@ -56,6 +57,7 @@ class _ChangeEmailState extends State<ChangeEmail> {
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           illustratedForm(
+            isLoading: isLoading,
             key: _formKey,
             imagePath: "assets/images/Login.png",
             children: [
@@ -70,7 +72,7 @@ class _ChangeEmailState extends State<ChangeEmail> {
               onPressed: () => onSubmit(context),
             ),
           ),
-          SuccessView(
+          IllustartedPage(
             headingText: "Email Updated",
             imagePath: "assets/images/sent.png",
             nextButton: RaisedButton.icon(

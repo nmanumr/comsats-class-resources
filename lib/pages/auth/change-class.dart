@@ -19,7 +19,15 @@ class ChangeClass extends StatefulWidget {
 class _ChangeClassState extends State<ChangeClass> {
   KlassService _klassService = KlassService();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  Stream<QuerySnapshot> _stream;
   String selectedKlass;
+  bool isLoading = false;
+
+  @override
+  initState() {
+    _stream = _klassService.getAllClasses();
+    super.initState();
+  }
 
   showError(err) {
     var msg;
@@ -44,8 +52,10 @@ class _ChangeClassState extends State<ChangeClass> {
     if (widget.klass != null && selectedKlass == widget.klass.name)
       Navigator.of(context).pop();
 
+    setState(() => isLoading = true);
     try {
       await _klassService.changeClass(selectedKlass);
+      setState(() => isLoading = false);
 
       if (widget.navigateToDashboard) {
         Navigator.pushNamedAndRemoveUntil(context, "/dashboard", (_) => false);
@@ -53,14 +63,17 @@ class _ChangeClassState extends State<ChangeClass> {
         Navigator.of(context).pop();
     } catch (e) {
       if (_scaffoldKey.currentState != null) showError(e);
+      setState(() => isLoading = false);
     }
   }
 
   Widget onSuccess(List<DocumentSnapshot> klasses) {
     return ListView.builder(
-      itemCount: klasses.length,
+      itemCount: klasses.length + 1,
       itemBuilder: (context, i) {
-        var klassName = klasses[i].data["name"];
+        if (i == 0)
+          return isLoading ? LinearProgressIndicator() : SizedBox(height: 6);
+        var klassName = klasses[i - 1].data["name"];
 
         if (widget.klass != null &&
             widget.klass.name == klassName &&
@@ -74,11 +87,11 @@ class _ChangeClassState extends State<ChangeClass> {
             child: Icon(isSelected ? Icons.done : Icons.class_),
             backgroundColor: isSelected
                 ? Theme.of(context).accentColor
-                : HexColor(generateColor(klasses[i].data["CR"])),
+                : HexColor(generateColor(klasses[i-1].data["CR"])),
             foregroundColor: Colors.white,
           ),
           title: Text(klassName),
-          subtitle: Text(klasses[i].data["CR"]),
+          subtitle: Text(klasses[i-1].data["CR"]),
           onTap: () {
             setState(() => selectedKlass = klassName);
           },
@@ -93,10 +106,12 @@ class _ChangeClassState extends State<ChangeClass> {
       key: _scaffoldKey,
       appBar: centeredAppBar(context, "Select Class"),
       body: StreamBuilder(
-        stream: _klassService.getAllClasses(),
+        stream: _stream,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
-            return Loader();
+            return ListView(
+              children: <Widget>[LinearProgressIndicator()],
+            );
 
           return onSuccess(snapshot.data.documents);
         },
