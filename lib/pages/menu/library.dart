@@ -1,6 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
@@ -57,7 +58,14 @@ class LibraryPage extends StatelessWidget {
                       title: Text("Update Profile"),
                       leading: Icon(Icons.person),
                       onTap: () {
-                        Navigator.pushNamed(context, '/edit-profile');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => UpdateProfile(
+                            klass: model.klassRef,
+                            name: model.name,
+                            rollNum: model.rollNum,
+                          )),
+                        );
                       },
                     ),
                     ListTile(

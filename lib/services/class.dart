@@ -34,4 +34,14 @@ class KlassService {
       "teacher": teacher,
     });
   }
+
+  changeClass(String klass) async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'syncUserCourses',
+    );
+
+    return await callable.call({
+      "class": klass,
+    });
+  }
 }

@@ -53,16 +53,23 @@ export const addCourseToUser = functions.https.onCall(async (data, context) => {
 /**
  * Synchronize user courses with user class courses
  */
-export const syncUserCourses = functions.https.onCall(async (_, context) => {
+export const syncUserCourses = functions.https.onCall(async (data, context) => {
     if (!context.auth) return;
+    if (!data['class']) return;
 
-    const userd: string = context.auth.uid;
-    const user = await db.doc(`/users/${userd}/`).get();
+    const klassRef = db.doc(`/classes/${data['class']}`);
+    const klass = await db.doc(`/classes/${data['class']}`).get();
+    const userid: string = context.auth.uid;
+    const semesters = await db.collection(`${klassRef.path}/semesters/`).get();
 
-    await deleteCollection(db, `/users/${userd}/semesters/`, 10);
+    await deleteCollection(db, `/users/${userid}/semesters/`, 10);
 
-    const snapshot = await db.collection(`${user.get("class")["path"]}/semesters/`).get();
-    for (const doc of snapshot.docs) {
-        await db.doc(`/users/${userd}/semesters/${doc.get("name")}/`).set(doc.data());
+    for (const doc of semesters.docs) {
+        await db.doc(`/users/${userid}/semesters/${doc.get("name")}/`).set(doc.data());
     }
+
+    await db.doc(`/users/${userid}/`).update({
+        "class": klassRef,
+        "currentSemester": klass.get("currentSemester")
+    })
 });
