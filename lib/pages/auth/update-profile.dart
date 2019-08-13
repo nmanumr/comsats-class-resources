@@ -19,7 +19,7 @@ class UpdateProfile extends StatefulWidget {
     this.name,
     this.rollNum,
     this.klass,
-    this.navigateToDashboard = true,
+    this.navigateToDashboard = false,
   });
 
   final String name;
@@ -80,11 +80,9 @@ class _UpdateProfileState extends State<UpdateProfile> {
             context,
             EnterExitRoute(
               exitPage: this.widget,
-              enterPage: UpdateProfile(navigateToDashboard: true),
+              enterPage: ChangeClass(navigateToDashboard: true),
             ),
           );
-        // Navigator.pushNamedAndRemoveUntil(
-        //     context, "/dashboard", (_) => false);
         else
           Navigator.pop(context);
       } catch (e) {
@@ -166,7 +164,11 @@ class _UpdateProfileState extends State<UpdateProfile> {
             },
           )
         ],
-        primaryButton: RaisedButton(child: Text("Save"), onPressed: submit),
+        primaryButton: RaisedButton.icon(
+          icon: Icon(widget.navigateToDashboard ? Icons.keyboard_arrow_right : Icons.check),
+          label: Text(widget.navigateToDashboard ? "Next" : "Save"),
+          onPressed: submit,
+        ),
       ),
     );
   }

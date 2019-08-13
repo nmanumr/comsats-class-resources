@@ -41,14 +41,18 @@ class _ChangeClassState extends State<ChangeClass> {
 
   submit(context) async {
     // Just close the dialog if klass is not changed
-    if (selectedKlass == widget.klass.name) Navigator.of(context).pop();
+    if (widget.klass != null && selectedKlass == widget.klass.name)
+      Navigator.of(context).pop();
 
     try {
       await _klassService.changeClass(selectedKlass);
-      Navigator.of(context).pop();
+
+      if (widget.navigateToDashboard) {
+        Navigator.pushNamedAndRemoveUntil(context, "/dashboard", (_) => false);
+      } else
+        Navigator.of(context).pop();
     } catch (e) {
-      if (_scaffoldKey.currentState != null)
-      showError(e);
+      if (_scaffoldKey.currentState != null) showError(e);
     }
   }
 
