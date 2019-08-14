@@ -1,4 +1,3 @@
-import 'package:class_resources/models/profile.dart';
 import 'package:class_resources/pages/auth/change-email.dart';
 import 'package:class_resources/pages/auth/change-pass.dart';
 import 'package:class_resources/pages/auth/reset-pass.dart';

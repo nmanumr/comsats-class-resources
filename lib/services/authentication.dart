@@ -14,6 +14,11 @@ class AuthService {
     sharedPreferences.setString("uid", uid);
   }
 
+  Future<bool> profileExists(String uid) async {
+    var doc = await _firestore.document("/users/$uid").get();
+    return doc.exists && doc.data["currentSemester"] != null;
+  }
+
   Future<String> signIn(String email, String password) async {
     FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);

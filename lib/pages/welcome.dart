@@ -1,11 +1,14 @@
 import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/utils/route-transition.dart';
 import 'package:flutter/material.dart';
 
 import '../components/bordered-button.dart';
 import '../components/google-button.dart';
+import 'auth/update-profile.dart';
 
 class WelcomePage extends StatelessWidget {
   final AuthService _auth = AuthService();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final textShadows = [
     Shadow(
@@ -25,28 +28,54 @@ class WelcomePage extends StatelessWidget {
     ),
   ];
 
-  void loginWithGoogle(context) {
+  void loginWithGoogle(context) async {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Center(
           child: CircularProgressIndicator(),
         );
       },
     );
-    
-    _auth.googleSignIn().then((val){
+
+    try {
+      var user = await _auth.googleSignIn();
+      var profileExists = await _auth.profileExists(user.uid);
+      _auth.setUserId(user.uid);
+
+      if (profileExists) {
+        Navigator.pushNamedAndRemoveUntil(context, "/dashboard", (_) => false);
+      } else {
+        Navigator.push(
+          context,
+          EnterExitRoute(
+            exitPage: this,
+            enterPage: UpdateProfile(
+              navigateToDashboard: true,
+              name: user.displayName,
+            ),
+          ),
+        );
+      }
+    } catch (err) {
       Navigator.pop(context);
-      print(val);
-    }).catchError((e){
-      Navigator.pop(context);
-      print(e);
-    });
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text('${err.message}'),
+          action: SnackBarAction(
+            label: 'Close',
+            onPressed: () {},
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
