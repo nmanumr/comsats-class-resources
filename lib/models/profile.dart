@@ -13,6 +13,7 @@ class ProfileModel extends Model {
   String email;
   String id;
   String klass;
+  String photoUrl;
   DocumentReference klassRef;
   DocumentReference crntSemesterRef;
 
@@ -35,6 +36,7 @@ class ProfileModel extends Model {
         notifyListeners();
       } else {
         id = val.uid;
+        photoUrl = val.photoUrl;
         _loadProfile(id);
       }
     });

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class TextAvatar extends StatelessWidget {
-  TextAvatar({@required this.text});
+  TextAvatar({@required this.text, this.photoUrl});
 
   final String text;
+  final String photoUrl;
 
   String getAvatarText(String text) {
     var words = (text ?? "").split(" ");
@@ -23,7 +24,8 @@ class TextAvatar extends StatelessWidget {
     Color color = HexColor(generateColor(text));
 
     return CircleAvatar(
-      child: Text(avatarText),
+      backgroundImage: photoUrl == null ? null : NetworkImage(photoUrl),
+      child: photoUrl == null ? Text(avatarText) : null,
       backgroundColor: color.withAlpha(175),
       foregroundColor: Colors.white,
     );

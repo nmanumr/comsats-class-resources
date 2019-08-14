@@ -9,7 +9,6 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LibraryPage extends StatelessWidget {
-  final String name = "Nauman Umer";
   final AuthService auth = AuthService();
 
   _launchURL(String url) async {
@@ -32,6 +31,12 @@ class LibraryPage extends StatelessWidget {
           "Roll Number",
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
+      );
+    } else if (model.photoUrl != null) {
+      return ListTile(
+        leading: TextAvatar(text: model.name, photoUrl: model.photoUrl),
+        title: Text(model.name),
+        subtitle: Text(model.rollNum),
       );
     } else {
       return ListTile(
@@ -60,11 +65,12 @@ class LibraryPage extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => UpdateProfile(
-                            klass: model.klassRef,
-                            name: model.name,
-                            rollNum: model.rollNum,
-                          )),
+                          MaterialPageRoute(
+                              builder: (_) => UpdateProfile(
+                                    klass: model.klassRef,
+                                    name: model.name,
+                                    rollNum: model.rollNum,
+                                  )),
                         );
                       },
                     ),
