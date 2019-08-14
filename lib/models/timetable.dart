@@ -15,6 +15,7 @@ class TimeTableModel extends Model {
   }
 
   loadEvents() async {
+    events = [];
     var courses = user.getCrntSemester()?.courses ?? [];
     for (var course in courses) {
       var courseEvents = await course.getAllEvents();
@@ -23,6 +24,8 @@ class TimeTableModel extends Model {
       // isLoading = true;
       notifyListeners();
     }
+
+    print(events.length);
   }
 
   List<EventModel> getEventForDay(DateTime date) {
@@ -31,10 +34,8 @@ class TimeTableModel extends Model {
       var eventDate = event.startTime.toDate();
 
       // skip event if [date] is out of event start and end limits
-      if (event.eventStart != null &&
-          event.eventEnd != null &&
-          date.isAfter(event.eventEnd) &&
-          date.isBefore(event.eventStart)) continue;
+      if (event.eventStart != null && date.isBefore(event.eventStart)) continue;
+      if (event.eventEnd != null && date.isAfter(event.eventEnd)) continue;
 
       if (Utils.isSameDay(date, eventDate))
         crntEvents.add(event);

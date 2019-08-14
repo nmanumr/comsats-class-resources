@@ -37,7 +37,8 @@ class _TimeTablePageState extends State<TimeTablePage>
     model = TimeTableModel(user: widget.userModel);
     _calendarController = CalendarController();
     _selectedDay = DateTime.now();
-    initialPosition = _selectedDay.weekday;
+    initialPosition = _selectedDay.weekday - 1;
+    _pageController = PageController(initialPage: initialPosition);
     lastPos = _selectedDay.weekday;
     _events = {};
     _visibleEvents = _events;
@@ -75,12 +76,18 @@ class _TimeTablePageState extends State<TimeTablePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: centeredAppBar(context, "Time Table", actions: [
+        // IconButton(
+        //   icon: Icon(Icons.today),
+        //   onPressed: () {
+        //     setState(() {
+        //       _selectedDay = DateTime.now();
+        //     });
+        //   },
+        // ),
         IconButton(
-          icon: Icon(Icons.today),
+          icon: Icon(Icons.sync),
           onPressed: () {
-            setState(() {
-              _selectedDay = DateTime.now();
-            });
+            model.loadEvents();
           },
         )
       ]),
@@ -92,6 +99,7 @@ class _TimeTablePageState extends State<TimeTablePage>
             return Column(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
+                // _buildHeader(),
                 _buildTableCalendar(),
                 const SizedBox(height: 8.0),
                 Expanded(child: _buildEventList()),
@@ -118,6 +126,7 @@ class _TimeTablePageState extends State<TimeTablePage>
   Widget _buildTableCalendar() {
     return TableCalendar(
       calendarController: _calendarController,
+      availableGestures: AvailableGestures.none,
       events: _visibleEvents,
       startingDayOfWeek: StartingDayOfWeek.monday,
       initialCalendarFormat: CalendarFormat.week,
@@ -170,49 +179,60 @@ class _TimeTablePageState extends State<TimeTablePage>
   }
 
   Widget _buildEventList() {
-    _pageController = PageController(initialPage: initialPosition);
 
     return PageView.builder(
+      key: PageStorageKey("timetable"),
       controller: _pageController,
       onPageChanged: (pos) {
-        var newDate = _selectedDay, crntPos = lastPos;
-        if (pos > lastPos) {
-          newDate = _selectedDay.add(Duration(days: 1));
-          if (!pageUpdatedLocally) crntPos += 1;
-        } else if (pos < lastPos && !pageUpdatedLocally) {
-          newDate = _selectedDay.subtract(Duration(days: 1));
-          if (!pageUpdatedLocally) crntPos -= 1;
-        }
-
-        if (pos == 0 && !pageUpdatedLocally) {
-          newDate = _selectedDay.subtract(Duration(days: 1));
-          _pageController.jumpToPage(7);
-          crntPos = 7;
-        } else if (pos == 8 && !pageUpdatedLocally) {
-          newDate = _selectedDay.add(Duration(days: 1));
-          _pageController.jumpToPage(1);
-          crntPos = 1;
-        }
-        _calendarController.setSelectedDay(newDate);
-
+        var crntPos = pos - DateTime.now().weekday + 1;
+        var date = DateTime.now().add(Duration(days: crntPos));
         setState(() {
-          pageUpdatedLocally = false;
-          lastPos = crntPos;
-          posUpdated = true;
-          _selectedDay = newDate;
+          _selectedDay = date;
+          _calendarController.setSelectedDay(date);
         });
       },
-      itemCount: 9,
-      itemBuilder: (context, pos) {
-        var date = _selectedDay;
-        if ((lastPos > pos && !posUpdated) ||
-            (posUpdated && lastPos == pos + 1))
-          date = date.subtract(Duration(days: 1));
-        else if ((lastPos < pos && !posUpdated) ||
-            (posUpdated && lastPos == pos - 1))
-          date = date.add(Duration(days: 1));
+      // onPageChanged: (pos) {
+      //   var newDate = _selectedDay, crntPos = lastPos;
+      //   if (pos > lastPos) {
+      //     newDate = _selectedDay.add(Duration(days: 1));
+      //     if (!pageUpdatedLocally) crntPos += 1;
+      //   } else if (pos < lastPos && !pageUpdatedLocally) {
+      //     newDate = _selectedDay.subtract(Duration(days: 1));
+      //     if (!pageUpdatedLocally) crntPos -= 1;
+      //   }
 
-        posUpdated = false;
+      //   if (pos == 0 && !pageUpdatedLocally) {
+      //     newDate = _selectedDay.subtract(Duration(days: 1));
+      //     _pageController.jumpToPage(7);
+      //     crntPos = 7;
+      //   } else if (pos == 8 && !pageUpdatedLocally) {
+      //     newDate = _selectedDay.add(Duration(days: 1));
+      //     _pageController.jumpToPage(1);
+      //     crntPos = 1;
+      //   }
+      //   _calendarController.setSelectedDay(newDate);
+
+      //   setState(() {
+      //     pageUpdatedLocally = false;
+      //     lastPos = crntPos;
+      //     posUpdated = true;
+      //     _selectedDay = newDate;
+      //   });
+      // },
+      itemCount: 7,
+      itemBuilder: (context, pos) {
+        var crntPos = pos - DateTime.now().weekday + 1;
+        var date = DateTime.now().add(Duration(days: crntPos));
+        print("pos: $pos");
+        print("crntPos: $crntPos");
+        // if ((lastPos > pos && !posUpdated) ||
+        //     (posUpdated && lastPos == pos + 1))
+        //   date = date.subtract(Duration(days: 1));
+        // else if ((lastPos < pos && !posUpdated) ||
+        //     (posUpdated && lastPos == pos - 1))
+        //   date = date.add(Duration(days: 1));
+
+        // posUpdated = false;
         return CalendarDay(
           model: model,
           day: date,

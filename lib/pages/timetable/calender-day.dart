@@ -3,6 +3,7 @@ import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:date_utils/date_utils.dart';
 
 class CalendarDay extends StatelessWidget {
   final TimeTableModel model;
@@ -27,7 +28,7 @@ class CalendarDay extends StatelessWidget {
     startPos += (event.startTime.toDate().minute / 60) * 48.0 + 2;
     var timediff = event.endTime.toDate().difference(event.startTime.toDate());
     var height = timediff.inMinutes / 60 * 48.0 - 5;
-    var color = HexColor(generateColor(event.title)).withAlpha(240);
+    var color = HexColor(generateColor(event.title, l: 40)).withAlpha(200);
     color.computeLuminance();
 
     return Container(
@@ -98,11 +99,25 @@ class CalendarDay extends StatelessWidget {
     return children;
   }
 
+  currentTimeLine(context) {
+    if (!Utils.isSameDay(day, DateTime.now())) return Text("");
+
+    var startPos = DateTime.now().hour * 48.0;
+    startPos += (DateTime.now().minute / 60) * 48.0 + 2;
+
+    return Container(
+      height: 3,
+      margin: EdgeInsets.only(top: startPos),
+      color: Theme.of(context).accentColor,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var events = model.getEventForDay(day);
     List<Widget> children = [Column(children: buildColumns(context))];
     children.addAll(events.map((event) => buildEventWidget(event)).toList());
+    children.add(currentTimeLine(context));
 
     return SingleChildScrollView(
       child: Stack(

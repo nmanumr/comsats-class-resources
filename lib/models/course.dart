@@ -69,6 +69,7 @@ class CourseModel extends Model {
         events.add(EventModel.eventFromDocument(document));
       }
       completer.complete(events);
+      _eventsStreamlistener.cancel();
     });
 
     return completer.future;
