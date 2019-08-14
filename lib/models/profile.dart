@@ -83,7 +83,7 @@ class ProfileModel extends Model {
         semesters.add(
           SemesterModel(
             doc: document,
-            isCurrent: document.reference.path == crntSemesterRef.path,
+            isCurrent: document.reference.documentID == crntSemesterRef.documentID,
             user: this,
           ),
         );
