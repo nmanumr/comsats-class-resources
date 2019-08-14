@@ -52,7 +52,6 @@ class _TimeTablePageState extends State<TimeTablePage>
 
   void _onDaySelected(DateTime day, List events) {
     setState(() {
-      pageUpdatedLocally = true;
       _selectedDay = day;
       _pageController.animateToPage(day.weekday,
           duration: Duration(milliseconds: 700), curve: Curves.easeOut);
@@ -223,8 +222,6 @@ class _TimeTablePageState extends State<TimeTablePage>
       itemBuilder: (context, pos) {
         var crntPos = pos - DateTime.now().weekday + 1;
         var date = DateTime.now().add(Duration(days: crntPos));
-        print("pos: $pos");
-        print("crntPos: $crntPos");
         // if ((lastPos > pos && !posUpdated) ||
         //     (posUpdated && lastPos == pos + 1))
         //   date = date.subtract(Duration(days: 1));

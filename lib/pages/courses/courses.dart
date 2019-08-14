@@ -55,12 +55,14 @@ class CoursesPage extends StatelessWidget {
                 );
               },
             ),
-            floatingActionButton: FloatingActionButton(
-              child: Icon(Icons.edit),
-              onPressed: () {
-                Navigator.pushNamed(context, "/add-course");
-              },
-            ),
+
+            
+            // floatingActionButton: FloatingActionButton(
+            //   child: Icon(Icons.edit),
+            //   onPressed: () {
+            //     Navigator.pushNamed(context, "/add-course");
+            //   },
+            // ),
           );
         },
       ),

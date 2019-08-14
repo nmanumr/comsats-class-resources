@@ -119,7 +119,13 @@ class CalendarDay extends StatelessWidget {
     children.addAll(events.map((event) => buildEventWidget(event)).toList());
     children.add(currentTimeLine(context));
 
+    var scrollController = new ScrollController(
+      initialScrollOffset: 48.0 * 8 - 16,
+    );
+
     return SingleChildScrollView(
+      key: PageStorageKey("day" + day.toString()),
+      controller: scrollController,
       child: Stack(
         children: children,
       ),
