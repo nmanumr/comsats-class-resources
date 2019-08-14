@@ -29,9 +29,15 @@ class TimeTableModel extends Model {
     List<EventModel> crntEvents = [];
     for (var event in events) {
       var eventDate = event.startTime.toDate();
+
+      // skip event if [date] is out of event start and end limits
+      if (event.eventStart != null &&
+          event.eventEnd != null &&
+          date.isAfter(event.eventEnd) &&
+          date.isBefore(event.eventStart)) continue;
+
       if (Utils.isSameDay(date, eventDate))
         crntEvents.add(event);
-
       else if (event.repeat == "weekly" && eventDate.weekday == date.weekday)
         crntEvents.add(event);
     }
