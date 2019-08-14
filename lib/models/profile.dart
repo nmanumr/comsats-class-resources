@@ -14,6 +14,7 @@ class ProfileModel extends Model {
   String id;
   String klass;
   String photoUrl;
+  bool isGoogleProvider;
   DocumentReference klassRef;
   DocumentReference crntSemesterRef;
 
@@ -36,6 +37,9 @@ class ProfileModel extends Model {
         notifyListeners();
       } else {
         id = val.uid;
+        email = val.email;
+        isGoogleProvider =
+            val.providerData.any((data) => data.providerId == "google.com") ?? false;
         photoUrl = val.photoUrl;
         _loadProfile(id);
       }
@@ -61,7 +65,6 @@ class ProfileModel extends Model {
 
       rollNum = val.data['rollNum'];
       name = val.data['name'];
-      email = val.data['email'];
       klassRef = val.data['class'];
       klass = val.data['class']?.path;
       rollNum = val.data['rollNum'];

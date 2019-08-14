@@ -28,7 +28,7 @@ class LibraryPage extends StatelessWidget {
         ),
         title: Text("Your Name", style: TextStyle(fontStyle: FontStyle.italic)),
         subtitle: Text(
-          "Roll Number",
+          "Your Email",
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
       );
@@ -36,15 +36,62 @@ class LibraryPage extends StatelessWidget {
       return ListTile(
         leading: TextAvatar(text: model.name, photoUrl: model.photoUrl),
         title: Text(model.name),
-        subtitle: Text(model.rollNum),
+        subtitle: Text(model.email ?? " "),
       );
     } else {
       return ListTile(
         leading: TextAvatar(text: model.name),
         title: Text(model.name),
-        subtitle: Text(model.rollNum),
+        subtitle: Text(model.email ?? " "),
       );
     }
+  }
+
+  List<Widget> profileActions(context, ProfileModel model) {
+    List<Widget> actions = [
+      profileTile(context, model),
+    ];
+
+    if (!model.isGoogleProvider) {
+      actions.addAll([
+        ListTile(
+          title: Text("Update Profile"),
+          leading: Icon(Icons.person),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => UpdateProfile(
+                        klass: model.klassRef,
+                        name: model.name,
+                        rollNum: model.rollNum,
+                      )),
+            );
+          },
+        ),
+        ListTile(
+          title: Text("Update Email"),
+          leading: Icon(Icons.email),
+          onTap: () => Navigator.pushNamed(context, '/changeEmail'),
+        ),
+        ListTile(
+          title: Text("Change Password"),
+          leading: Icon(Icons.vpn_key),
+          onTap: () => Navigator.pushNamed(context, '/changepass'),
+        ),
+      ]);
+    }
+
+    actions.add(ListTile(
+      title: Text("Logout"),
+      leading: Icon(Icons.exit_to_app),
+      onTap: () {
+        auth.signOut();
+        Navigator.pushNamedAndRemoveUntil(context, '/welcome', (_) => false);
+      },
+    ));
+
+    return actions;
   }
 
   @override
@@ -58,41 +105,7 @@ class LibraryPage extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: <Widget>[
-                    profileTile(context, model),
-                    ListTile(
-                      title: Text("Update Profile"),
-                      leading: Icon(Icons.person),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => UpdateProfile(
-                                    klass: model.klassRef,
-                                    name: model.name,
-                                    rollNum: model.rollNum,
-                                  )),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text("Update Email"),
-                      leading: Icon(Icons.email),
-                      onTap: () => Navigator.pushNamed(context, '/changeEmail'),
-                    ),
-                    ListTile(
-                      title: Text("Change Password"),
-                      leading: Icon(Icons.vpn_key),
-                      onTap: () => Navigator.pushNamed(context, '/changepass'),
-                    ),
-                    ListTile(
-                      title: Text("Logout"),
-                      leading: Icon(Icons.exit_to_app),
-                      onTap: () {
-                        auth.signOut();
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/welcome', (_) => false);
-                      },
-                    ),
+                    ...profileActions(context, model),
                     Divider(),
                     ListTile(
                       title: Text("Share this app"),
