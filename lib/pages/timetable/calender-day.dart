@@ -1,5 +1,6 @@
 import 'package:class_resources/models/event.dart';
 import 'package:class_resources/models/timetable.dart';
+import 'package:class_resources/pages/timetable/event-detail.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,29 +24,38 @@ class CalendarDay extends StatelessWidget {
     );
   }
 
-  Widget buildEventWidget(EventModel event) {
+  Widget buildEventWidget(EventModel event, context) {
     var startPos = event.startTime.toDate().hour * 48.0;
     startPos += (event.startTime.toDate().minute / 60) * 48.0 + 2;
     var timediff = event.endTime.toDate().difference(event.startTime.toDate());
     var height = timediff.inMinutes / 60 * 48.0 - 5;
-    var color = HexColor(generateColor(event.title, l: 40)).withAlpha(200);
-    color.computeLuminance();
 
     return Container(
       margin: EdgeInsets.fromLTRB(64, startPos, 10, 0),
-      decoration: BoxDecoration(
-        color: color,
+      child: Material(
         borderRadius: BorderRadius.circular(5),
-      ),
-      child: SizedBox(
-        height: height,
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            paddedText(event.title),
-            paddedText(event.location),
-          ],
+        color: event.color,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(5),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EventDetails(model: event),
+              ),
+            );
+          },
+          child: SizedBox(
+            height: height,
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                paddedText(event.title),
+                paddedText(event.location),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -116,7 +126,8 @@ class CalendarDay extends StatelessWidget {
   Widget build(BuildContext context) {
     var events = model.getEventForDay(day);
     List<Widget> children = [Column(children: buildColumns(context))];
-    children.addAll(events.map((event) => buildEventWidget(event)).toList());
+    children.addAll(
+        events.map((event) => buildEventWidget(event, context)).toList());
     children.add(currentTimeLine(context));
 
     var scrollController = new ScrollController(

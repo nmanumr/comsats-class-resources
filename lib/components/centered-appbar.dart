@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 
-
-AppBar centeredAppBar(BuildContext ctx, String title, {List<Widget> actions, Widget leading}){
+AppBar centeredAppBar(BuildContext context, String title,
+    {List<Widget> actions, Widget leading, bool isCloseable = false}) {
   return AppBar(
-      title: Text(title),
-      centerTitle: true,
-      backgroundColor: Theme.of(ctx).canvasColor,
-      elevation: 0,
-      actions: actions,
-      leading: leading
-    );
+    title: Text(title),
+    centerTitle: true,
+    backgroundColor: Theme.of(context).canvasColor,
+    elevation: 0,
+    actions: actions,
+    leading: leading != null
+        ? leading
+        : isCloseable
+            ? IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context))
+            : null,
+  );
 }

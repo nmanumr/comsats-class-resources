@@ -66,7 +66,7 @@ class CourseModel extends Model {
     _eventsStreamlistener =
         _firestore.collection("${ref.path}/events").snapshots().listen((data) {
       for (var document in data.documents) {
-        events.add(EventModel.eventFromDocument(document));
+        events.add(EventModel.eventFromDocument(document, this));
       }
       completer.complete(events);
       _eventsStreamlistener.cancel();

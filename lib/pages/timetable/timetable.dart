@@ -53,7 +53,7 @@ class _TimeTablePageState extends State<TimeTablePage>
   void _onDaySelected(DateTime day, List events) {
     setState(() {
       _selectedDay = day;
-      _pageController.animateToPage(day.weekday,
+      _pageController.animateToPage(day.weekday - 1,
           duration: Duration(milliseconds: 700), curve: Curves.easeOut);
     });
   }
@@ -178,7 +178,6 @@ class _TimeTablePageState extends State<TimeTablePage>
   }
 
   Widget _buildEventList() {
-
     return PageView.builder(
       key: PageStorageKey("timetable"),
       controller: _pageController,
