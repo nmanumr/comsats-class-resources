@@ -24,8 +24,6 @@ class TimeTableModel extends Model {
       // isLoading = true;
       notifyListeners();
     }
-
-    print(events.length);
   }
 
   List<EventModel> getEventForDay(DateTime date) {

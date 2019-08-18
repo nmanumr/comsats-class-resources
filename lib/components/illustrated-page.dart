@@ -27,10 +27,13 @@ class IllustartedPage extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-          child: Text(
-            headingText,
-            style: Theme.of(context).textTheme.headline,
-            textAlign: TextAlign.center,
+          child: Opacity(
+            opacity: 0.8,
+            child: Text(
+              headingText,
+              style: Theme.of(context).textTheme.headline,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         Padding(

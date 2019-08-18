@@ -9,7 +9,6 @@ import './courses/courses.dart';
 import './notifications.dart';
 import './timetable/timetable.dart';
 import './menu/library.dart';
-import 'auth/update-profile.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -52,8 +51,8 @@ class _DashboardState extends State<Dashboard>
         "page": TimeTablePage(userModel: model),
       },
       {
-        "name": "My Tasks",
-        "icon": Icons.playlist_add_check,
+        "name": "Notifications",
+        "icon": Icons.notifications,
         "page": NotificationPage(),
       },
       {

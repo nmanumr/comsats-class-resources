@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:class_resources/models/semester.dart';
 import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/utils/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -28,6 +29,7 @@ class ProfileModel extends Model {
 
   StreamSubscription _profileStreamlistener;
   StreamSubscription _semesterStreamlistener;
+  NotificationUtils _notificationUtils = NotificationUtils();
 
   ProfileModel() {
     auth.getCurrentUser().then((val) {
@@ -69,6 +71,8 @@ class ProfileModel extends Model {
       klass = val.data['class']?.path;
       rollNum = val.data['rollNum'];
       crntSemesterRef = val.data["currentSemester"];
+
+      _notificationUtils.initFcmListeners(klassRef.documentID);
 
       profileStatus = ProfileStatus.Success;
       _loadSemesters();
