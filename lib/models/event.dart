@@ -20,21 +20,26 @@ class EventModel extends Model {
   /// Last datetime to stop repeating event to
   final DateTime eventEnd;
 
-  EventModel({
-    this.title,
-    this.location,
-    this.endTime,
-    this.repeat,
-    this.startTime,
-    this.eventStart,
-    this.eventEnd,
-    this.eventType,
-    this.color,
-    this.course,
-    this.eventSlot
-  });
+  EventModel(
+      {this.title,
+      this.location,
+      this.endTime,
+      this.repeat,
+      this.startTime,
+      this.eventStart,
+      this.eventEnd,
+      this.eventType,
+      this.color,
+      this.course,
+      this.eventSlot});
 
-  static EventModel eventFromDocument(DocumentSnapshot doc, CourseModel course) {
+  static Future<EventModel> fromDocumentRef(DocumentReference ref) async {
+    var doc = await ref.get();
+    return eventFromDocument(doc, null);
+  }
+
+  static EventModel eventFromDocument(
+      DocumentSnapshot doc, CourseModel course) {
     DateTime eventStart, eventEnd;
     if (doc.data["eventStart"] != null)
       eventStart = doc.data["eventStart"].toDate();

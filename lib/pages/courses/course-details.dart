@@ -2,6 +2,7 @@ import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/course.dart';
 import 'package:class_resources/pages/courses/about.dart';
+import 'package:class_resources/pages/courses/assignments.dart';
 import 'package:class_resources/pages/courses/resources.dart';
 import 'package:flutter/material.dart';
 
@@ -82,10 +83,7 @@ class CourseDetail extends StatelessWidget {
                 key: PageStorageKey("Course-${model.code}"),
                 children: <Widget>[
                   CourseResources(model: model),
-                  EmptyState(
-                    text: "No assignment found",
-                    icon: Icons.assignment,
-                  ),
+                  CourseAssignments(model: model),
                   CourseAbout(model: model),
                 ],
               ),

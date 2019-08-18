@@ -2,6 +2,7 @@ import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
+import 'package:class_resources/models/assignment.dart';
 import 'package:class_resources/models/course.dart';
 import 'package:class_resources/models/resource.dart';
 import 'package:class_resources/services/download-manager.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class CourseResource extends StatelessWidget {
-  final ResourceModel model;
+  final dynamic model;
 
   CourseResource({
     @required this.model,
@@ -122,8 +123,8 @@ class CourseResource extends StatelessWidget {
   }
 
   getTrailingWidget() {
-    if (model.isHeading || model.downloadStatus == DownloadTaskStatus.undefined)
-      return null;
+    if ((model is ResourceModel && model.isHeading) ||
+        model.downloadStatus == DownloadTaskStatus.undefined) return null;
 
     if (model.downloadStatus == DownloadTaskStatus.complete)
       return Icon(Icons.offline_pin);
@@ -159,29 +160,41 @@ class CourseResource extends StatelessWidget {
     );
   }
 
+  Widget _buildModelDescendant(context, child, model) {
+    if (model is ResourceModel && model.isHeading)
+      return ListHeader(text: model.name);
+
+    return ListTile(
+      leading: FileTypeAvatar(fileType: model.ext),
+      title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
+      subtitle: Text(model.formateDate()),
+      trailing: getTrailingWidget(),
+      onTap: () {
+        if (model.downloadStatus == DownloadTaskStatus.complete)
+          model.open();
+        else
+          showBottomAction(context);
+      },
+      onLongPress: () {
+        showBottomAction(context);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (model is ResourceModel) {
+      return ScopedModel(
+        model: model as ResourceModel,
+        child: ScopedModelDescendant<ResourceModel>(
+          builder: _buildModelDescendant,
+        ),
+      );
+    }
     return ScopedModel(
-      model: model,
-      child: ScopedModelDescendant<ResourceModel>(
-        builder: (context, child, model) {
-          if (model.isHeading) return ListHeader(text: model.name);
-          return ListTile(
-            leading: FileTypeAvatar(fileType: model.ext),
-            title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
-            subtitle: Text(model.formateDate()),
-            trailing: getTrailingWidget(),
-            onTap: () {
-              if (model.downloadStatus == DownloadTaskStatus.complete)
-                model.open();
-              else
-                showBottomAction(context);
-            },
-            onLongPress: () {
-              showBottomAction(context);
-            },
-          );
-        },
+      model: model as AssignmentModel,
+      child: ScopedModelDescendant<AssignmentModel>(
+        builder: _buildModelDescendant,
       ),
     );
   }

@@ -59,6 +59,13 @@ class CourseModel extends Model {
         .snapshots();
   }
 
+  getCourseAssignments() {
+    return _firestore
+        .collection("${ref.path}/assignments")
+        .orderBy("date")
+        .snapshots();
+  }
+
   Future<List<EventModel>> getAllEvents() async {
     List<EventModel> events = [];
     var collection =
