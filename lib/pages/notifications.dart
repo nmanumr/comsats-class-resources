@@ -4,6 +4,7 @@ import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/models/event.dart';
 import 'package:class_resources/models/notification.dart';
 import 'package:class_resources/models/timetable.dart';
+import 'package:date_utils/date_utils.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -26,10 +27,9 @@ class _NotificationPageState extends State<NotificationPage> {
       },
       child: ListTile(
         leading: CircleAvatar(
-          child: Icon(Icons.notifications),
-          backgroundColor: HexColor(generateColor(notification.title ?? "")),
-          foregroundColor: Colors.white
-        ),
+            child: Icon(Icons.notifications),
+            backgroundColor: HexColor(generateColor(notification.title ?? "")),
+            foregroundColor: Colors.white),
         title: Text(notification.title ?? ""),
         subtitle: Text(notification.body ?? ""),
       ),
@@ -64,10 +64,10 @@ class _NotificationPageState extends State<NotificationPage> {
         : '';
     return ListTile(
       leading: CircleAvatar(
-        child: Icon(Icons.event_note),
-        backgroundColor: HexColor(generateColor(event.title + startTime)).withAlpha(130),
-        foregroundColor: Colors.white
-      ),
+          child: Icon(Icons.event_note),
+          backgroundColor:
+              HexColor(generateColor(event.title + startTime)).withAlpha(130),
+          foregroundColor: Colors.white),
       title: Text(event.title ?? ""),
       subtitle: Text(event.endTime != null
           ? "${event.location ?? ''} ($startTime - $endTime)"
@@ -83,6 +83,10 @@ class _NotificationPageState extends State<NotificationPage> {
         model.getEventForDay(DateTime.now().add(Duration(days: 1)));
 
     if (todayEvents.length != 0) {
+      // Remove all the passed events;
+      todayEvents.removeWhere(
+          (event) => event.startTime.toDate().isAfter(DateTime.now()));
+          
       events.add(ListHeader(text: "Today"));
       events.addAll(
           todayEvents.map((EventModel event) => _buildEvent(event)).toList());
