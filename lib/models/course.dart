@@ -59,19 +59,14 @@ class CourseModel extends Model {
         .snapshots();
   }
 
-  Future<List<EventModel>> getAllEvents() {
-    var completer = new Completer<List<EventModel>>();
+  Future<List<EventModel>> getAllEvents() async {
     List<EventModel> events = [];
+    var collection =
+        await _firestore.collection("${ref.path}/events").getDocuments();
+    for (var document in collection.documents) {
+      events.add(EventModel.eventFromDocument(document, this));
+    }
 
-    _eventsStreamlistener =
-        _firestore.collection("${ref.path}/events").snapshots().listen((data) {
-      for (var document in data.documents) {
-        events.add(EventModel.eventFromDocument(document, this));
-      }
-      completer.complete(events);
-      _eventsStreamlistener.cancel();
-    });
-
-    return completer.future;
+    return events;
   }
 }

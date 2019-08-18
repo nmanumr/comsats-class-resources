@@ -15,15 +15,18 @@ class TimeTableModel extends Model {
   }
 
   loadEvents() async {
+    isLoading = true;
     events = [];
+    notifyListeners();
     var courses = user.getCrntSemester()?.courses ?? [];
     for (var course in courses) {
       var courseEvents = await course.getAllEvents();
       events.addAll(courseEvents);
 
-      // isLoading = true;
       notifyListeners();
     }
+    isLoading = false;
+    notifyListeners();
   }
 
   List<EventModel> getEventForDay(DateTime date) {

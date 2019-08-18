@@ -2,6 +2,7 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/models/timetable.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -21,6 +22,7 @@ class _DashboardState extends State<Dashboard>
   final wantKeepAlive = true;
 
   ProfileModel _profileModel;
+  TimeTableModel timeTableModel;
   int _cIndex = 0;
 
   List tabs;
@@ -37,23 +39,23 @@ class _DashboardState extends State<Dashboard>
     _profileModel.close();
   }
 
-  List<BottomNavigationBarItem> initTabs(ProfileModel model) {
+  List<BottomNavigationBarItem> initTabs() {
     List<BottomNavigationBarItem> bottomNavItems = [];
     tabs = [
       {
         "name": "Courses",
         "icon": Icons.book,
-        "page": CoursesPage(model: model),
+        "page": CoursesPage(model: _profileModel),
       },
       {
         "name": "Time Table",
         "icon": Icons.calendar_today,
-        "page": TimeTablePage(userModel: model),
+        "page": TimeTablePage(timetableModel: timeTableModel),
       },
       {
         "name": "Notifications",
         "icon": Icons.notifications,
-        "page": NotificationPage(),
+        "page": NotificationPage(timetableModel: timeTableModel),
       },
       {
         "name": "Menu",
@@ -80,8 +82,8 @@ class _DashboardState extends State<Dashboard>
     return bottomNavItems;
   }
 
-  Widget buildDashboard(BuildContext context, ProfileModel model) {
-    var bottomNavItems = initTabs(model);
+  Widget buildDashboard(BuildContext context) {
+    var bottomNavItems = initTabs();
 
     return Scaffold(
       key: PageStorageKey('BottomNavigationBar'),
@@ -156,7 +158,12 @@ class _DashboardState extends State<Dashboard>
           }
 
           // build dashboard layout
-          return buildDashboard(context, model);
+          if (timeTableModel == null)
+            timeTableModel = TimeTableModel(user: model);
+          if (model.semesters.length != 0 &&
+              timeTableModel.events.length == 0 &&
+              !timeTableModel.isLoading) timeTableModel.loadEvents();
+          return buildDashboard(context);
         },
       ),
     );

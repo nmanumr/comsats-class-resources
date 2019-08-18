@@ -25,6 +25,9 @@ npm run shell
 
 # Invoking a function in shell
 func_name(data)
+
+# Generate signing key fingure print
+keytool -list -v -keystore path/key.jks -alias key
 ```
 
 ## TODO

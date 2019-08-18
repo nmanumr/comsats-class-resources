@@ -1,7 +1,6 @@
 import 'package:class_resources/models/event.dart';
 import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/pages/timetable/event-detail.dart';
-import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_utils/date_utils.dart';
@@ -27,8 +26,14 @@ class CalendarDay extends StatelessWidget {
   Widget buildEventWidget(EventModel event, context) {
     var startPos = event.startTime.toDate().hour * 48.0;
     startPos += (event.startTime.toDate().minute / 60) * 48.0 + 2;
-    var timediff = event.endTime.toDate().difference(event.startTime.toDate());
-    var height = timediff.inMinutes / 60 * 48.0 - 5;
+    var height;
+    if (event.endTime == null) {
+      height = 48.0;
+    } else {
+      var timediff =
+          event.endTime.toDate().difference(event.startTime.toDate());
+      height = timediff.inMinutes / 60 * 48.0 - 5;
+    }
 
     return Container(
       margin: EdgeInsets.fromLTRB(64, startPos, 10, 0),
@@ -52,7 +57,7 @@ class CalendarDay extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 paddedText(event.title),
-                paddedText(event.location),
+                paddedText(event.location ?? ""),
               ],
             ),
           ),
@@ -63,7 +68,7 @@ class CalendarDay extends StatelessWidget {
 
   List<Widget> buildColumns(BuildContext context) {
     List<Widget> children = [];
-    for (var i = 0; i < 24; i++) {
+    for (var i = 0; i <= 24; i++) {
       children.add(SizedBox(
         height: 48,
         child: Row(

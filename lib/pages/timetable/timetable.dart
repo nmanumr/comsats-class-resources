@@ -1,6 +1,4 @@
 import 'package:class_resources/components/centered-appbar.dart';
-import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/models/profile.dart';
 import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/pages/timetable/calender-day.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +6,9 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class TimeTablePage extends StatefulWidget {
-  TimeTablePage({this.userModel});
+  TimeTablePage({this.timetableModel});
 
-  final ProfileModel userModel;
+  final TimeTableModel timetableModel;
 
   @override
   _TimeTablePageState createState() => _TimeTablePageState();
@@ -34,7 +32,7 @@ class _TimeTablePageState extends State<TimeTablePage>
   @override
   void initState() {
     super.initState();
-    model = TimeTableModel(user: widget.userModel);
+    model = widget.timetableModel;
     _calendarController = CalendarController();
     _selectedDay = DateTime.now();
     initialPosition = _selectedDay.weekday - 1;
@@ -85,19 +83,23 @@ class _TimeTablePageState extends State<TimeTablePage>
         // ),
         IconButton(
           icon: Icon(Icons.sync),
-          onPressed: () {
-            model.loadEvents();
-          },
+          onPressed: model.isLoading
+              ? null
+              : () {
+                  model.loadEvents();
+                },
         )
       ]),
       body: ScopedModel(
         model: model,
         child: ScopedModelDescendant<TimeTableModel>(
           builder: (context, child, model) {
-            if (model.isLoading) return Loader();
             return Column(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
+                model.isLoading
+                    ? LinearProgressIndicator()
+                    : SizedBox(height: 6),
                 // _buildHeader(),
                 _buildTableCalendar(),
                 const SizedBox(height: 8.0),
