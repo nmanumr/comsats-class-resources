@@ -82,11 +82,12 @@ class _NotificationPageState extends State<NotificationPage> {
     var tomorrowEvents =
         model.getEventForDay(DateTime.now().add(Duration(days: 1)));
 
+    // Remove all the passed events;
+    todayEvents.removeWhere(
+        (event) => event.startTime.toDate().isBefore(DateTime.now()));
+
     if (todayEvents.length != 0) {
-      // Remove all the passed events;
-      todayEvents.removeWhere(
-          (event) => event.startTime.toDate().isAfter(DateTime.now()));
-          
+
       events.add(ListHeader(text: "Today"));
       events.addAll(
           todayEvents.map((EventModel event) => _buildEvent(event)).toList());
