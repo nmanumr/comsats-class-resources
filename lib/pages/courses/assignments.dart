@@ -1,7 +1,7 @@
 import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/models/assignment.dart';
-import 'package:class_resources/models/course.dart';
+import 'package:class_resources/models/assignment.model.dart';
+import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/pages/courses/resources.dart';
 import 'package:class_resources/services/download-manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,7 +21,11 @@ class CourseAssignments extends StatelessWidget {
   Widget onSuccess(QuerySnapshot query) {
     List<Widget> children = query.documents
         .map((doc) => CourseResource(
-              model: AssignmentModel.fromDocument(doc, _downloadManager),
+              model: AssignmentModel(
+                data: doc.data,
+                downloadManager: _downloadManager,
+                ref: doc.reference,
+              ),
             ))
         .toList();
 

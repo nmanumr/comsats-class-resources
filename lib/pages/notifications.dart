@@ -1,10 +1,9 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/list-header.dart';
-import 'package:class_resources/models/event.dart';
+import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/notification.dart';
 import 'package:class_resources/models/timetable.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -58,9 +57,9 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildEvent(EventModel event) {
-    var startTime = DateFormat.jm().format(event.startTime.toDate());
+    var startTime = DateFormat.jm().format(event.startTime);
     var endTime = event.endTime != null
-        ? DateFormat.jm().format(event.endTime.toDate())
+        ? DateFormat.jm().format(event.endTime)
         : '';
     return ListTile(
       leading: CircleAvatar(
@@ -84,7 +83,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
     // Remove all the passed events;
     todayEvents.removeWhere(
-        (event) => event.startTime.toDate().isBefore(DateTime.now()));
+        (event) => event.startTime.isBefore(DateTime.now()));
 
     if (todayEvents.length != 0) {
 

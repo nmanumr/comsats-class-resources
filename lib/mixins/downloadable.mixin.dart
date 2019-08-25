@@ -14,8 +14,8 @@ abstract class Downloadable {
   String _localPath;
   String documentId;
   String driveFileId;
-  String downloadUrl;
-  String openUrl;
+  String _downloadUrl;
+  String _openUrl;
   String ext;
   String name;
   DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
@@ -53,12 +53,12 @@ abstract class Downloadable {
   }
 
   String getDownloadUrl() {
-    if (downloadUrl != null) return downloadUrl;
+    if (_downloadUrl != null) return _downloadUrl;
     return "https://drive.google.com/uc?id=$driveFileId&export=download";
   }
 
   String getOpenUrl() {
-    if (openUrl != null) return openUrl;
+    if (_openUrl != null) return _openUrl;
     return "https://drive.google.com/file/d/$driveFileId/view";
   }
 

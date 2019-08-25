@@ -1,10 +1,10 @@
 import 'package:class_resources/components/centered-appbar.dart';
-import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/models/class.dart';
 import 'package:class_resources/services/class.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'package:class_resources/models/class.model.dart';
 
 class ChangeClass extends StatefulWidget {
   ChangeClass({this.klass, this.navigateToDashboard = true});

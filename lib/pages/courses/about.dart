@@ -1,5 +1,5 @@
 import 'package:class_resources/components/list-header.dart';
-import 'package:class_resources/models/course.dart';
+import 'package:class_resources/models/course.model.dart';
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
 

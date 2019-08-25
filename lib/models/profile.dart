@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:class_resources/models/semester.dart';
+import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:class_resources/utils/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,7 +53,7 @@ class ProfileModel extends Model {
     if (_semesterStreamlistener != null) _semesterStreamlistener.cancel();
 
     for (var semester in semesters) {
-      semester.close();
+      semester.destroy();
     }
   }
 
@@ -85,11 +85,12 @@ class ProfileModel extends Model {
         _firestore.collection('users/$id/semesters').snapshots().listen((data) {
       for (var document in data.documents) {
         semesters.add(
+          // var isCurrent = document.reference.documentID == crntSemesterRef.documentID;
           SemesterModel(
-            doc: document,
-            isCurrent: document.reference.documentID == crntSemesterRef.documentID,
             user: this,
-          ),
+            data: document.data,
+            ref: document.reference,
+          )
         );
       }
 

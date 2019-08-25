@@ -1,5 +1,5 @@
 import 'package:class_resources/components/text-avatar.dart';
-import 'package:class_resources/models/course.dart';
+import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/pages/courses/course-details.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';

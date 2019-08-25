@@ -2,15 +2,17 @@ import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
-import 'package:class_resources/models/assignment.dart';
-import 'package:class_resources/models/course.dart';
-import 'package:class_resources/models/resource.dart';
+import 'package:class_resources/models/assignment.model.dart';
+import 'package:class_resources/models/course.model.dart';
+import 'package:class_resources/models/resource.model.dart';
 import 'package:class_resources/services/download-manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+
+// TODO: make it better
 class CourseResource extends StatelessWidget {
   final dynamic model;
 
@@ -40,7 +42,7 @@ class CourseResource extends StatelessWidget {
     List<Widget> children = [
       ListTile(
         title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
-        subtitle: Text(model.formateDate()),
+        subtitle: Text(model.formatedDate),
       ),
       Divider(),
       ListTile(
@@ -165,9 +167,9 @@ class CourseResource extends StatelessWidget {
       return ListHeader(text: model.name);
 
     return ListTile(
-      leading: FileTypeAvatar(fileType: model.ext),
+      leading: FileTypeAvatar(fileType: model.extension),
       title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
-      subtitle: Text(model.formateDate()),
+      subtitle: Text(model.formatedDate),
       trailing: getTrailingWidget(),
       onTap: () {
         if (model.downloadStatus == DownloadTaskStatus.complete)
@@ -213,7 +215,8 @@ class CourseResources extends StatelessWidget {
   Widget onSuccess(QuerySnapshot query) {
     List<Widget> children = query.documents
         .map((doc) => CourseResource(
-              model: ResourceModel.fromDocument(doc, _downloadManager),
+              model: ResourceModel(
+                  data: doc.data, downloadManager: _downloadManager),
             ))
         .toList();
 

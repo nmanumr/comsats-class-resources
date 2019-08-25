@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:class_resources/models/event.dart';
+import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:date_utils/date_utils.dart';
@@ -20,8 +20,9 @@ class TimeTableModel extends Model {
     notifyListeners();
     var courses = user.getCrntSemester()?.courses ?? [];
     for (var course in courses) {
-      var courseEvents = await course.getAllEvents();
-      events.addAll(courseEvents);
+      course.getAllEvents().listen((data) {
+        events = data;
+      });
 
       notifyListeners();
     }
@@ -32,7 +33,7 @@ class TimeTableModel extends Model {
   List<EventModel> getEventForDay(DateTime date) {
     List<EventModel> crntEvents = [];
     for (var event in events) {
-      var eventDate = event.startTime.toDate();
+      var eventDate = event.startTime;
 
       // skip event if [date] is out of event start and end limits
       if (event.eventStart != null && date.isBefore(event.eventStart)) continue;

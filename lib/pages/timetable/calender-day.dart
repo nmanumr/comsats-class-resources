@@ -1,4 +1,4 @@
-import 'package:class_resources/models/event.dart';
+import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/pages/timetable/event-detail.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,14 +24,13 @@ class CalendarDay extends StatelessWidget {
   }
 
   Widget buildEventWidget(EventModel event, context) {
-    var startPos = event.startTime.toDate().hour * 48.0;
-    startPos += (event.startTime.toDate().minute / 60) * 48.0 + 2;
+    var startPos = event.startTime.hour * 48.0;
+    startPos += (event.startTime.minute / 60) * 48.0 + 2;
     var height;
     if (event.endTime == null) {
       height = 48.0;
     } else {
-      var timediff =
-          event.endTime.toDate().difference(event.startTime.toDate());
+      var timediff = event.endTime.difference(event.startTime);
       height = timediff.inMinutes / 60 * 48.0 - 5;
     }
 

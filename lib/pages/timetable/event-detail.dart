@@ -1,5 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
-import 'package:class_resources/models/event.dart';
+import 'package:class_resources/models/event.model.dart';
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -76,13 +76,13 @@ class EventDetails extends StatelessWidget {
           copyableListItem(
             context,
             title: "Start Time",
-            subtitle: DateFormat.jm().format(model.startTime.toDate()),
+            subtitle: DateFormat.jm().format(model.startTime),
             icon: Icons.alarm,
           ),
           copyableListItem(
             context,
             title: "EndTime",
-            subtitle: DateFormat.jm().format(model.endTime.toDate()),
+            subtitle: DateFormat.jm().format(model.endTime),
             icon: Icons.alarm_on,
           ),
           ...(model.eventSlot != null

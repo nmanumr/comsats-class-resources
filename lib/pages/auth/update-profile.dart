@@ -2,7 +2,7 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/models/class.dart';
+import 'package:class_resources/models/class.model.dart';
 import 'package:class_resources/services/authentication.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:class_resources/utils/route-transition.dart';
@@ -52,8 +52,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }
 
   void loadClass() async {
-    var klass = await KlassModel.fromRef(widget.klass);
-    setState(() => _klass = klass);
+    _klass = KlassModel.fromRef(widget.klass);
   }
 
   void onError(err) {

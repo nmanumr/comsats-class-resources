@@ -1,6 +1,5 @@
-import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/text-avatar.dart';
-import 'package:class_resources/models/course.dart';
+import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/pages/courses/about.dart';
 import 'package:class_resources/pages/courses/assignments.dart';
 import 'package:class_resources/pages/courses/resources.dart';

@@ -50,25 +50,26 @@ class LibraryPage extends StatelessWidget {
   List<Widget> profileActions(context, ProfileModel model) {
     List<Widget> actions = [
       profileTile(context, model),
+      ListTile(
+        title: Text("Update Profile"),
+        leading: Icon(Icons.person),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => UpdateProfile(
+                klass: model.klassRef,
+                name: model.name,
+                rollNum: model.rollNum,
+              ),
+            ),
+          );
+        },
+      ),
     ];
 
     if (!model.isGoogleProvider) {
       actions.addAll([
-        ListTile(
-          title: Text("Update Profile"),
-          leading: Icon(Icons.person),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => UpdateProfile(
-                        klass: model.klassRef,
-                        name: model.name,
-                        rollNum: model.rollNum,
-                      )),
-            );
-          },
-        ),
         ListTile(
           title: Text("Update Email"),
           leading: Icon(Icons.email),
