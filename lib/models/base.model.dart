@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:meta/meta.dart';
 
-class BaseModel extends Model {
+class BaseModel {
   /// Raw data of the model
   Map<String, dynamic> raw;
 
@@ -13,30 +13,26 @@ class BaseModel extends Model {
 
   StreamSubscription _sub;
 
-  BaseModel({Map<String, dynamic> data, this.ref}) {
+  load({Map<String, dynamic> data, @required ref}) {
+    this.ref = ref;
+    
     if (data == null)
-      _sub = ref.snapshots().listen((doc) {
-        // cannot find any way to manipulate all class field from map directly
-        raw = doc.data;
-        isLoading = false;
-
-        onDataLoaded();
-        notifyListeners();
-      });
-    else {
-      raw = data;
-      onDataLoaded();
-    }
+      loadfromRef(ref);
+    else
+      loadFromdoc(data, ref: ref);
   }
 
   /// Build Model from document
-  BaseModel.fromdoc(this.raw, {this.ref}) : isLoading = false {
+  loadFromdoc(raw, {DocumentReference ref}) {
+    this.raw = raw;
+    this.ref = ref;
+    isLoading = false;
     onDataLoaded();
   }
 
   /// Build Model from document reference
-  BaseModel.fromRef(DocumentReference ref) {
-    ref = ref;
+  loadfromRef(DocumentReference ref) {
+    this.ref = ref;
     _sub = ref.snapshots().listen((doc) {
       raw = doc.data;
       isLoading = false;
@@ -47,8 +43,11 @@ class BaseModel extends Model {
 
   /// Does nothing
   /// To be overriden by super class
-  void loadData(Map<String, dynamic> data) {
-  }
+  void loadData(Map<String, dynamic> data) {}
+
+  /// Does nothing
+  /// To be overriden by super class
+  notifyListeners() {}
 
   /// called when data has been loaded
   void onDataLoaded() => loadData(raw);

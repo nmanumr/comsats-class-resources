@@ -3,8 +3,9 @@ import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-class SemesterModel extends BaseModel with SemesterData {
+class SemesterModel extends Model with BaseModel, SemesterData {
   /// user profile model
   ProfileModel user;
 
@@ -15,7 +16,9 @@ class SemesterModel extends BaseModel with SemesterData {
     Map<String, dynamic> data,
     DocumentReference ref,
     @required this.user,
-  }) : super(data: data, ref: ref);
+  }) {
+    load(ref: ref, data: data);
+  }
 
   @override
   void destroy() {
@@ -25,6 +28,7 @@ class SemesterModel extends BaseModel with SemesterData {
 
   void loadCourse() {
     for (DocumentReference courseRef in this.rawCourses) {
+      print(courseRef.path);
       courses.add(CourseModel(ref: courseRef, user: this.user));
     }
   }

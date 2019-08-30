@@ -3,17 +3,20 @@ import 'dart:ui';
 import 'package:class_resources/models/base.model.dart';
 import 'package:class_resources/models/course.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 enum EventType { reminder, event }
 
-class EventModel extends BaseModel with EventData {
+class EventModel extends Model with BaseModel, EventData {
   CourseModel course;
 
   EventModel({
     Map<String, dynamic> data,
     DocumentReference ref,
     this.course,
-  }) : super(data: data, ref: ref);
+  }){
+    load(ref: ref, data: data);
+  }
 }
 
 class EventData {

@@ -2,17 +2,20 @@ import 'package:class_resources/mixins/firestore.mixin.dart';
 import 'package:class_resources/models/base.model.dart';
 import 'package:class_resources/models/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'event.model.dart';
 
-class CourseModel extends BaseModel with CourseData, FirestoreMixin {
+class CourseModel extends Model with BaseModel, CourseData, FirestoreMixin {
   ProfileModel user;
 
   CourseModel({
     Map<String, dynamic> data,
     DocumentReference ref,
     this.user,
-  }) : super(data: data, ref: ref);
+  }){
+    load(data: data, ref: ref);
+  }
 
   Stream<QuerySnapshot> getCourseResources() =>
       collectionSnapshots("resources");

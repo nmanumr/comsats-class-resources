@@ -3,16 +3,18 @@ import 'package:class_resources/models/resource.model.dart';
 import 'package:class_resources/services/download-manager.dart';
 import 'package:class_resources/mixins/downloadable.mixin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-class AssignmentModel extends BaseModel with Downloadable, ResourceData {
+class AssignmentModel extends Model with BaseModel, Downloadable, ResourceData {
   DownloadManager downloadManager;
 
   AssignmentModel({
     Map<String, dynamic> data,
     DocumentReference ref,
     this.downloadManager,
-  }) : super(data: data, ref: ref);
-
+  }) {
+    load(data: data, ref: ref);
+  }
 
   @override
   notifyModelListeners() {
