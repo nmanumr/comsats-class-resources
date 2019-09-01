@@ -1,37 +1,59 @@
+import 'package:class_resources/models/profile.model.dart';
+import 'package:class_resources/services/user.service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-enum AccountStatus { ProfileError, AuthError, Loading, Success }
+enum AccountStatus { AuthError, Loading, Success, LoggedOut }
 
-class UserData {
+class UserModel extends Model {
   String email;
   String name;
   String photoUrl;
   String uid;
-  List<String> providers;
-  AccountStatus status;
+  List<UserInfo> providers;
+  AccountStatus status = AccountStatus.Loading;
+  UserService service;
+
+  ProfileModel profile;
+
+  UserModel(String uid) {
+    service = UserService(uid, this);
+    status = AccountStatus.LoggedOut;
+  }
+
+  UserModel.fromData(FirebaseUser data){
+    service = UserService.fromData(this);
+    loadData(data);
+  }
 
   loadData(FirebaseUser data) {
     if (data == null)
       status = AccountStatus.AuthError;
-
     else {
       uid = data.uid;
       email = data.email;
       photoUrl = data.photoUrl;
       name = data.displayName;
-      providers = data.providerData.map((d) => d.providerId).toList();
+      providers = data.providerData;
+      profile = ProfileModel(this);
+      status = AccountStatus.Success;
+
+      for (var provider in providers)
+        print(provider.providerId);
     }
+
+    notifyListeners();
   }
-}
 
-class UserModel extends Model with UserData {
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  setStatus(AccountStatus status) {
+    status = status;
+    notifyListeners();
+  }
 
-  UserModel() {
-    _firebaseAuth.currentUser().then((data) {
-      loadData(data);
-      notifyListeners();
-    });
+  hasProvider(String providerId) {
+    for (var provider in providers)
+      if (provider.providerId == providerId) return true;
+
+    return false;
   }
 }

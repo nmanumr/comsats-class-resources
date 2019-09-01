@@ -43,7 +43,7 @@ class CourseAssignments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: model.getCourseAssignments(),
+      stream: model.service.getCourseAssignments(),
       builder: (context, snapshot) {
         if (snapshot.hasError) return onError(snapshot.error);
 

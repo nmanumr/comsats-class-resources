@@ -1,3 +1,4 @@
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/change-email.dart';
 import 'package:class_resources/pages/auth/change-pass.dart';
 import 'package:class_resources/pages/auth/reset-pass.dart';
@@ -32,21 +33,25 @@ class AppMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var user = UserModel(uid);
+
     return MaterialApp(
       title: 'Class Resources',
       theme: lightTheme(),
       darkTheme: darkTheme(),
       routes: {
-        '/': (ctx) => this.uid == "" ? WelcomePage() : Dashboard(),
+        '/': (ctx) => user.status == AccountStatus.LoggedOut
+            ? WelcomePage()
+            : Dashboard(user),
         '/welcome': (ctx) => WelcomePage(),
-        '/dashboard': (ctx) => Dashboard(),
+        '/dashboard': (ctx) => Dashboard(user),
         '/signup': (ctx) => SignupPage(),
         '/login': (ctx) => LoginPage(),
         '/resetpass': (ctx) => ResetPassPage(),
-        '/changepass': (ctx) => ChangePass(),
-        '/changeEmail': (ctx) => ChangeEmail(),
-        '/edit-profile': (ctx) => UpdateProfile(),
-        '/create-profile': (ctx) => UpdateProfile(navigateToDashboard: true),
+        '/changepass': (ctx) => ChangePass(user),
+        '/changeEmail': (ctx) => ChangeEmail(user),
+        '/create-profile': (ctx) =>
+            UpdateProfile(navigateToDashboard: true, profile: user.profile),
         '/add-course': (ctx) => AddCourses(),
         '/create-course': (ctx) => CreateCourse(),
         '/license': (ctx) => AppLicensePage(),

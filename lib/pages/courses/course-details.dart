@@ -45,11 +45,11 @@ class CourseDetail extends StatelessWidget {
                               child: ListTile(
                                 leading: TextAvatar(
                                   text: (model.title ?? "") +
-                                      (model.klassName ?? ""),
+                                      (model.klass.name ?? ""),
                                 ),
                                 title: Text(model.title ?? ""),
                                 subtitle: Text(
-                                    "${model.klassName} - ${model.teacher}" ??
+                                    "${model.klass.name} - ${model.teacher}" ??
                                         ""),
                               ),
                             ),

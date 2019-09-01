@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
+import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/event.model.dart';
-import 'package:class_resources/models/profile.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:date_utils/date_utils.dart';
 
@@ -18,9 +18,9 @@ class TimeTableModel extends Model {
     isLoading = true;
     events = [];
     notifyListeners();
-    var courses = user.getCrntSemester()?.courses ?? [];
+    var courses = user.service.getCurrentSemester()?.courses ?? [];
     for (var course in courses) {
-      course.getAllEvents().listen((data) {
+      course.service.getAllEvents().listen((data) {
         events = data;
       });
 

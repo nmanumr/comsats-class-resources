@@ -5,24 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class ResourceModel extends Model with BaseModel, Downloadable, ResourceData {
+class ResourceModel extends Model with BaseModel, Downloadable {
   DownloadManager downloadManager;
-
-  ResourceModel({
-    Map<String, dynamic> data,
-    DocumentReference ref,
-    this.downloadManager,
-  }) {
-    load(ref: ref, data: data);
-  }
-
-  @override
-  notifyModelListeners() {
-    notifyListeners();
-  }
-}
-
-class ResourceData {
   String name;
   String driveFileId;
 
@@ -63,10 +47,23 @@ class ResourceData {
     driveFileId = data["driveFileId"];
     downloadUrl = data["downloadUrl"];
     openUrl = data["openUrl"];
-    date = data["date"] ? (data["date"] as Timestamp).toDate(): null;
+    date = data["date"] != null ? (data["date"] as Timestamp).toDate(): null;
     mimeType = data["mimeType"];
     uploadedBy = data["uploadedBy"];
     extension = data["ext"];
     isHeading = data["isHeading"] ?? false;
+  }
+
+  ResourceModel({
+    Map<String, dynamic> data,
+    DocumentReference ref,
+    this.downloadManager,
+  }) {
+    load(ref: ref, data: data);
+  }
+
+  @override
+  notifyModelListeners() {
+    notifyListeners();
   }
 }

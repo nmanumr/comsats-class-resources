@@ -18,15 +18,18 @@ class CourseItem extends StatelessWidget {
   }
 
   buildLoaded(BuildContext context) {
+    var klassName = "";
+    if(model.klass != null && (model.klass?.name ?? "").isNotEmpty)
+      klassName = model.klass.name;
     return Hero(
       tag: model.ref.path,
       child: Material(
         child: ListTile(
           leading: TextAvatar(
-            text: (model.title ?? "") + (model.klassName ?? ""),
+            text: (model.title ?? "") + (klassName ?? ""),
           ),
           title: Text(model.title ?? ""),
-          subtitle: Text("${model.klassName} - ${model.teacher}" ?? ""),
+          subtitle: Text("$klassName - ${model.teacher}" ?? ""),
           onTap: () {
             Navigator.push(
               context,

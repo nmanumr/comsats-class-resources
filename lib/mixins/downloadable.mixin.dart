@@ -11,15 +11,16 @@ abstract class Downloadable {
   factory Downloadable._() => null;
 
   String mimeType;
-  String _localPath;
   String documentId;
   String driveFileId;
-  String _downloadUrl;
-  String _openUrl;
   String ext;
   String name;
-  DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
   DownloadManager downloadManager;
+  DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
+  
+  String _localPath;
+  String _downloadUrl;
+  String _openUrl;
   String _downloadTaskId;
 
   notifyModelListeners() => null;

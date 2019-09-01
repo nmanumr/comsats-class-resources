@@ -1,8 +1,10 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/timetable.dart';
+import 'package:class_resources/models/user.model.dart';
+import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -12,6 +14,10 @@ import './timetable/timetable.dart';
 import './menu/library.dart';
 
 class Dashboard extends StatefulWidget {
+  Dashboard(this.user);
+
+  final UserModel user;
+
   @override
   _DashboardState createState() => _DashboardState();
 }
@@ -21,7 +27,6 @@ class _DashboardState extends State<Dashboard>
   @override
   final wantKeepAlive = true;
 
-  ProfileModel _profileModel;
   TimeTableModel timeTableModel;
   int _cIndex = 0;
 
@@ -30,13 +35,12 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
-    _profileModel = ProfileModel();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _profileModel.close();
+    widget.user.profile.service.close();
   }
 
   List<BottomNavigationBarItem> initTabs() {
@@ -45,7 +49,7 @@ class _DashboardState extends State<Dashboard>
       {
         "name": "Courses",
         "icon": Icons.book,
-        "page": CoursesPage(model: _profileModel),
+        "page": CoursesPage(model: widget.user.profile),
       },
       {
         "name": "Time Table",
@@ -60,7 +64,7 @@ class _DashboardState extends State<Dashboard>
       {
         "name": "Menu",
         "icon": Icons.menu,
-        "page": LibraryPage(),
+        "page": LibraryPage(widget.user),
       }
     ];
 
@@ -108,17 +112,16 @@ class _DashboardState extends State<Dashboard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
     return ScopedModel(
-      model: _profileModel,
-      child: ScopedModelDescendant<ProfileModel>(
-        builder: (context, child, model) {
+      model: widget.user,
+      child: ScopedModelDescendant<UserModel>(
+        builder: (context, child, userModel) {
           // Model not loaded yet
-          if (model.profileStatus == ProfileStatus.Loading) {
+          if (userModel.status == AccountStatus.Loading) {
             return Loader();
           }
 
-          if (model.profileStatus == ProfileStatus.AuthError) {
+          if (userModel.status == AccountStatus.AuthError) {
             return Scaffold(
               appBar: centeredAppBar(context, ""),
               body: IllustartedPage(
@@ -137,33 +140,48 @@ class _DashboardState extends State<Dashboard>
             );
           }
 
-          if (model.profileStatus == ProfileStatus.ProfileError) {
-            return Scaffold(
-              appBar: centeredAppBar(context, ""),
-              body: Center(
-                child: IllustartedPage(
-                  imagePath: "assets/images/warning.png",
-                  headingText: "Profile not found",
-                  subheadingText:
-                      "No profile found corresponding your ID. Either its deleted or hadn't created yet.",
-                  centerButton: RaisedButton(
-                    child: Text("Create Profile"),
-                    onPressed: () {
-                      Navigator.pushNamed(context, "/create-profile");
-                    },
-                  ),
-                ),
-              ),
-            );
-          }
+          return ScopedModel(
+            model: userModel.profile,
+            child: ScopedModelDescendant<ProfileModel>(
+              builder: (context, child, profileModel) {
 
-          // build dashboard layout
-          if (timeTableModel == null)
-            timeTableModel = TimeTableModel(user: model);
-          if (model.semesters.length != 0 &&
-              timeTableModel.events.length == 0 &&
-              !timeTableModel.isLoading) timeTableModel.loadEvents();
-          return buildDashboard(context);
+                if (profileModel == null || profileModel.status == ProfileStatus.Loading) {
+                  return Loader();
+                }
+
+                if (profileModel.status == ProfileStatus.Error) {
+                  return Scaffold(
+                    appBar: centeredAppBar(context, ""),
+                    body: Center(
+                      child: IllustartedPage(
+                        imagePath: "assets/images/warning.png",
+                        headingText: "Profile not found",
+                        subheadingText:
+                            "No profile found corresponding your ID. Either its deleted or hadn't created yet.",
+                        centerButton: RaisedButton(
+                          child: Text("Create Profile"),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => UpdateProfile(
+                                  navigateToDashboard: true,
+                                  profile: ProfileModel(userModel),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                // build dashboard layout
+                return buildDashboard(context);
+              },
+            ),
+          );
         },
       ),
     );

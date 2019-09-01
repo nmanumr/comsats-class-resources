@@ -1,15 +1,15 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/text-avatar.dart';
-import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
-import 'package:class_resources/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LibraryPage extends StatelessWidget {
-  final AuthService auth = AuthService();
+  final UserModel user;
+  LibraryPage(this.user);
 
   _launchURL(String url) async {
     if (await canLaunch(url)) {
@@ -19,8 +19,8 @@ class LibraryPage extends StatelessWidget {
     }
   }
 
-  ListTile profileTile(BuildContext ctx, ProfileModel model) {
-    if ((model.name ?? "").isEmpty) {
+  ListTile profileTile(BuildContext ctx) {
+    if ((user.profile.name ?? "").isEmpty) {
       return ListTile(
         leading: CircleAvatar(
           child: Icon(Icons.person),
@@ -32,24 +32,24 @@ class LibraryPage extends StatelessWidget {
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
       );
-    } else if (model.photoUrl != null) {
+    } else if (user.photoUrl != null) {
       return ListTile(
-        leading: TextAvatar(text: model.name, photoUrl: model.photoUrl),
-        title: Text(model.name),
-        subtitle: Text(model.email ?? " "),
+        leading: TextAvatar(text: user.profile.name, photoUrl: user.photoUrl),
+        title: Text(user.profile.name),
+        subtitle: Text(user.email ?? " "),
       );
     } else {
       return ListTile(
-        leading: TextAvatar(text: model.name),
-        title: Text(model.name),
-        subtitle: Text(model.email ?? " "),
+        leading: TextAvatar(text: user.profile.name),
+        title: Text(user.profile.name),
+        subtitle: Text(user.email ?? " "),
       );
     }
   }
 
-  List<Widget> profileActions(context, ProfileModel model) {
+  List<Widget> profileActions(context) {
     List<Widget> actions = [
-      profileTile(context, model),
+      profileTile(context),
       ListTile(
         title: Text("Update Profile"),
         leading: Icon(Icons.person),
@@ -58,9 +58,7 @@ class LibraryPage extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (_) => UpdateProfile(
-                klass: model.klassRef,
-                name: model.name,
-                rollNum: model.rollNum,
+                profile: user.profile,
               ),
             ),
           );
@@ -68,7 +66,7 @@ class LibraryPage extends StatelessWidget {
       ),
     ];
 
-    if (!model.isGoogleProvider) {
+    if (!user.hasProvider("google.com")) {
       actions.addAll([
         ListTile(
           title: Text("Update Email"),
@@ -87,7 +85,7 @@ class LibraryPage extends StatelessWidget {
       title: Text("Logout"),
       leading: Icon(Icons.exit_to_app),
       onTap: () {
-        auth.signOut();
+        user.service.signOut();
         Navigator.pushNamedAndRemoveUntil(context, '/welcome', (_) => false);
       },
     ));
@@ -100,13 +98,13 @@ class LibraryPage extends StatelessWidget {
     return Scaffold(
       appBar: centeredAppBar(context, "Menu"),
       body: Container(
-        child: ScopedModelDescendant<ProfileModel>(
+        child: ScopedModelDescendant<UserModel>(
           builder: (context, child, model) => Column(
             children: <Widget>[
               Expanded(
                 child: ListView(
                   children: <Widget>[
-                    ...profileActions(context, model),
+                    ...profileActions(context),
                     Divider(),
                     ListTile(
                       title: Text("Share this app"),

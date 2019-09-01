@@ -56,7 +56,7 @@ class CourseAbout extends StatelessWidget {
       copyableListItem(context, "Course code", model.code),
       copyableListItem(context, "Credit Hours", model.creditHours),
       copyableListItem(context, "Teacher", model.teacher),
-      copyableListItem(context, "Class", model.klassName),
+      copyableListItem(context, "Class", model.klass.name),
     ];
 
     if (model.maintainers.contains(model.user.id)) {

@@ -17,7 +17,6 @@ class PrimaryFlatButton extends StatelessWidget {
     this.colorBrightness,
     this.padding,
     this.shape,
-    this.clipBehavior,
     this.focusNode,
     this.materialTapTargetSize,
     @required this.child,
@@ -36,7 +35,6 @@ class PrimaryFlatButton extends StatelessWidget {
   final Brightness colorBrightness;
   final EdgeInsetsGeometry padding;
   final ShapeBorder shape;
-  final Clip clipBehavior;
   final FocusNode focusNode;
   final MaterialTapTargetSize materialTapTargetSize;
   final Widget child;
@@ -58,7 +56,6 @@ class PrimaryFlatButton extends StatelessWidget {
       colorBrightness: this.colorBrightness,
       padding: this.padding,
       shape: this.shape,
-      clipBehavior: this.clipBehavior,
       focusNode: this.focusNode,
       materialTapTargetSize: this.materialTapTargetSize,
       child: this.child,

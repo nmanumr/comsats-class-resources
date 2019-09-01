@@ -2,7 +2,7 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/services/user.service.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,7 @@ class ResetPassPage extends StatefulWidget {
 
 class _ResetPassPageState extends State<ResetPassPage> {
   PageController _pageController = PageController();
-  AuthService _authService = AuthService();
+  UserService _userService = UserService("", null);
   TextEditingController _controller = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -47,7 +47,7 @@ class _ResetPassPageState extends State<ResetPassPage> {
   void onSubmit(ctx) async {
     setState(() => isLoading = true);
     try {
-      await _authService.resetPassword(_controller.text);
+      await _userService.resetPassword(_controller.text);
       onEmailSent();
     } catch (err) {
       onError(ctx, err);

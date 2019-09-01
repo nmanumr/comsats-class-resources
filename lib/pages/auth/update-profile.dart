@@ -3,28 +3,24 @@ import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/class.model.dart';
-import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:class_resources/utils/validator.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:class_resources/components/input.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'change-class.dart';
 
 class UpdateProfile extends StatefulWidget {
   UpdateProfile({
-    this.name,
-    this.rollNum,
-    this.klass,
+    @required this.profile,
     this.navigateToDashboard = false,
   });
 
-  final String name;
-  final String rollNum;
-  final DocumentReference klass;
+  final ProfileModel profile;
 
   /// if true will navigate to dashboard Route
   /// otherwise just closes itself
@@ -37,23 +33,11 @@ class UpdateProfile extends StatefulWidget {
 class _UpdateProfileState extends State<UpdateProfile> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  AuthService _authService = AuthService();
 
   MaskedTextController _rollumController =
       MaskedTextController(mask: 'AA00-AAA-000');
   TextEditingController _nameController = TextEditingController();
-  KlassModel _klass;
   bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.klass != null) loadClass();
-  }
-
-  void loadClass() async {
-    _klass = KlassModel.fromRef(widget.klass);
-  }
 
   void onError(err) {
     _scaffoldKey.currentState.showSnackBar(
@@ -72,7 +56,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
-        await _authService.updateProfile(
+        await widget.profile.service.updateProfile(
           _nameController.text,
           _rollumController.text,
         );
@@ -94,6 +78,45 @@ class _UpdateProfileState extends State<UpdateProfile> {
     }
   }
 
+  Widget buildClassTile() {
+    return ScopedModel(
+      model: widget.profile.klass,
+      child: ScopedModelDescendant<KlassModel>(
+        builder: (context, widget, model) {
+          if (model.isLoading) return Loader();
+
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
+            child: OutlineButton(
+              // padding: EdgeInsets.fromLTRB(20, 15, 10, 15),
+              child: SizedBox(
+                width: double.infinity,
+                child: ListTile(
+                  leading: CircleAvatar(
+                    child: Icon(Icons.class_),
+                    backgroundColor: HexColor(generateColor(model.cr)),
+                    foregroundColor: Colors.white,
+                  ),
+                  title: Text(model.name),
+                  subtitle: Text("CR: " + model.cr ?? ""),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChangeClass(klass: model),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,69 +130,24 @@ class _UpdateProfileState extends State<UpdateProfile> {
         children: [
           PaddedInput(
             label: "Your Name",
-            initialValue: widget.name,
+            initialValue: widget.profile.name,
             controller: _nameController,
             validator: nameValidator,
           ),
           PaddedInput(
             label: "Your Roll Number",
-            initialValue: widget.rollNum,
+            initialValue: widget.profile.name,
             controller: _rollumController,
             validator: rollNumValidator,
           ),
-          widget.klass != null ? ListHeader(text: "Your Class") : Text(" "),
-          Builder(
-            builder: (context) {
-              if (widget.klass != null) {
-                if (_klass != null) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
-                    child: OutlineButton(
-                      // padding: EdgeInsets.fromLTRB(20, 15, 10, 15),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Icon(Icons.class_),
-                            backgroundColor: HexColor(generateColor(_klass.cr)),
-                            foregroundColor: Colors.white,
-                          ),
-                          title: Text(_klass.name),
-                          subtitle: Text("CR: " + _klass.cr ?? ""),
-                          trailing: Icon(Icons.keyboard_arrow_right),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChangeClass(klass: _klass),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
-                  child: OutlineButton(
-                    padding: EdgeInsets.fromLTRB(20, 15, 10, 15),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Loader(),
-                    ),
-                    onPressed: () {},
-                  ),
-                );
-              }
-
-              return Text(" ");
-            },
-          )
+          ...(widget.profile.klass != null
+              ? [ListHeader(text: "Your Class"), buildClassTile()]
+              : []),
         ],
         primaryButton: RaisedButton.icon(
-          icon: Icon(widget.navigateToDashboard ? Icons.keyboard_arrow_right : Icons.check),
+          icon: Icon(widget.navigateToDashboard
+              ? Icons.keyboard_arrow_right
+              : Icons.check),
           label: Text(widget.navigateToDashboard ? "Next" : "Save"),
           onPressed: submit,
         ),
