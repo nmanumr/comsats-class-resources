@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-ThemeData lightTheme() {
+ThemeData lightTheme(Brightness brightness) {
   // return ThemeData(
-  //   brightness: Brightness.light,
+  //   brightness: brightness,
   //   canvasColor: Color(0xFFFFFFFF),
   //   primaryColor: Color(0xFF3F83B1),
   //   primaryColorLight: Color(0xFF3F83B1),
@@ -15,7 +15,8 @@ ThemeData lightTheme() {
   //   dividerColor: Color(0xFFDEE3EA),
   // );
   return ThemeData(
-    brightness: Brightness.dark,
+    fontFamily: 'ProductSans',
+    brightness: brightness,
     canvasColor: Color(0xFF1C2733),
     primaryColor: Color(0xFF195BBC),
     primaryColorLight: Color(0xFF222E3C),
@@ -26,6 +27,11 @@ ThemeData lightTheme() {
       foregroundColor: Colors.white,
     ),
     dividerColor: Color(0xFF10171E),
+    textTheme: TextTheme(
+      caption: TextStyle(
+        color: Colors.white.withOpacity(0.5)
+      )
+    )
   );
 }
 
