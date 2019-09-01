@@ -17,11 +17,15 @@ class UserModel extends Model {
   ProfileModel profile;
 
   UserModel(String uid) {
-    service = UserService(uid, this);
-    status = AccountStatus.LoggedOut;
+    if (uid == null || uid.isEmpty)
+      status = AccountStatus.LoggedOut;
+    else {
+      status = AccountStatus.Loading;
+      service = UserService(uid, this);
+    }
   }
 
-  UserModel.fromData(FirebaseUser data){
+  UserModel.fromData(FirebaseUser data) {
     service = UserService.fromData(this);
     loadData(data);
   }
@@ -38,8 +42,7 @@ class UserModel extends Model {
       profile = ProfileModel(this);
       status = AccountStatus.Success;
 
-      for (var provider in providers)
-        print(provider.providerId);
+      for (var provider in providers) print(provider.providerId);
     }
 
     notifyListeners();

@@ -26,8 +26,7 @@ class UserService {
   /// to presistant user login
   Future<void> saveUserId(uid) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    print("saaved");
-    print(sharedPreferences.setString("uid", uid));
+    await sharedPreferences.setString("uid", uid);
   }
 
   /// signup user with email and password

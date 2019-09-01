@@ -20,15 +20,19 @@ import 'pages/menu/license.dart';
 void main() async {
   String uid = "";
   try {
+    // to void "ServicesBinding.defaultBinaryMessenger was
+    // accessed before the binding was initialized" error
+    WidgetsFlutterBinding.ensureInitialized();
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     uid = prefs.getString('uid') ?? "";
   } catch (_) {}
 
-  return runApp(AppMain(uid: uid));
+  return runApp(AppMain(uid));
 }
 
 class AppMain extends StatelessWidget {
-  AppMain({@required this.uid});
+  AppMain(this.uid);
   final String uid;
 
   @override
