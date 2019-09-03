@@ -1,9 +1,10 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/text-avatar.dart';
+import 'package:class_resources/components/theme-chooser.dart';
+import 'package:class_resources/models/theme.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:dynamic_theme/theme_switcher_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -96,14 +97,11 @@ class LibraryPage extends StatelessWidget {
   }
 
   void showChooser(context) {
+    var _themeModel = ThemeModel();
     showDialog<void>(
         context: context,
         builder: (context) {
-          return BrightnessSwitcherDialog(
-            onSelectedTheme: (brightness) {
-              DynamicTheme.of(context).setBrightness(brightness);
-            },
-          );
+          return ThemeSwitcherDialog(themeModel: _themeModel);
         });
   }
 
@@ -155,7 +153,7 @@ class LibraryPage extends StatelessWidget {
                     ),
                     ListTile(
                       title: Text("Theme"),
-                      leading: Icon(Icons.security),
+                      leading: Icon(Icons.format_paint),
                       onTap: (){
                         showChooser(context);
                       },

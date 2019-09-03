@@ -15,27 +15,23 @@ ThemeData lightTheme(Brightness brightness) {
   //   dividerColor: Color(0xFFDEE3EA),
   // );
   return ThemeData(
-    fontFamily: 'ProductSans',
-    brightness: brightness,
-    canvasColor: Color(0xFF1C2733),
-    primaryColor: Color(0xFF195BBC),
-    primaryColorLight: Color(0xFF222E3C),
-    primaryColorDark: Color(0xFF151D26),
-    accentColor: Color(0xFF61A9E1),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Color(0xFF61A9E1),
-      foregroundColor: Colors.white,
-    ),
-    dividerColor: Color(0xFF10171E),
-    textTheme: TextTheme(
-      caption: TextStyle(
-        color: Colors.white.withOpacity(0.5)
-      )
-    )
-  );
+      fontFamily: 'ProductSans',
+      brightness: brightness,
+      canvasColor: Color(0xFF1C2733),
+      primaryColor: Color(0xFF195BBC),
+      primaryColorLight: Color(0xFF222E3C),
+      primaryColorDark: Color(0xFF151D26),
+      accentColor: Color(0xFF61A9E1),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Color(0xFF61A9E1),
+        foregroundColor: Colors.white,
+      ),
+      dividerColor: Color(0xFF10171E),
+      textTheme:
+          TextTheme(caption: TextStyle(color: Colors.white.withOpacity(0.5))));
 }
 
-ThemeData darkTheme() {
+ThemeData defaultDarkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
     canvasColor: Color(0xFF1C2733),
@@ -50,8 +46,28 @@ ThemeData darkTheme() {
     dividerColor: Color(0xFF10171E),
     buttonTheme: ButtonThemeData(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(6))
-      ),
+          borderRadius: BorderRadius.all(Radius.circular(6))),
+    ),
+    textSelectionHandleColor: Color(0xFF61A9E1),
+  );
+}
+
+ThemeData defaultTheme() {
+  return ThemeData(
+    brightness: Brightness.light,
+    canvasColor: Color(0xFFFFFFFF),
+    primaryColor: Color(0xFFFFFFFF),
+    primaryColorLight: Color(0xFFFFFFFF),
+    primaryColorDark: Color(0xFFFFFFFF),
+    accentColor: Color(0xFF61A9E1),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Color(0xFF61A9E1),
+      foregroundColor: Colors.white,
+    ),
+    dividerColor: Color(0xFF10171E),
+    buttonTheme: ButtonThemeData(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(6))),
     ),
     textSelectionHandleColor: Color(0xFF61A9E1),
   );
