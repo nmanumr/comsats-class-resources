@@ -1,5 +1,6 @@
 import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/models/profile.model.dart';
+import 'package:class_resources/models/timetable.model.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -9,6 +10,7 @@ class SemesterModel extends Model {
   bool isCurrent;
   ProfileModel user;
   List<CourseModel> courses = [];
+  TimetableModel timetable;
 
   DocumentReference ref;
 
@@ -30,5 +32,7 @@ class SemesterModel extends Model {
         .map<CourseModel>((course) {
       return CourseModel(ref: course, user: user);
     }).toList();
+
+    timetable = TimetableModel(courses);
   }
 }

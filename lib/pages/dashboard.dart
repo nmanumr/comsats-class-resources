@@ -2,14 +2,14 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.model.dart';
-import 'package:class_resources/models/timetable.dart';
+// import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import './courses/courses.dart';
-import './notifications.dart';
+// import './notifications.dart';
 import './timetable/timetable.dart';
 import './menu/library.dart';
 
@@ -27,7 +27,7 @@ class _DashboardState extends State<Dashboard>
   @override
   final wantKeepAlive = true;
 
-  TimeTableModel timeTableModel;
+  // TimeTableModel timeTableModel;
   int _cIndex = 0;
 
   List tabs;
@@ -54,13 +54,13 @@ class _DashboardState extends State<Dashboard>
       {
         "name": "Time Table",
         "icon": Icons.calendar_today,
-        "page": TimeTablePage(timetableModel: timeTableModel),
+        "page": TimeTablePage(),
       },
-      {
-        "name": "Notifications",
-        "icon": Icons.notifications,
-        "page": NotificationPage(timetableModel: timeTableModel),
-      },
+      // {
+      //   "name": "Notifications",
+      //   "icon": Icons.notifications,
+      //   "page": NotificationPage(timetableModel: timeTableModel),
+      // },
       {
         "name": "Menu",
         "icon": Icons.menu,

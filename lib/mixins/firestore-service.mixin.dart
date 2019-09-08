@@ -15,14 +15,12 @@ class FirestoreServiceMixin {
     void Function() onDone,
     bool cancelOnError,
   }) {
-    subscriptions.add(
-      firestore.document(path).snapshots().listen(
-            onData,
-            onError: onError,
-            onDone: onDone,
-            cancelOnError: cancelOnError,
-          ),
-    );
+    subscriptions.add(firestore.document(path).snapshots().listen(
+          onData,
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        ));
   }
 
   /// subscribe to firebase collection changes
@@ -34,14 +32,27 @@ class FirestoreServiceMixin {
     void Function() onDone,
     bool cancelOnError,
   }) {
-    subscriptions.add(
-      firestore.collection(path).snapshots().listen(
-            onData,
-            onError: onError,
-            onDone: onDone,
-            cancelOnError: cancelOnError,
-          ),
-    );
+    subscriptions.add(firestore.collection(path).snapshots().listen(
+          onData,
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        ));
+  }
+
+  void subscribeStream<T>(
+    Stream<T> stream,
+    void Function(T) onData, {
+    Function onError,
+    void Function() onDone,
+    bool cancelOnError,
+  }) {
+    subscriptions.add(stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    ));
   }
 
   close() {

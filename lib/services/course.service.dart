@@ -27,12 +27,13 @@ class CourseService with FirestoreServiceMixin {
     return relativeCollectionSnapsots("assignments");
   }
 
-  Stream<List<EventModel>> getAllEvents() {
-    return relativeCollectionSnapsots("events").map(
+  Stream<List<EventModel>> getTimetable() {
+    return relativeCollectionSnapsots("timetable").map(
       (data) => data.documents
           .map(
             (eventDoc) => EventModel(
               data: eventDoc.data,
+              eventType: EventType.ClassEvent,
               ref: eventDoc.reference,
               course: this.model,
             ),
