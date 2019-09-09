@@ -44,13 +44,12 @@ class CourseDetail extends StatelessWidget {
                               color: Theme.of(context).primaryColorLight,
                               child: ListTile(
                                 leading: TextAvatar(
-                                  text: (model.title ?? "") +
-                                      (model.klass.name ?? ""),
+                                  text:
+                                      (model.title ?? "") + (model.code ?? ""),
                                 ),
                                 title: Text(model.title ?? ""),
                                 subtitle: Text(
-                                    "${model.klass.name} - ${model.teacher}" ??
-                                        ""),
+                                    "${model.code} - ${model.teacher}" ?? ""),
                               ),
                             ),
                           ),

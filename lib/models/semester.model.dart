@@ -10,7 +10,6 @@ class SemesterModel extends Model {
   bool isCurrent;
   ProfileModel user;
   List<CourseModel> courses = [];
-  TimetableModel timetable;
 
   DocumentReference ref;
 
@@ -32,7 +31,5 @@ class SemesterModel extends Model {
         .map<CourseModel>((course) {
       return CourseModel(ref: course, user: user);
     }).toList();
-
-    timetable = TimetableModel(courses);
   }
 }
