@@ -5,6 +5,7 @@ import 'package:class_resources/pages/auth/reset-pass.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:class_resources/pages/courses/add-courses.dart';
 import 'package:flutter/material.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,36 +32,53 @@ void main() async {
   return runApp(AppMain(uid));
 }
 
-class AppMain extends StatelessWidget {
+class AppMain extends StatefulWidget {
   AppMain(this.uid);
   final String uid;
 
   @override
-  Widget build(BuildContext context) {
-    var user = UserModel(uid);
+  _AppMainState createState() => _AppMainState();
+}
 
-    return MaterialApp(
-      title: 'Class Resources',
-      theme: lightTheme(),
-      darkTheme: darkTheme(),
-      routes: {
-        '/': (ctx) => user.status == AccountStatus.LoggedOut
-            ? WelcomePage()
-            : Dashboard(user),
-        '/welcome': (ctx) => WelcomePage(),
-        '/dashboard': (ctx) => Dashboard(user),
-        '/signup': (ctx) => SignupPage(),
-        '/login': (ctx) => LoginPage(),
-        '/resetpass': (ctx) => ResetPassPage(),
-        '/changepass': (ctx) => ChangePass(user),
-        '/changeEmail': (ctx) => ChangeEmail(user),
-        '/create-profile': (ctx) =>
-            UpdateProfile(navigateToDashboard: true, profile: user.profile),
-        '/add-course': (ctx) => AddCourses(),
-        '/create-course': (ctx) => CreateCourse(),
-        '/license': (ctx) => AppLicensePage(),
-        '/privacypolicy': (ctx) => PrivacyPolicyPage()
-      },
-    );
+class _AppMainState extends State<AppMain> {
+  UserModel user;
+
+  @override
+  void initState() {
+    user = UserModel(widget.uid);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicTheme(
+        defaultBrightness: Brightness.dark,
+        data: (brightness) {
+          return (brightness == Brightness.light)? defaultTheme(): defaultDarkTheme();
+        },
+        themedWidgetBuilder: (context, theme) {
+          return MaterialApp(
+            title: 'Class Resources',
+            theme: theme,
+            routes: {
+              '/': (ctx) => user.status == AccountStatus.LoggedOut
+                  ? WelcomePage()
+                  : Dashboard(user),
+              '/welcome': (ctx) => WelcomePage(),
+              '/dashboard': (ctx) => Dashboard(user),
+              '/signup': (ctx) => SignupPage(),
+              '/login': (ctx) => LoginPage(),
+              '/resetpass': (ctx) => ResetPassPage(),
+              '/changepass': (ctx) => ChangePass(user),
+              '/changeEmail': (ctx) => ChangeEmail(user),
+              '/create-profile': (ctx) => UpdateProfile(
+                  navigateToDashboard: true, profile: user.profile),
+              '/add-course': (ctx) => AddCourses(),
+              '/create-course': (ctx) => CreateCourse(),
+              '/license': (ctx) => AppLicensePage(),
+              '/privacypolicy': (ctx) => PrivacyPolicyPage()
+            },
+          );
+        });
   }
 }

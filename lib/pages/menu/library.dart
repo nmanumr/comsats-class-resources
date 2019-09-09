@@ -1,5 +1,7 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/text-avatar.dart';
+import 'package:class_resources/components/theme-chooser.dart';
+import 'package:class_resources/models/theme.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +95,15 @@ class LibraryPage extends StatelessWidget {
     return actions;
   }
 
+  void showChooser(context) {
+    var _themeModel = ThemeModel();
+    showDialog<void>(
+        context: context,
+        builder: (context) {
+          return ThemeSwitcherDialog(themeModel: _themeModel);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,6 +150,13 @@ class LibraryPage extends StatelessWidget {
                       onTap: () =>
                           Navigator.pushNamed(context, '/privacypolicy'),
                     ),
+                    // ListTile(
+                    //   title: Text("Theme"),
+                    //   leading: Icon(Icons.format_paint),
+                    //   onTap: (){
+                    //     showChooser(context);
+                    //   },
+                    // ),
                     ListTile(
                       title: Text("About App"),
                       leading: Icon(Icons.info_outline),

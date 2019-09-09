@@ -71,15 +71,15 @@ class CalendarDay extends StatelessWidget {
     );
   }
 
-  List<Widget> buildColumns() {
+  List<Widget> buildColumns(context) {
     List<Widget> children = [];
     for (var i = 0; i < 7; i++) {
       children.add(Container(
         height: 120,
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(width: 1),
-            left: BorderSide(width: 1),
+            bottom: BorderSide(width: 1, color: Theme.of(context).dividerColor),
+            left: BorderSide(width: 1, color: Theme.of(context).dividerColor),
           ),
         ),
         child: Row(
@@ -99,7 +99,7 @@ class CalendarDay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = [Column(children: buildColumns())];
+    List<Widget> children = [Column(children: buildColumns(context))];
     children.addAll(
         events.map((event) => buildEventWidget(event, context)).toList());
 
