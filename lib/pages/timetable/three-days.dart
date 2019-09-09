@@ -1,16 +1,19 @@
+import 'package:class_resources/models/event.model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'calender-day.dart';
 
 class ThreeDaysView extends StatelessWidget {
-  ThreeDaysView(this.lectureDuration, this.totalLectures, this.startTime);
+  ThreeDaysView(
+      this.lectureDuration, this.totalLectures, this.startTime, this.events);
 
   final Duration lectureDuration;
   final num totalLectures;
   final TimeOfDay startTime;
   final ScrollController calenderDaysScoller = ScrollController();
   final ScrollController calenderLagendScoller = ScrollController();
+  final List<EventModel> events;
 
   getslotStartTime(num slot) {
     final now = DateTime.now();
@@ -61,9 +64,7 @@ class ThreeDaysView extends StatelessWidget {
     var lagends =
         List<Widget>.generate(totalLectures, (i) => buildLectureLagend(i + 1));
 
-    // lagends.insert(0, SizedBox(height: 70, width: 70));
     return Container(
-      // padding: EdgeInsets.symmetric(vertical: 15),
       child: Column(
         children: lagends,
       ),
@@ -73,9 +74,10 @@ class ThreeDaysView extends StatelessWidget {
   buildCalederDay(index, width) {
     var date =
         DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+    var dayEvents = events.where((e) => e.weekday == index + 1).toList();
     return SizedBox(
-      width: (width - 70) / 3,
-      child: CalendarDay(day: date, events: []),
+      width: 150,
+      child: CalendarDay(day: date, events: dayEvents),
     );
   }
 
@@ -85,26 +87,26 @@ class ThreeDaysView extends StatelessWidget {
     for (var i = 0; i < days.length; i++) {
       var day = days[i];
       bool isCrntDay = DateTime.now().weekday - 1 == i;
-      dayLagends.add(
-        SizedBox(
-          width: (width - 70) / 3,
-          height: 70,
-          child: Material(
-            elevation: 2,
-            color: Theme.of(context).primaryColorLight,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: isCrntDay ? Theme.of(context).accentColor: Colors.transparent,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                child: Text(day),
+      dayLagends.add(SizedBox(
+        width: 150,
+        height: 70,
+        child: Material(
+          elevation: 2,
+          color: Theme.of(context).primaryColorLight,
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                color: isCrntDay
+                    ? Theme.of(context).accentColor
+                    : Colors.transparent,
               ),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              child: Text(day),
             ),
           ),
-        )
-      );
+        ),
+      ));
     }
 
     return SizedBox(
@@ -113,6 +115,10 @@ class ThreeDaysView extends StatelessWidget {
         children: <Widget>[
           SizedBox(
             width: 70,
+            child: Material(
+              elevation: 2,
+              color: Theme.of(context).primaryColorLight,
+            ),
           ),
           Expanded(
             child: ListView(
@@ -136,7 +142,6 @@ class ThreeDaysView extends StatelessWidget {
       calenderLagendScoller.jumpTo(
         calenderDaysScoller.position.pixels,
       );
-      // calenderLagendScoller.position.setPixels();
     });
 
     return SizedBox(
@@ -148,7 +153,6 @@ class ThreeDaysView extends StatelessWidget {
             height: 50,
             width: double.infinity,
             child: Material(
-              // elevation: 2,
               color: Theme.of(context).primaryColorLight,
             ),
           ),

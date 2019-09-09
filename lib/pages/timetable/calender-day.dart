@@ -8,32 +8,42 @@ class CalendarDay extends StatelessWidget {
 
   CalendarDay({@required this.events, @required this.day});
 
-  Widget paddedText(text) {
+  Widget paddedText(text, {light = false}) {
     return Padding(
       padding: EdgeInsets.fromLTRB(10, 3, 0, 0),
-      child: Text(
-        text,
-        style: TextStyle(fontWeight: FontWeight.w500),
+      child: Opacity(
+        opacity: light ? 0.8 : 1.0,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: light ? 13 : 14.0,
+          ),
+        ),
       ),
     );
   }
 
+  DateTime dateTimeFromTime(TimeOfDay t) {
+    var now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, t.hour, t.minute);
+  }
+
   Widget buildEventWidget(EventModel event, context) {
-    var startPos = event.startTime.hour * 48.0;
-    startPos += (event.startTime.minute / 60) * 48.0 + 2;
-    var height;
-    if (event.endTime == null) {
-      height = 48.0;
-    } else {
-      var timediff = event.endTime.difference(event.startTime);
-      height = timediff.inMinutes / 60 * 48.0 - 5;
-    }
+    var startTime = dateTimeFromTime(event.startTime)
+        .difference(dateTimeFromTime(TimeOfDay(hour: 8, minute: 30)));
+
+    var duration = dateTimeFromTime(event.endTime)
+        .difference(dateTimeFromTime(event.startTime));
+
+    var startPos = startTime.inMinutes / 60 * 80.0 + 4;
+    var height = duration.inMinutes / 60 * 80.0 - 8;
 
     return Container(
-      margin: EdgeInsets.fromLTRB(64, startPos, 10, 0),
+      margin: EdgeInsets.fromLTRB(4, startPos, 3, 0),
       child: Material(
         borderRadius: BorderRadius.circular(5),
-        color: event.color,
+        color: event.color.withAlpha(200),
         child: InkWell(
           borderRadius: BorderRadius.circular(5),
           onTap: () {
@@ -51,7 +61,8 @@ class CalendarDay extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 paddedText(event.title),
-                paddedText(event.location ?? ""),
+                SizedBox(height: 5),
+                paddedText(event.location ?? "", light: true),
               ],
             ),
           ),
@@ -67,7 +78,7 @@ class CalendarDay extends StatelessWidget {
         height: 120,
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(width: i == 6 ? 0 : 1),
+            bottom: BorderSide(width: 1),
             left: BorderSide(width: 1),
           ),
         ),

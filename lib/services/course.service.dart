@@ -28,7 +28,8 @@ class CourseService with FirestoreServiceMixin {
   }
 
   Stream<List<EventModel>> getTimetable() {
-    return relativeCollectionSnapsots("timetable").map(
+    var path = p.join(this.ref.path, "timetable");
+    return firestore.collection(path).snapshots().map(
       (data) => data.documents
           .map(
             (eventDoc) => EventModel(

@@ -1,4 +1,3 @@
-import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/services/course.service.dart';
 import 'package:meta/meta.dart';
 import 'package:class_resources/models/profile.model.dart';

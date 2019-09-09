@@ -54,7 +54,7 @@ class _DashboardState extends State<Dashboard>
       {
         "name": "Time Table",
         "icon": Icons.calendar_today,
-        "page": TimeTablePage(),
+        "page": TimeTablePage(userProfile: widget.user.profile),
       },
       // {
       //   "name": "Notifications",
