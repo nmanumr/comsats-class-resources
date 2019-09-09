@@ -10,15 +10,12 @@ class CalendarDay extends StatelessWidget {
 
   Widget paddedText(text, {light = false}) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 3, 0, 0),
-      child: Opacity(
-        opacity: light ? 0.8 : 1.0,
-        child: Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: light ? 13 : 14.0,
-          ),
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: light ? 13 : 14.0,
         ),
       ),
     );
