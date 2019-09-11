@@ -24,7 +24,7 @@ class ProfileService with FirestoreServiceMixin {
     return null;
   }
 
-  updateProfile(rollNum, name) async {
+  updateProfile({String rollNum, String name}) async {
     var uid = model.user.uid;
     DocumentReference profileRef = firestore.document("users/$uid");
     DocumentSnapshot document = await profileRef.get();

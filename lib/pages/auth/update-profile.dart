@@ -57,8 +57,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
     if (_formKey.currentState.validate()) {
       try {
         await widget.profile.service.updateProfile(
-          _nameController.text,
-          _rollumController.text,
+          rollNum: _rollumController.text.toLowerCase(),
+          name: _nameController.text,
         );
         setState(() => isLoading = false);
         if (widget.navigateToDashboard)
@@ -94,7 +94,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 child: ListTile(
                   leading: CircleAvatar(
                     child: Icon(Icons.class_),
-                    backgroundColor: HexColor(generateColor(model.cr)),
+                    backgroundColor: HexColor(generateColor(model.name)),
                     foregroundColor: Colors.white,
                   ),
                   title: Text(model.name),
@@ -136,7 +136,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
           ),
           PaddedInput(
             label: "Your Roll Number",
-            initialValue: widget.profile.name,
+            initialValue: widget.profile.rollNum,
             controller: _rollumController,
             validator: rollNumValidator,
           ),

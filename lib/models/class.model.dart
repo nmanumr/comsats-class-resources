@@ -20,6 +20,6 @@ class KlassData {
   loadData(Map<String, dynamic> data) {
     name = data["name"];
     currentSemester = data["currentSemester"];
-    cr = data["cr"];
+    cr = data["CR"];
   }
 }

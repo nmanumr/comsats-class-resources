@@ -73,7 +73,7 @@ class ThreeDaysView extends StatelessWidget {
 
   buildCalederDay(index, width) {
     var date =
-        DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+        DateTime.now().subtract(Duration(days: DateTime.now().weekday - index - 1));
     var dayEvents = events.where((e) => e.weekday == index + 1).toList();
     return SizedBox(
       width: 150,

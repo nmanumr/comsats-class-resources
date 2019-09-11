@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/pages/timetable/event-detail.dart';
+import 'package:date_utils/date_utils.dart';
 
 class CalendarDay extends StatelessWidget {
   final List<EventModel> events;
@@ -94,11 +95,31 @@ class CalendarDay extends StatelessWidget {
     return children;
   }
 
+  Widget currentTimeLine(context) {
+    if (!Utils.isSameDay(day, DateTime.now())) return Text("");
+
+    var start = dateTimeFromTime(TimeOfDay(hour: 8, minute: 30));
+    var end = dateTimeFromTime(TimeOfDay(hour: 19, minute: 00));
+    var now = DateTime.now();
+
+    if (now.isBefore(start) || now.isAfter(end)) return Text("");
+
+    var dur = now.difference(dateTimeFromTime(TimeOfDay(hour: 8, minute: 30)));
+    var startPos = dur.inMinutes / 60 * 80.0;
+
+    return Container(
+      height: 3,
+      margin: EdgeInsets.only(top: startPos),
+      color: Theme.of(context).accentColor,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [Column(children: buildColumns(context))];
     children.addAll(
         events.map((event) => buildEventWidget(event, context)).toList());
+    children.add(currentTimeLine(context));
 
     return Stack(
       children: children,
