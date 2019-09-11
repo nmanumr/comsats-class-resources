@@ -53,7 +53,7 @@ class BaseModel {
   void onDataLoaded() => loadData(raw);
 
   /// To be called when model destory
-  void destroy() {
+  void close() {
     if (_sub != null) _sub.cancel();
   }
 }

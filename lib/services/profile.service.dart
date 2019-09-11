@@ -39,4 +39,13 @@ class ProfileService with FirestoreServiceMixin {
       "name": name,
     });
   }
+
+  @override
+  close() {
+    for (var semester in model.semesters) {
+      semester.close();
+    }
+    model.klass.close();
+    return super.close();
+  }
 }

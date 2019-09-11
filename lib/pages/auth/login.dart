@@ -5,12 +5,16 @@ import 'package:class_resources/pages/dashboard.dart';
 import 'package:class_resources/services/user.service.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:class_resources/utils/validator.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 
 import 'package:class_resources/components/input.dart';
 
 class LoginPage extends StatefulWidget {
   final UserService userService = UserService("", null);
+  final FirebaseAnalyticsObserver observer;
+
+  LoginPage(this.observer);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -30,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         EnterExitRoute(
           exitPage: this.widget,
-          enterPage: Dashboard(user),
+          enterPage: Dashboard(user, widget.observer),
         ),
         (_) => false);
   }

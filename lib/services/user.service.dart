@@ -22,6 +22,11 @@ class UserService {
 
   UserService.fromData(this.model);
 
+
+  void close(){
+    this.model.profile.service.close();
+  }
+
   /// Save User id to shared preferences
   /// to presistant user login
   Future<void> saveUserId(uid) async {

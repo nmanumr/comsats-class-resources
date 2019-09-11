@@ -31,4 +31,10 @@ class SemesterModel extends Model {
       return CourseModel(ref: course, user: user);
     }).toList();
   }
+
+  void close(){
+    for(var course in courses){
+      course.service.close();
+    }
+  }
 }

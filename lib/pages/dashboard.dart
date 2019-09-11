@@ -2,9 +2,9 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.model.dart';
-// import 'package:class_resources/models/timetable.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -14,18 +14,24 @@ import './timetable/timetable.dart';
 import './menu/library.dart';
 
 class Dashboard extends StatefulWidget {
-  Dashboard(this.user);
+  Dashboard(this.user, this.observer);
 
   final UserModel user;
+  final FirebaseAnalyticsObserver observer;
 
   @override
-  _DashboardState createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState(observer);
 }
 
 class _DashboardState extends State<Dashboard>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin, RouteAware {
+
+  _DashboardState(this.observer);
+
   @override
   final wantKeepAlive = true;
+
+  final FirebaseAnalyticsObserver observer;
 
   // TimeTableModel timeTableModel;
   int _cIndex = 0;
@@ -38,9 +44,16 @@ class _DashboardState extends State<Dashboard>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    observer.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
   void dispose() {
+    observer.unsubscribe(this);
+    widget.user.service.close();
     super.dispose();
-    widget.user.profile.service.close();
   }
 
   List<BottomNavigationBarItem> initTabs() {
@@ -48,11 +61,13 @@ class _DashboardState extends State<Dashboard>
     tabs = [
       {
         "name": "Courses",
+        "path": "courses",
         "icon": Icons.book,
         "page": CoursesPage(model: widget.user.profile),
       },
       {
         "name": "Time Table",
+        "path": "timetable",
         "icon": Icons.calendar_today,
         "page": TimeTablePage(userProfile: widget.user.profile),
       },
@@ -63,6 +78,7 @@ class _DashboardState extends State<Dashboard>
       // },
       {
         "name": "Menu",
+        "path": "menu",
         "icon": Icons.menu,
         "page": LibraryPage(widget.user),
       }
@@ -103,6 +119,9 @@ class _DashboardState extends State<Dashboard>
         onTap: (index) {
           setState(() {
             _cIndex = index;
+            observer.analytics.setCurrentScreen(
+              screenName: 'dashboard/${tabs[index]["path"]}',
+            );
           });
         },
       ),
@@ -144,8 +163,8 @@ class _DashboardState extends State<Dashboard>
             model: userModel.profile,
             child: ScopedModelDescendant<ProfileModel>(
               builder: (context, child, profileModel) {
-
-                if (profileModel == null || profileModel.status == ProfileStatus.Loading) {
+                if (profileModel == null ||
+                    profileModel.status == ProfileStatus.Loading) {
                   return Loader();
                 }
 

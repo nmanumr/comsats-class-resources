@@ -163,7 +163,7 @@ class LibraryPage extends StatelessWidget {
                       onTap: () => showAboutDialog(
                         context: context,
                         applicationName: "COMSATS Class Resources",
-                        applicationVersion: "v0.1",
+                        applicationVersion: "v1.2",
                         applicationLegalese: "(c) 2019 Nauman Umer",
                         applicationIcon:
                             Image.asset("assets/images/logo.png", width: 50),
