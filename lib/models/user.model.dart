@@ -41,8 +41,6 @@ class UserModel extends Model {
       providers = data.providerData;
       profile = ProfileModel(this);
       status = AccountStatus.Success;
-
-      for (var provider in providers) print(provider.providerId);
     }
 
     notifyListeners();

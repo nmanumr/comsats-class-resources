@@ -30,8 +30,6 @@ class _TimeTablePageState extends State<TimeTablePage> {
           setState(() {
             events.addAll(data);
           });
-
-          print("${data.length} - ${course.title}");
         },
       ));
     }
