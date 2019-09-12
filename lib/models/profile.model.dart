@@ -20,9 +20,7 @@ class ProfileModel extends Model {
   KlassModel klass;
   ProfileService service;
   List<SemesterModel> semesters = [];
-  ProfileStatus status;
-
-  bool loading = true;
+  ProfileStatus status = ProfileStatus.Loading;
 
   ProfileModel(this.user) {
     service = ProfileService(user, this);
@@ -38,7 +36,6 @@ class ProfileModel extends Model {
       id = data["id"];
       rollNum = data["rollNum"];
       klass = KlassModel.fromRef(data["class"] as DocumentReference);
-      loading = false;
 
       status = ProfileStatus.Loaded;
     }

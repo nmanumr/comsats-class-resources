@@ -11,6 +11,8 @@ class ProfileService with FirestoreServiceMixin {
     subscribeDocument("/users/${user.uid}", (doc) {
       model.loadData(doc.data);
     });
+
+
   }
 
   /// return users lastest semester

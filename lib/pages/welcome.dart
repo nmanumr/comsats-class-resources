@@ -3,8 +3,7 @@ import 'package:class_resources/services/user.service.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:flutter/material.dart';
 
-import '../components/bordered-button.dart';
-import '../components/google-button.dart';
+import '../components/buttons.dart';
 import 'auth/update-profile.dart';
 
 class WelcomePage extends StatelessWidget {

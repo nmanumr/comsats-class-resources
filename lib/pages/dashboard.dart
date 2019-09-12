@@ -24,8 +24,10 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard>
-    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin, RouteAware {
-
+    with
+        AutomaticKeepAliveClientMixin,
+        SingleTickerProviderStateMixin,
+        RouteAware {
   _DashboardState(this.observer);
 
   @override
@@ -117,12 +119,13 @@ class _DashboardState extends State<Dashboard>
         selectedItemColor: Theme.of(context).accentColor,
         items: bottomNavItems,
         onTap: (index) {
+          if(_cIndex == index) return;
           setState(() {
             _cIndex = index;
-            observer.analytics.setCurrentScreen(
-              screenName: 'dashboard/${tabs[index]["path"]}',
-            );
           });
+          observer.analytics.setCurrentScreen(
+            screenName: 'dashboard/${tabs[index]["path"]}',
+          );
         },
       ),
     );

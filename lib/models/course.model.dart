@@ -27,7 +27,7 @@ class CourseModel extends Model {
     teacher = data["teacher"];
     maintainers = data["maintainers"] ?? [];
     creditHours = data["creditHours"];
-
+    
     isLoading = false;
     notifyListeners();
   }

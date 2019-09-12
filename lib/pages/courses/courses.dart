@@ -25,7 +25,7 @@ class CoursesPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return ScopedModel(
       model: model,
       child: ScopedModelDescendant<ProfileModel>(
@@ -35,7 +35,9 @@ class CoursesPage extends StatelessWidget {
             appBar: centeredAppBar(context, "Courses"),
             body: Builder(
               builder: (context) {
-                if (model.status == ProfileStatus.LoadingSemesters) return Loader();
+                if (model.status == ProfileStatus.LoadingSemesters ||
+                    model.status == ProfileStatus.Loading) return Loader();
+                    
                 if (model.semesters.isEmpty) return getEmptyState();
 
                 List<Widget> children = [];
@@ -56,7 +58,6 @@ class CoursesPage extends StatelessWidget {
               },
             ),
 
-            
             // floatingActionButton: FloatingActionButton(
             //   child: Icon(Icons.edit),
             //   onPressed: () {

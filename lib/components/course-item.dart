@@ -50,7 +50,8 @@ class CourseItem extends StatelessWidget {
       model: model,
       child: ScopedModelDescendant<CourseModel>(
         builder: (context, child, model) {
-          if (model.isLoading) buildLoading();
+          if (model.isLoading) return buildLoading();
+
           return buildLoaded(context);
         },
       ),
