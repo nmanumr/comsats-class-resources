@@ -6,6 +6,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 abstract class Downloadable {
   factory Downloadable._() => null;
@@ -90,11 +91,22 @@ abstract class Downloadable {
 
   resumeDownloading() async {
     _downloadTaskId = await downloadManager.resumeTask(_downloadTaskId);
-    markDownloadStatus(DownloadTaskStatus.enqueued);
+    if (_downloadTaskId == null) {
+      Fluttertoast.showToast(
+        msg: "Download is not resumeable.",
+      );
+      await cancelDownloading();
+      markDownloadStatus(DownloadTaskStatus.undefined);
+    } else {
+      markDownloadStatus(DownloadTaskStatus.enqueued);
+    }
   }
 
   cancelDownloading() async {
-    await downloadManager.cancelTask(_downloadTaskId);
+    try {
+      await downloadManager.cancelTask(_downloadTaskId);
+      delete();
+    } catch (_) {}
     markDownloadStatus(DownloadTaskStatus.undefined);
   }
 

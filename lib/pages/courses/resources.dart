@@ -23,8 +23,8 @@ class CourseResource extends StatelessWidget {
         strokeWidth: 3,
         value: value,
       ),
-      height: 20,
-      width: 20,
+      height: 40,
+      width: 40,
     );
   }
 
@@ -126,6 +126,9 @@ class CourseResource extends StatelessWidget {
     if (model.downloadStatus == DownloadTaskStatus.complete)
       return Icon(Icons.offline_pin);
 
+    if (model.downloadStatus == DownloadTaskStatus.paused)
+      return Icon(Icons.pause);
+
     return StreamBuilder(
       stream: model.getDownloadStatusStream(),
       builder: (context, AsyncSnapshot<DownloadStatus> snap) {
@@ -147,8 +150,23 @@ class CourseResource extends StatelessWidget {
           model.markDownloadStatus(DownloadTaskStatus.undefined);
 
         if (snap.data.status == DownloadTaskStatus.running) {
-          if (snap.data.progress > 0 && snap.data.progress <= 100)
-            return progressIndicator(value: snap.data.progress.toDouble());
+          print(snap.data.progress);
+          if (snap.data.progress > 0 && snap.data.progress <= 100) {
+            var val = snap.data.progress / 100.0;
+            return Stack(
+              children: [
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Center(
+                    child: Text("${snap.data.progress} %",
+                        style: TextStyle(fontSize: 10.0)),
+                  ),
+                ),
+                progressIndicator(value: val),
+              ],
+            );
+          }
           return progressIndicator();
         }
 
@@ -163,8 +181,8 @@ class CourseResource extends StatelessWidget {
       model: model,
       child: ScopedModelDescendant<ResourceModel>(
         builder: (ctx, _, model) {
-          if (model.isHeading)
-            return ListHeader(text: model.name);
+          print("building...");
+          if (model.isHeading) return ListHeader(text: model.name);
 
           return ListTile(
             leading: FileTypeAvatar(fileType: model.ext),
