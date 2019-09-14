@@ -1,7 +1,6 @@
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/pages/courses/about.dart';
-import 'package:class_resources/pages/courses/assignments.dart';
 import 'package:class_resources/pages/courses/resources.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +18,7 @@ class CourseDetail extends StatelessWidget {
     return Scaffold(
       key: PageStorageKey("Course Details"),
       body: DefaultTabController(
-        length: 3,
+        length: 2,
         child: Column(
           children: <Widget>[
             Padding(
@@ -65,7 +64,6 @@ class CourseDetail extends StatelessWidget {
                             indicatorWeight: 3.0,
                             tabs: [
                               Tab(text: "Resources"),
-                              Tab(text: "Assignments"),
                               Tab(text: "About"),
                             ],
                           ),
@@ -81,7 +79,6 @@ class CourseDetail extends StatelessWidget {
                 key: PageStorageKey("Course-${model.code}"),
                 children: <Widget>[
                   CourseResources(model: model),
-                  CourseAssignments(model: model),
                   CourseAbout(model: model),
                 ],
               ),

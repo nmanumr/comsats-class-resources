@@ -1,11 +1,10 @@
-import 'package:class_resources/models/base.model.dart';
 import 'package:class_resources/services/download-manager.dart';
 import 'package:class_resources/mixins/downloadable.mixin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class ResourceModel extends Model with BaseModel, Downloadable {
+class ResourceModel extends Model with Downloadable {
   DownloadManager downloadManager;
   String name;
   String driveFileId;
@@ -15,7 +14,7 @@ class ResourceModel extends Model with BaseModel, Downloadable {
   DateTime date;
   String uploadedBy;
   String mimeType;
-  String extension;
+  String ext;
   bool isHeading;
   String documentId;
 
@@ -50,7 +49,7 @@ class ResourceModel extends Model with BaseModel, Downloadable {
     date = data["date"] != null ? (data["date"] as Timestamp).toDate(): null;
     mimeType = data["mimeType"];
     uploadedBy = data["uploadedBy"];
-    extension = data["ext"];
+    ext = data["ext"];
     isHeading = data["isHeading"] ?? false;
   }
 
@@ -59,7 +58,9 @@ class ResourceModel extends Model with BaseModel, Downloadable {
     DocumentReference ref,
     this.downloadManager,
   }) {
-    load(ref: ref, data: data);
+    documentId = ref.documentID;
+    loadData(data);
+    loadPath();
   }
 
   @override

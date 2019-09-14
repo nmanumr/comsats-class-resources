@@ -17,10 +17,10 @@ abstract class Downloadable {
   String name;
   DownloadManager downloadManager;
   DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
-  
+
   String _localPath;
-  String _downloadUrl;
-  String _openUrl;
+  String downloadUrl;
+  String openUrl;
   String _downloadTaskId;
 
   notifyModelListeners() => null;
@@ -36,12 +36,13 @@ abstract class Downloadable {
   }
 
   loadDownloadStatus() async {
-    if (await File("$_localPath/$documentId.$ext").exists()) {
+    this.downloadStatus =
+        await downloadManager.getDownloadStatus(this.downloadUrl);
+    if (this.downloadStatus == DownloadTaskStatus.undefined &&
+        await File("$_localPath/$documentId.$ext").exists()) {
       this.downloadStatus = DownloadTaskStatus.complete;
-    } else {
-      this.downloadStatus =
-          await downloadManager.getDownloadStatus(this.getDownloadUrl());
     }
+
     notifyModelListeners();
   }
 
@@ -53,18 +54,8 @@ abstract class Downloadable {
     }
   }
 
-  String getDownloadUrl() {
-    if (_downloadUrl != null) return _downloadUrl;
-    return "https://drive.google.com/uc?id=$driveFileId&export=download";
-  }
-
-  String getOpenUrl() {
-    if (_openUrl != null) return _openUrl;
-    return "https://drive.google.com/file/d/$driveFileId/view";
-  }
-
   openInBrowser() {
-    _launchURL(this.getOpenUrl());
+    _launchURL(this.openUrl);
   }
 
   share() {
@@ -113,7 +104,7 @@ abstract class Downloadable {
     if (!hasExisted) savedDir.create();
 
     _downloadTaskId = await downloadManager.startDownload(
-        this.getDownloadUrl(), _localPath, "$documentId.$ext");
+        this.downloadUrl, _localPath, "$documentId.$ext");
 
     downloadStatus = DownloadTaskStatus.enqueued;
     notifyModelListeners();
