@@ -24,6 +24,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
     super.initState();
 
     var semester = widget.userProfile.service.getCurrentSemester();
+    if(semester == null) return;
     for (var course in semester.courses) {
       subscriptions.add(course.service.getTimetable().listen(
         (data) {
