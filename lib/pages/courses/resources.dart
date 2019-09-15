@@ -4,7 +4,7 @@ import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
 import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/models/resource.model.dart';
-import 'package:class_resources/services/download-manager.dart';
+import 'package:class_resources/services/download.service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -207,7 +207,7 @@ class CourseResources extends StatelessWidget {
   CourseResources({this.model});
 
   final CourseModel model;
-  final DownloadManager _downloadManager = DownloadManager();
+  final DownloadService _downloadManager = DownloadService();
 
   Widget onError(err) {
     return Text('Error: $err');
@@ -219,7 +219,7 @@ class CourseResources extends StatelessWidget {
               model: ResourceModel(
                 ref: doc.reference,
                 data: doc.data,
-                downloadManager: _downloadManager,
+                downloadService: _downloadManager,
               ),
             ))
         .toList();

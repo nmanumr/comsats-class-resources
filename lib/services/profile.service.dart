@@ -3,6 +3,7 @@ import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class ProfileService with FirestoreServiceMixin {
   ProfileModel model;
@@ -56,5 +57,15 @@ class ProfileService with FirestoreServiceMixin {
     }
     await model.klass.close();
     return await super.close();
+  }
+
+  changeClass(String klass) async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'syncUserCourses',
+    );
+
+    return await callable.call({
+      "class": klass,
+    });
   }
 }

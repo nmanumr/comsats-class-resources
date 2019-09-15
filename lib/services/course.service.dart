@@ -2,6 +2,7 @@ import 'package:class_resources/mixins/firestore-service.mixin.dart';
 import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/models/event.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:path/path.dart' as p;
 
 class CourseService with FirestoreServiceMixin {
@@ -41,5 +42,27 @@ class CourseService with FirestoreServiceMixin {
           )
           .toList(),
     );
+  }
+
+  static createCourse({
+    String title,
+    String teacher,
+    String creditHours,
+    String code,
+    String klass,
+    String semester,
+  }) async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'addCourseToClass',
+    );
+
+    return await callable.call({
+      "title": title,
+      "creditHours": creditHours,
+      "code": code,
+      "klass": klass,
+      "semester": semester,
+      "teacher": teacher,
+    });
   }
 }

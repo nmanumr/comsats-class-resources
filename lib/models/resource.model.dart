@@ -1,11 +1,11 @@
-import 'package:class_resources/services/download-manager.dart';
+import 'package:class_resources/services/download.service.dart';
 import 'package:class_resources/mixins/downloadable.mixin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ResourceModel extends Model with Downloadable {
-  DownloadManager downloadManager;
+  DownloadService downloadService;
   String name;
   String driveFileId;
 
@@ -56,7 +56,7 @@ class ResourceModel extends Model with Downloadable {
   ResourceModel({
     Map<String, dynamic> data,
     DocumentReference ref,
-    this.downloadManager,
+    this.downloadService,
   }) {
     documentId = ref.documentID;
     loadData(data);

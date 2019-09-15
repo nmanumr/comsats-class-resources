@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:class_resources/services/download-manager.dart';
+import 'package:class_resources/services/download.service.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,7 +16,7 @@ abstract class Downloadable {
   String driveFileId;
   String ext;
   String name;
-  DownloadManager downloadManager;
+  DownloadService downloadService;
   DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
 
   String _localPath;
@@ -38,7 +38,7 @@ abstract class Downloadable {
 
   loadDownloadStatus() async {
     this.downloadStatus =
-        await downloadManager.getDownloadStatus(this.downloadUrl);
+        await downloadService.getDownloadStatus(this.downloadUrl);
     if (this.downloadStatus == DownloadTaskStatus.undefined &&
         await File("$_localPath/$documentId.$ext").exists()) {
       this.downloadStatus = DownloadTaskStatus.complete;
@@ -76,7 +76,7 @@ abstract class Downloadable {
   }
 
   getDownloadStatusStream() {
-    return downloadManager.listenDownloadTask(_downloadTaskId);
+    return downloadService.listenDownloadTask(_downloadTaskId);
   }
 
   markDownloadStatus(DownloadTaskStatus status) {
@@ -85,12 +85,12 @@ abstract class Downloadable {
   }
 
   pauseDownloading() async {
-    await downloadManager.pauseTask(_downloadTaskId);
+    await downloadService.pauseTask(_downloadTaskId);
     markDownloadStatus(DownloadTaskStatus.paused);
   }
 
   resumeDownloading() async {
-    _downloadTaskId = await downloadManager.resumeTask(_downloadTaskId);
+    _downloadTaskId = await downloadService.resumeTask(_downloadTaskId);
     if (_downloadTaskId == null) {
       Fluttertoast.showToast(
         msg: "Download is not resumeable.",
@@ -104,7 +104,7 @@ abstract class Downloadable {
 
   cancelDownloading() async {
     try {
-      await downloadManager.cancelTask(_downloadTaskId);
+      await downloadService.cancelTask(_downloadTaskId);
       delete();
     } catch (_) {}
     markDownloadStatus(DownloadTaskStatus.undefined);
@@ -115,7 +115,7 @@ abstract class Downloadable {
     bool hasExisted = await savedDir.exists();
     if (!hasExisted) savedDir.create();
 
-    _downloadTaskId = await downloadManager.startDownload(
+    _downloadTaskId = await downloadService.startDownload(
         this.downloadUrl, _localPath, "$documentId.$ext");
 
     downloadStatus = DownloadTaskStatus.enqueued;

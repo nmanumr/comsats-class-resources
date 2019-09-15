@@ -17,7 +17,6 @@ import './pages/welcome.dart';
 import './pages/auth/signup.dart';
 import './pages/auth/login.dart';
 import './pages/auth/update-profile.dart';
-import './pages/courses/create-course.dart';
 import 'pages/menu/license.dart';
 
 void main() async {
@@ -81,7 +80,6 @@ class _AppMainState extends State<AppMain> {
               '/create-profile': (ctx) => UpdateProfile(
                   navigateToDashboard: true, profile: user.profile),
               '/add-course': (ctx) => AddCourses(),
-              '/create-course': (ctx) => CreateCourse(),
               '/license': (ctx) => AppLicensePage(),
               '/privacypolicy': (ctx) => PrivacyPolicyPage()
             },

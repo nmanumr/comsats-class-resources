@@ -1,7 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/models/profile.model.dart';
-
-import 'package:class_resources/services/class.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +15,10 @@ class ChangeClass extends StatefulWidget {
 }
 
 class _ChangeClassState extends State<ChangeClass> {
-  KlassService _klassService = KlassService();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  Stream<QuerySnapshot> _stream;
+  // Stream<QuerySnapshot> _stream;
   String selectedKlass;
   bool isLoading = false;
-
-  @override
-  initState() {
-    _stream = _klassService.getAllClasses();
-    super.initState();
-  }
 
   showError(err) {
     var msg;
@@ -54,7 +45,7 @@ class _ChangeClassState extends State<ChangeClass> {
       Navigator.of(context).pop();
 
     try {
-      await _klassService.changeClass(selectedKlass);
+      await widget.profile.service.changeClass(selectedKlass);
       await widget.profile.service.refresh();
 
       setState(() => isLoading = false);
@@ -121,7 +112,7 @@ class _ChangeClassState extends State<ChangeClass> {
         )
       ]),
       body: StreamBuilder(
-        stream: _stream,
+        stream: Firestore.instance.collection("classes").snapshots(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
             return ListView(
