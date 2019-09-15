@@ -6,7 +6,6 @@ import 'package:class_resources/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-
 class ChangeClass extends StatefulWidget {
   ChangeClass({this.profile, this.navigateToDashboard = true});
 
@@ -109,7 +108,18 @@ class _ChangeClassState extends State<ChangeClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: centeredAppBar(context, "Select Class"),
+      appBar: centeredAppBar(context, "Select Your Class", actions: [
+        FlatButton(
+          child: Text(widget.profile == null ? "Skip" : "Cancel"),
+          onPressed: () {
+            if (widget.navigateToDashboard)
+              Navigator.pushNamedAndRemoveUntil(
+                  context, "/dashboard", (_) => false);
+            else
+              Navigator.of(context).pop();
+          },
+        )
+      ]),
       body: StreamBuilder(
         stream: _stream,
         builder: (context, AsyncSnapshot snapshot) {
