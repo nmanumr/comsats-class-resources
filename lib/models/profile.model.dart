@@ -44,7 +44,6 @@ class ProfileModel extends Model {
     if (semesters.isEmpty) loadSemesters(user.uid);
 
     notifyListeners();
-    return;
   }
 
   /// load user semester
@@ -52,7 +51,6 @@ class ProfileModel extends Model {
     setStatus(ProfileStatus.LoadingSemesters);
 
     service.subscribeCollection("/users/$userId/semesters/", (data) {
-
       semesters = data.documents
           .map<SemesterModel>((doc) => SemesterModel(
                 data: doc.data,
@@ -64,10 +62,10 @@ class ProfileModel extends Model {
     });
   }
 
-  setStatus(ProfileStatus status){
+  setStatus(ProfileStatus status) {
     this.status = status;
     notifyListeners();
   }
 
-  close() => service.close();
+  Future<void> close() async => await service.close();
 }

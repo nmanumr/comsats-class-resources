@@ -55,9 +55,9 @@ class FirestoreServiceMixin {
     ));
   }
 
-  close() {
+  Future<void> close() async {
     for (var subscription in subscriptions) {
-      subscription.cancel();
+      await subscription.cancel();
     }
   }
 }

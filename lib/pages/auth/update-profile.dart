@@ -82,7 +82,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     return ScopedModel(
       model: widget.profile.klass,
       child: ScopedModelDescendant<KlassModel>(
-        builder: (context, widget, model) {
+        builder: (context, _, model) {
           if (model.isLoading) return Loader();
 
           return Padding(
@@ -99,16 +99,17 @@ class _UpdateProfileState extends State<UpdateProfile> {
                   ),
                   title: Text(model.name),
                   subtitle: Text("CR: " + model.cr ?? ""),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  // trailing: Icon(Icons.keyboard_arrow_right),
                 ),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChangeClass(klass: model),
-                  ),
-                );
+                // TODO: fix class update issues
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => ChangeClass(profile: widget.profile),
+                //   ),
+                // );
               },
             ),
           );

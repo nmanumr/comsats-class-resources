@@ -150,7 +150,6 @@ class CourseResource extends StatelessWidget {
           model.markDownloadStatus(DownloadTaskStatus.undefined);
 
         if (snap.data.status == DownloadTaskStatus.running) {
-          print(snap.data.progress);
           if (snap.data.progress > 0 && snap.data.progress <= 100) {
             var val = snap.data.progress / 100.0;
             return Stack(
@@ -181,7 +180,6 @@ class CourseResource extends StatelessWidget {
       model: model,
       child: ScopedModelDescendant<ResourceModel>(
         builder: (ctx, _, model) {
-          print("building...");
           if (model.isHeading) return ListHeader(text: model.name);
 
           return ListTile(

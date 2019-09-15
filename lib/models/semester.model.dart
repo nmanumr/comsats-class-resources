@@ -32,9 +32,9 @@ class SemesterModel extends Model {
     }).toList();
   }
 
-  void close(){
+  Future<void> close() async {
     for(var course in courses){
-      course.service.close();
+      await course.service.close();
     }
   }
 }

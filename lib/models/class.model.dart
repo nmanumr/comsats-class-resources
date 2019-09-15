@@ -5,7 +5,6 @@ import 'package:scoped_model/scoped_model.dart';
 
 class KlassModel extends Model {
   String name;
-  DocumentReference currentSemester;
   String cr;
 
   DocumentReference ref;
@@ -19,22 +18,19 @@ class KlassModel extends Model {
   KlassModel.fromRef(DocumentReference ref) {
     this.ref = ref;
     _sub = ref.snapshots().listen((doc) {
-      isLoading = false;
       loadData(doc.data);
-      notifyListeners();
     });
   }
 
   loadData(Map<String, dynamic> data) {
     name = data["name"];
-    currentSemester = data["currentSemester"];
     cr = data["CR"];
     isLoading = false;
     notifyListeners();
   }
 
   /// To be called when model destory
-  void close() {
-    if (_sub != null) _sub.cancel();
+  Future<void> close() async {
+    if (_sub != null) await _sub.cancel();
   }
 }

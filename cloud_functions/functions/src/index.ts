@@ -58,7 +58,6 @@ export const syncUserCourses = functions.https.onCall(async (data, context) => {
     if (!data['class']) return;
 
     const klassRef = db.doc(`/classes/${data['class']}`);
-    const klass = await db.doc(`/classes/${data['class']}`).get();
     const userid: string = context.auth.uid;
     const semesters = await db.collection(`${klassRef.path}/semesters/`).get();
 
@@ -70,6 +69,5 @@ export const syncUserCourses = functions.https.onCall(async (data, context) => {
 
     await db.doc(`/users/${userid}/`).update({
         "class": klassRef,
-        "currentSemester": klass.get("currentSemester")
     })
 });

@@ -11,8 +11,15 @@ class ProfileService with FirestoreServiceMixin {
     subscribeDocument("/users/${user.uid}", (doc) {
       model.loadData(doc.data);
     });
+  }
 
-
+  Future<void> refresh() async {
+    await close();
+    model.semesters = [];
+    model.klass = null;
+    subscribeDocument("/users/${model.user.uid}", (doc) {
+      model.loadData(doc.data);
+    });
   }
 
   /// return users lastest semester
@@ -43,11 +50,11 @@ class ProfileService with FirestoreServiceMixin {
   }
 
   @override
-  close() {
+  Future<void> close() async {
     for (var semester in model.semesters) {
-      semester.close();
+      await semester.close();
     }
-    model.klass.close();
-    return super.close();
+    await model.klass.close();
+    return await super.close();
   }
 }
