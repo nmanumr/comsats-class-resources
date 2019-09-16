@@ -1,11 +1,13 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/models/profile.model.dart';
+import 'package:class_resources/models/user.model.dart';
+import 'package:class_resources/pages/dashboard.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChangeClass extends StatefulWidget {
-  ChangeClass({this.profile, this.navigateToDashboard = true});
+  ChangeClass(this.profile, {this.navigateToDashboard = true});
 
   final bool navigateToDashboard;
   final ProfileModel profile;
@@ -41,8 +43,8 @@ class _ChangeClassState extends State<ChangeClass> {
   submit(context) async {
     setState(() => isLoading = true);
     // Just close the dialog if klass is not changed
-    if (widget.profile != null && selectedKlass == widget.profile.klass.name)
-      Navigator.of(context).pop();
+    if (widget.profile.klass != null &&
+        selectedKlass == widget.profile.klass.name) Navigator.of(context).pop();
 
     try {
       await widget.profile.service.changeClass(selectedKlass);
@@ -101,7 +103,7 @@ class _ChangeClassState extends State<ChangeClass> {
       key: _scaffoldKey,
       appBar: centeredAppBar(context, "Select Your Class", actions: [
         FlatButton(
-          child: Text(widget.profile == null ? "Skip" : "Cancel"),
+          child: Text(widget.navigateToDashboard ? "Skip" : "Cancel"),
           onPressed: () {
             if (widget.navigateToDashboard)
               Navigator.pushNamedAndRemoveUntil(
@@ -123,7 +125,7 @@ class _ChangeClassState extends State<ChangeClass> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        label: Text("Done"),
+        label: Text("Select"),
         icon: Icon(Icons.done),
         onPressed: () => submit(context),
       ),

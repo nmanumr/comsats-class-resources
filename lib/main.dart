@@ -68,12 +68,12 @@ class _AppMainState extends State<AppMain> {
             theme: theme,
             routes: {
               '/': (ctx) => user.status == AccountStatus.LoggedOut
-                  ? WelcomePage()
+                  ? WelcomePage(user)
                   : Dashboard(user, observer),
-              '/welcome': (ctx) => WelcomePage(),
+              '/welcome': (ctx) => WelcomePage(user),
               '/dashboard': (ctx) => Dashboard(user, observer),
-              '/signup': (ctx) => SignupPage(),
-              '/login': (ctx) => LoginPage(observer),
+              '/signup': (ctx) => SignupPage(user),
+              '/login': (ctx) => LoginPage(user, observer),
               '/resetpass': (ctx) => ResetPassPage(),
               '/changepass': (ctx) => ChangePass(user),
               '/changeEmail': (ctx) => ChangeEmail(user),

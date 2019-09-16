@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:class_resources/models/profile.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -10,10 +11,7 @@ class KlassModel extends Model {
   DocumentReference ref;
   bool isLoading = true;
   StreamSubscription _sub;
-
-  KlassModel.fromdoc(Map<String, dynamic> data, {this.ref}) {
-    loadData(data);
-  }
+  ProfileModel profile;
 
   KlassModel.fromRef(DocumentReference ref) {
     this.ref = ref;

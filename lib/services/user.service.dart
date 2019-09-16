@@ -22,11 +22,6 @@ class UserService {
 
   UserService.fromData(this.model);
 
-
-  void close(){
-    this.model.profile.service.close();
-  }
-
   /// Save User id to shared preferences
   /// to presistant user login
   Future<void> saveUserId(uid) async {
@@ -42,7 +37,8 @@ class UserService {
     );
     saveUserId(user.uid);
 
-    return UserModel.fromData(user);
+    this.model.loadData(user);
+    return this.model;
   }
 
   /// Sign in user with google signin provider
@@ -57,20 +53,23 @@ class UserService {
         await _firebaseAuth.signInWithCredential(credential);
 
     saveUserId(user.uid);
-    return UserModel.fromData(user);
+    this.model.loadData(user);
+    return this.model;
   }
 
   /// Sign user with email, password
   Future<UserModel> signIn(String email, String password) async {
     FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
-        
+
     saveUserId(user.uid);
-    return UserModel.fromData(user);
+    this.model.loadData(user);
+    return this.model;
   }
 
   /// Sign out user
   Future<void> signOut() async {
+    await this.close();
     _firebaseAuth.signOut();
     saveUserId(null);
   }
@@ -101,5 +100,9 @@ class UserService {
   Future<bool> hasProfile(String uid) async {
     var doc = await _firestore.document("/users/$uid/").get();
     return doc.exists;
+  }
+
+  Future<void> close() async {
+    await this.model.profile.service.close();
   }
 }

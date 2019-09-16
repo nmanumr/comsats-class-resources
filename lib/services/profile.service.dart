@@ -15,6 +15,7 @@ class ProfileService with FirestoreServiceMixin {
   }
 
   Future<void> refresh() async {
+    model.setStatus(ProfileStatus.Loading);
     await close();
     model.semesters = [];
     model.klass = null;
@@ -55,7 +56,8 @@ class ProfileService with FirestoreServiceMixin {
     for (var semester in model.semesters) {
       await semester.close();
     }
-    await model.klass.close();
+    if (model.klass != null) await model.klass.close();
+    model.klass = null;
     return await super.close();
   }
 

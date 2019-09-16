@@ -54,7 +54,6 @@ class _DashboardState extends State<Dashboard>
   @override
   void dispose() {
     observer.unsubscribe(this);
-    widget.user.service.close();
     super.dispose();
   }
 
@@ -134,6 +133,7 @@ class _DashboardState extends State<Dashboard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    print(widget.user.uid);
     return ScopedModel(
       model: widget.user,
       child: ScopedModelDescendant<UserModel>(

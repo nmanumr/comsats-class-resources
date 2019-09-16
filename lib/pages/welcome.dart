@@ -1,5 +1,5 @@
 import 'package:class_resources/models/profile.model.dart';
-import 'package:class_resources/services/user.service.dart';
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +8,9 @@ import 'auth/update-profile.dart';
 
 class WelcomePage extends StatelessWidget {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final UserService _userService = UserService("", null);
+  final UserModel userModel;
+
+  WelcomePage(this.userModel);
 
   final textShadows = [
     Shadow(
@@ -40,8 +42,8 @@ class WelcomePage extends StatelessWidget {
     );
 
     try {
-      var user = await _userService.signinWithGoogle();
-      var profileExists = await _userService.hasProfile(user.uid);
+      var user = await userModel.service.signinWithGoogle();
+      var profileExists = await userModel.service.hasProfile(user.uid);
 
       if (profileExists) {
         Navigator.pushNamedAndRemoveUntil(context, "/dashboard", (_) => false);

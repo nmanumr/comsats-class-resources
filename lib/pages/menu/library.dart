@@ -86,8 +86,8 @@ class LibraryPage extends StatelessWidget {
     actions.add(ListTile(
       title: Text("Logout"),
       leading: Icon(Icons.exit_to_app),
-      onTap: () {
-        user.service.signOut();
+      onTap: () async {
+        await user.service.signOut();
         Navigator.pushNamedAndRemoveUntil(context, '/welcome', (_) => false);
       },
     ));

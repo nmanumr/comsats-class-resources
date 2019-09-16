@@ -2,7 +2,6 @@ import 'package:class_resources/models/class.model.dart';
 import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/services/profile.service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 enum ProfileStatus {
@@ -30,12 +29,11 @@ class ProfileModel extends Model {
     // profile doesn't exists
     if (data == null)
       status = ProfileStatus.Error;
-
     else {
       name = data["name"];
       id = data["id"];
       rollNum = data["rollNum"];
-      klass = KlassModel.fromRef(data["class"] as DocumentReference);
+      klass = data["class"] != null ? KlassModel.fromRef(data["class"]) : null;
 
       status = ProfileStatus.Loaded;
     }

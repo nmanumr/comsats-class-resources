@@ -2,14 +2,16 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/input.dart';
 import 'package:class_resources/models/profile.model.dart';
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
-import 'package:class_resources/services/user.service.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
-  final UserService userService = UserService("", null);
+  final UserModel userModel;
+
+  SignupPage(this.userModel);
 
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -39,7 +41,7 @@ class _SignupPageState extends State<SignupPage> {
     setState(() => isLoading = true);
     if (_formKey.currentState.validate()) {
       try {
-        var user = await widget.userService
+        var user = await widget.userModel.service
             .signUp(_emailController.text, _passwordController.text);
         setState(() => isLoading = false);
         Navigator.push(

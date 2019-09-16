@@ -15,7 +15,7 @@ class ResetPassPage extends StatefulWidget {
 
 class _ResetPassPageState extends State<ResetPassPage> {
   PageController _pageController = PageController();
-  UserService _userService = UserService("", null);
+  UserService _userService;
   TextEditingController _controller = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 

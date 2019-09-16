@@ -2,7 +2,6 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/dashboard.dart';
-import 'package:class_resources/services/user.service.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -11,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:class_resources/components/input.dart';
 
 class LoginPage extends StatefulWidget {
-  final UserService userService = UserService("", null);
+  final UserModel userModel;
   final FirebaseAnalyticsObserver observer;
 
-  LoginPage(this.observer);
+  LoginPage(this.userModel, this.observer);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -56,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
-        var user = await widget.userService.signIn(email, password);
+        var user = await widget.userModel.service.signIn(email, password);
         onLogin(user);
       } catch (e) {
         onError(ctx, e);
