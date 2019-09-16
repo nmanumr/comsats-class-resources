@@ -1,21 +1,34 @@
+import 'dart:async';
+
+import 'package:class_resources/models/profile.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:class_resources/models/base.model.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-class KlassModel extends BaseModel with KlassData {
-  KlassModel.fromdoc(Map<String, dynamic> data, {DocumentReference ref})
-      : super.fromdoc(data, ref: ref);
-
-  KlassModel.fromRef(DocumentReference ref) : super.fromRef(ref);
-}
-
-class KlassData {
+class KlassModel extends Model {
   String name;
-  DocumentReference currentSemester;
   String cr;
+
+  DocumentReference ref;
+  bool isLoading = true;
+  StreamSubscription _sub;
+  ProfileModel profile;
+
+  KlassModel.fromRef(DocumentReference ref) {
+    this.ref = ref;
+    _sub = ref.snapshots().listen((doc) {
+      loadData(doc.data);
+    });
+  }
 
   loadData(Map<String, dynamic> data) {
     name = data["name"];
-    currentSemester = data["currentSemester"];
-    cr = data["cr"];
+    cr = data["CR"];
+    isLoading = false;
+    notifyListeners();
+  }
+
+  /// To be called when model destory
+  Future<void> close() async {
+    if (_sub != null) await _sub.cancel();
   }
 }

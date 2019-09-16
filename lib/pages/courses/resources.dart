@@ -2,19 +2,16 @@ import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
-import 'package:class_resources/models/assignment.model.dart';
 import 'package:class_resources/models/course.model.dart';
 import 'package:class_resources/models/resource.model.dart';
-import 'package:class_resources/services/download-manager.dart';
+import 'package:class_resources/services/download.service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-
-// TODO: make it better
 class CourseResource extends StatelessWidget {
-  final dynamic model;
+  final ResourceModel model;
 
   CourseResource({
     @required this.model,
@@ -26,8 +23,8 @@ class CourseResource extends StatelessWidget {
         strokeWidth: 3,
         value: value,
       ),
-      height: 20,
-      width: 20,
+      height: 40,
+      width: 40,
     );
   }
 
@@ -56,21 +53,19 @@ class CourseResource extends StatelessWidget {
     ];
 
     if (downloadRunning) {
-      // bool paused = model.downloadStatus == DownloadTaskStatus.paused;
+      bool paused = model.downloadStatus == DownloadTaskStatus.paused;
       children.addAll([
-        // Disabled Pause we cannot check if the
-        // download is resumable or not
-        // ListTile(
-        //   leading: Icon(paused ? Icons.play_arrow : Icons.pause),
-        //   title: Text(paused ? 'Resume' : 'Pause'),
-        //   onTap: () {
-        //     Navigator.pop(context);
-        //     paused ? model.resumeDownloading() : model.pauseDownloading();
-        //   },
-        // ),
+        ListTile(
+          leading: Icon(paused ? Icons.play_arrow : Icons.pause),
+          title: Text(paused ? 'Resume download' : 'Pause download'),
+          onTap: () {
+            Navigator.pop(context);
+            paused ? model.resumeDownloading() : model.pauseDownloading();
+          },
+        ),
         ListTile(
           leading: Icon(Icons.clear),
-          title: Text('Cancel'),
+          title: Text('Cancel download'),
           onTap: () {
             Navigator.pop(context);
             model.cancelDownloading();
@@ -125,11 +120,14 @@ class CourseResource extends StatelessWidget {
   }
 
   getTrailingWidget() {
-    if ((model is ResourceModel && model.isHeading) ||
+    if ((model.isHeading) ||
         model.downloadStatus == DownloadTaskStatus.undefined) return null;
 
     if (model.downloadStatus == DownloadTaskStatus.complete)
       return Icon(Icons.offline_pin);
+
+    if (model.downloadStatus == DownloadTaskStatus.paused)
+      return Icon(Icons.pause);
 
     return StreamBuilder(
       stream: model.getDownloadStatusStream(),
@@ -152,8 +150,22 @@ class CourseResource extends StatelessWidget {
           model.markDownloadStatus(DownloadTaskStatus.undefined);
 
         if (snap.data.status == DownloadTaskStatus.running) {
-          if (snap.data.progress > 0 && snap.data.progress <= 100)
-            return progressIndicator(value: snap.data.progress.toDouble());
+          if (snap.data.progress > 0 && snap.data.progress <= 100) {
+            var val = snap.data.progress / 100.0;
+            return Stack(
+              children: [
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Center(
+                    child: Text("${snap.data.progress} %",
+                        style: TextStyle(fontSize: 10.0)),
+                  ),
+                ),
+                progressIndicator(value: val),
+              ],
+            );
+          }
           return progressIndicator();
         }
 
@@ -162,41 +174,30 @@ class CourseResource extends StatelessWidget {
     );
   }
 
-  Widget _buildModelDescendant(context, child, model) {
-    if (model is ResourceModel && model.isHeading)
-      return ListHeader(text: model.name);
-
-    return ListTile(
-      leading: FileTypeAvatar(fileType: model.extension),
-      title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
-      subtitle: Text(model.formatedDate),
-      trailing: getTrailingWidget(),
-      onTap: () {
-        if (model.downloadStatus == DownloadTaskStatus.complete)
-          model.open();
-        else
-          showBottomAction(context);
-      },
-      onLongPress: () {
-        showBottomAction(context);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (model is ResourceModel) {
-      return ScopedModel(
-        model: model as ResourceModel,
-        child: ScopedModelDescendant<ResourceModel>(
-          builder: _buildModelDescendant,
-        ),
-      );
-    }
     return ScopedModel(
-      model: model as AssignmentModel,
-      child: ScopedModelDescendant<AssignmentModel>(
-        builder: _buildModelDescendant,
+      model: model,
+      child: ScopedModelDescendant<ResourceModel>(
+        builder: (ctx, _, model) {
+          if (model.isHeading) return ListHeader(text: model.name);
+
+          return ListTile(
+            leading: FileTypeAvatar(fileType: model.ext),
+            title: Text(model.name ?? "", overflow: TextOverflow.ellipsis),
+            subtitle: Text(model.formatedDate),
+            trailing: getTrailingWidget(),
+            onTap: () {
+              if (model.downloadStatus == DownloadTaskStatus.complete)
+                model.open();
+              else
+                showBottomAction(ctx);
+            },
+            onLongPress: () {
+              showBottomAction(ctx);
+            },
+          );
+        },
       ),
     );
   }
@@ -206,7 +207,7 @@ class CourseResources extends StatelessWidget {
   CourseResources({this.model});
 
   final CourseModel model;
-  final DownloadManager _downloadManager = DownloadManager();
+  final DownloadService _downloadManager = DownloadService();
 
   Widget onError(err) {
     return Text('Error: $err');
@@ -216,7 +217,10 @@ class CourseResources extends StatelessWidget {
     List<Widget> children = query.documents
         .map((doc) => CourseResource(
               model: ResourceModel(
-                  data: doc.data, downloadManager: _downloadManager),
+                ref: doc.reference,
+                data: doc.data,
+                downloadService: _downloadManager,
+              ),
             ))
         .toList();
 
@@ -234,7 +238,7 @@ class CourseResources extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: model.getCourseResources(),
+      stream: model.service.getCourseResources(),
       builder: (context, snapshot) {
         if (snapshot.hasError) return onError(snapshot.error);
 

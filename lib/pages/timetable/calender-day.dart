@@ -1,44 +1,47 @@
-import 'package:class_resources/models/event.model.dart';
-import 'package:class_resources/models/timetable.dart';
-import 'package:class_resources/pages/timetable/event-detail.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:class_resources/models/event.model.dart';
+import 'package:class_resources/pages/timetable/event-detail.dart';
 import 'package:date_utils/date_utils.dart';
 
 class CalendarDay extends StatelessWidget {
-  final TimeTableModel model;
+  final List<EventModel> events;
   final DateTime day;
 
-  CalendarDay({@required this.model, @required this.day});
+  CalendarDay({@required this.events, @required this.day});
 
-  String getTimeFromIdx(num idx) => idx < 13 ? "$idx AM" : "${idx - 12} PM";
-
-  Widget paddedText(text) {
+  Widget paddedText(text, {light = false}) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 3, 0, 0),
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
       child: Text(
         text,
-        style: TextStyle(fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: light ? 13 : 14.0,
+        ),
       ),
     );
   }
 
+  DateTime dateTimeFromTime(TimeOfDay t) {
+    var now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, t.hour, t.minute);
+  }
+
   Widget buildEventWidget(EventModel event, context) {
-    var startPos = event.startTime.hour * 48.0;
-    startPos += (event.startTime.minute / 60) * 48.0 + 2;
-    var height;
-    if (event.endTime == null) {
-      height = 48.0;
-    } else {
-      var timediff = event.endTime.difference(event.startTime);
-      height = timediff.inMinutes / 60 * 48.0 - 5;
-    }
+    var startTime = dateTimeFromTime(event.startTime)
+        .difference(dateTimeFromTime(TimeOfDay(hour: 8, minute: 30)));
+
+    var duration = dateTimeFromTime(event.endTime)
+        .difference(dateTimeFromTime(event.startTime));
+
+    var startPos = startTime.inMinutes / 60 * 80.0 + 4;
+    var height = duration.inMinutes / 60 * 80.0 - 8;
 
     return Container(
-      margin: EdgeInsets.fromLTRB(64, startPos, 10, 0),
+      margin: EdgeInsets.fromLTRB(4, startPos, 3, 0),
       child: Material(
         borderRadius: BorderRadius.circular(5),
-        color: event.color,
+        color: event.color.withAlpha(200),
         child: InkWell(
           borderRadius: BorderRadius.circular(5),
           onTap: () {
@@ -56,7 +59,8 @@ class CalendarDay extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 paddedText(event.title),
-                paddedText(event.location ?? ""),
+                SizedBox(height: 5),
+                paddedText(event.location ?? "", light: true),
               ],
             ),
           ),
@@ -65,45 +69,23 @@ class CalendarDay extends StatelessWidget {
     );
   }
 
-  List<Widget> buildColumns(BuildContext context) {
+  List<Widget> buildColumns(context) {
     List<Widget> children = [];
-    for (var i = 0; i <= 24; i++) {
-      children.add(SizedBox(
-        height: 48,
+    for (var i = 0; i < 7; i++) {
+      children.add(Container(
+        height: 120,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(width: 1, color: Theme.of(context).dividerColor),
+            left: BorderSide(width: 1, color: Theme.of(context).dividerColor),
+          ),
+        ),
         child: Row(
           children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(minWidth: 60, minHeight: 40),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: EdgeInsets.only(right: 13),
-                  transform: Matrix4.translationValues(0, -24, 0),
-                  child: Text(
-                    i == 0 ? "" : getTimeFromIdx(i),
-                    style: TextStyle(fontSize: 11),
-                  ),
-                ),
-              ),
-            ),
             Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      width: i == 23 ? 0 : 1,
-                      color: Theme.of(context).dividerColor,
-                    ),
-                    left: BorderSide(
-                      width: 1,
-                      color: Theme.of(context).dividerColor,
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(""),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(""),
               ),
             )
           ],
@@ -113,11 +95,17 @@ class CalendarDay extends StatelessWidget {
     return children;
   }
 
-  currentTimeLine(context) {
+  Widget currentTimeLine(context) {
     if (!Utils.isSameDay(day, DateTime.now())) return Text("");
 
-    var startPos = DateTime.now().hour * 48.0;
-    startPos += (DateTime.now().minute / 60) * 48.0 + 2;
+    var start = dateTimeFromTime(TimeOfDay(hour: 8, minute: 30));
+    var end = dateTimeFromTime(TimeOfDay(hour: 19, minute: 00));
+    var now = DateTime.now();
+
+    if (now.isBefore(start) || now.isAfter(end)) return Text("");
+
+    var dur = now.difference(dateTimeFromTime(TimeOfDay(hour: 8, minute: 30)));
+    var startPos = dur.inMinutes / 60 * 80.0;
 
     return Container(
       height: 3,
@@ -128,22 +116,13 @@ class CalendarDay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var events = model.getEventForDay(day);
     List<Widget> children = [Column(children: buildColumns(context))];
     children.addAll(
         events.map((event) => buildEventWidget(event, context)).toList());
     children.add(currentTimeLine(context));
 
-    var scrollController = new ScrollController(
-      initialScrollOffset: 48.0 * 8 - 16,
-    );
-
-    return SingleChildScrollView(
-      key: PageStorageKey("day" + day.toString()),
-      controller: scrollController,
-      child: Stack(
-        children: children,
-      ),
+    return Stack(
+      children: children,
     );
   }
 }

@@ -26,7 +26,11 @@ npm run shell
 # Invoking a function in shell
 func_name(data)
 
-# Generate signing key fingure print
+# Generate debug signing key
+keytool -genkey -v -keystore ~/.android/debug.keystore -alias debug -keyalg RSA -keysize 2048 -validity 10000
+
+
+# Generate signing key finger print
 keytool -list -v -keystore path/key.jks -alias key
 ```
 

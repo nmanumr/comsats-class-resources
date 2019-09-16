@@ -2,13 +2,17 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 // TODO: Add re authenticate user before changing the password
 
 class ChangeEmail extends StatefulWidget {
+  ChangeEmail(this.user);
+
+  final UserModel user;
+
   @override
   createState() => _ChangeEmailState();
 }
@@ -17,7 +21,6 @@ class _ChangeEmailState extends State<ChangeEmail> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   PageController _pageController = PageController();
-  AuthService _authService = AuthService();
   bool isLoading = false;
 
   TextEditingController _emailController = TextEditingController();
@@ -27,7 +30,7 @@ class _ChangeEmailState extends State<ChangeEmail> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
-        await _authService.changePassword(_emailController.text);
+        await widget.user.service.changePassword(_emailController.text);
         await _pageController.nextPage(
           curve: Curves.easeOutExpo,
           duration: Duration(milliseconds: 700),

@@ -1,57 +1,55 @@
 import 'dart:ui';
 
-import 'package:class_resources/models/base.model.dart';
+import 'package:class_resources/utils/colors.dart';
+import 'package:flutter/material.dart';
+import "package:meta/meta.dart";
 import 'package:class_resources/models/course.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-enum EventType { reminder, event }
+enum EventType { ClassEvent, Reminder }
 
-class EventModel extends BaseModel with EventData {
+class EventModel extends Model {
+  String title;
+  String location;
+  String teacher;
+  TimeOfDay startTime;
+  TimeOfDay endTime;
+  EventType eventType;
   CourseModel course;
+  num weekday;
+  bool isLab;
+  String eventSlot;
+  
+  Color color;
+
+  DocumentReference ref;
+
+  loadData(Map<String, dynamic> data) {
+    location = data["location"];
+    teacher = data["teacher"];
+    eventSlot = data["eventSlot"];
+    weekday = data["weekday"];
+
+    startTime = timeOfDayFromString(data["startTime"]);
+    endTime = timeOfDayFromString(data["endTime"]);
+
+    isLab = data["isLab"];
+    title = (isLab ? "(Lab) " : "") + this.course.title;
+    color = data["color"] ?? HexColor(generateColor(title));
+  }
+
+  TimeOfDay timeOfDayFromString(String time) {
+    var t = time.split(":");
+    return TimeOfDay(hour: int.parse(t[0]), minute: int.parse(t[1]));
+  }
 
   EventModel({
     Map<String, dynamic> data,
-    DocumentReference ref,
-    this.course,
-  }) : super(data: data, ref: ref);
-}
-
-class EventData {
-  String title;
-  String location;
-  String repeat;
-  DateTime startTime;
-  DateTime endTime;
-  EventType eventType;
-  CourseModel course;
-  String eventSlot;
-  Color color;
-
-  /// First datetime to start repeating event from
-  DateTime eventStart;
-
-  /// Last datetime to stop repeating event to
-  DateTime eventEnd;
-
-  loadData(Map<String, dynamic> data) {
-    title = data["title"];
-    location = data["location"];
-    eventType = data["eventType"];
-    course = data["course"];
-    eventSlot = data["eventSlot"];
-    color = data["color"];
-
-    startTime = data["startTime"] != null
-        ? (data["startTime"] as Timestamp).toDate()
-        : null;
-    eventEnd = data["endTime"] != null
-        ? (data["endTime"] as Timestamp).toDate()
-        : null;
-    eventStart = data["eventStart"] != null
-        ? (data["eventStart"] as Timestamp).toDate()
-        : null;
-    eventEnd = data["eventEnd"] != null
-        ? (data["eventEnd"] as Timestamp).toDate()
-        : null;
+    this.ref,
+    @required this.eventType,
+    @required this.course,
+  }) {
+    loadData(data);
   }
 }

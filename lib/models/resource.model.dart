@@ -1,25 +1,11 @@
-import 'package:class_resources/models/base.model.dart';
-import 'package:class_resources/services/download-manager.dart';
+import 'package:class_resources/services/download.service.dart';
 import 'package:class_resources/mixins/downloadable.mixin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-class ResourceModel extends BaseModel with Downloadable, ResourceData {
-  DownloadManager downloadManager;
-
-  ResourceModel({
-    Map<String, dynamic> data,
-    DocumentReference ref,
-    this.downloadManager,
-  }) : super(data: data, ref: ref);
-
-  @override
-  notifyModelListeners() {
-    notifyListeners();
-  }
-}
-
-class ResourceData {
+class ResourceModel extends Model with Downloadable {
+  DownloadService downloadService;
   String name;
   String driveFileId;
 
@@ -28,7 +14,7 @@ class ResourceData {
   DateTime date;
   String uploadedBy;
   String mimeType;
-  String extension;
+  String ext;
   bool isHeading;
   String documentId;
 
@@ -60,10 +46,25 @@ class ResourceData {
     driveFileId = data["driveFileId"];
     downloadUrl = data["downloadUrl"];
     openUrl = data["openUrl"];
-    date = data["date"] ? (data["date"] as Timestamp).toDate(): null;
+    date = data["date"] != null ? (data["date"] as Timestamp).toDate(): null;
     mimeType = data["mimeType"];
     uploadedBy = data["uploadedBy"];
-    extension = data["ext"];
+    ext = data["ext"];
     isHeading = data["isHeading"] ?? false;
+  }
+
+  ResourceModel({
+    Map<String, dynamic> data,
+    DocumentReference ref,
+    this.downloadService,
+  }) {
+    documentId = ref.documentID;
+    loadData(data);
+    loadPath();
+  }
+
+  @override
+  notifyModelListeners() {
+    notifyListeners();
   }
 }

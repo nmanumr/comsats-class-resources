@@ -38,6 +38,11 @@ class EventDetails extends StatelessWidget {
     );
   }
 
+  DateTime dateTimeFromTime(TimeOfDay t) {
+    var now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, t.hour, t.minute);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,19 +75,19 @@ class EventDetails extends StatelessWidget {
           ),
           copyableListItem(
             context,
-            title: model.course.teacher,
+            title: model.teacher,
             icon: Icons.person,
           ),
           copyableListItem(
             context,
             title: "Start Time",
-            subtitle: DateFormat.jm().format(model.startTime),
+            subtitle: DateFormat.jm().format(dateTimeFromTime(model.startTime)),
             icon: Icons.alarm,
           ),
           copyableListItem(
             context,
             title: "EndTime",
-            subtitle: DateFormat.jm().format(model.endTime),
+            subtitle: DateFormat.jm().format(dateTimeFromTime(model.endTime)),
             icon: Icons.alarm_on,
           ),
           ...(model.eventSlot != null

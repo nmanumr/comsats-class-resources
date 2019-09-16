@@ -1,25 +1,27 @@
 import 'dart:io';
 
-import 'package:class_resources/services/download-manager.dart';
+import 'package:class_resources/services/download.service.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 abstract class Downloadable {
   factory Downloadable._() => null;
 
   String mimeType;
-  String _localPath;
   String documentId;
   String driveFileId;
-  String _downloadUrl;
-  String _openUrl;
   String ext;
   String name;
+  DownloadService downloadService;
   DownloadTaskStatus downloadStatus = DownloadTaskStatus.undefined;
-  DownloadManager downloadManager;
+
+  String _localPath;
+  String downloadUrl;
+  String openUrl;
   String _downloadTaskId;
 
   notifyModelListeners() => null;
@@ -35,12 +37,13 @@ abstract class Downloadable {
   }
 
   loadDownloadStatus() async {
-    if (await File("$_localPath/$documentId.$ext").exists()) {
+    this.downloadStatus =
+        await downloadService.getDownloadStatus(this.downloadUrl);
+    if (this.downloadStatus == DownloadTaskStatus.undefined &&
+        await File("$_localPath/$documentId.$ext").exists()) {
       this.downloadStatus = DownloadTaskStatus.complete;
-    } else {
-      this.downloadStatus =
-          await downloadManager.getDownloadStatus(this.getDownloadUrl());
     }
+
     notifyModelListeners();
   }
 
@@ -52,18 +55,8 @@ abstract class Downloadable {
     }
   }
 
-  String getDownloadUrl() {
-    if (_downloadUrl != null) return _downloadUrl;
-    return "https://drive.google.com/uc?id=$driveFileId&export=download";
-  }
-
-  String getOpenUrl() {
-    if (_openUrl != null) return _openUrl;
-    return "https://drive.google.com/file/d/$driveFileId/view";
-  }
-
   openInBrowser() {
-    _launchURL(this.getOpenUrl());
+    _launchURL(this.openUrl);
   }
 
   share() {
@@ -83,7 +76,7 @@ abstract class Downloadable {
   }
 
   getDownloadStatusStream() {
-    return downloadManager.listenDownloadTask(_downloadTaskId);
+    return downloadService.listenDownloadTask(_downloadTaskId);
   }
 
   markDownloadStatus(DownloadTaskStatus status) {
@@ -92,17 +85,28 @@ abstract class Downloadable {
   }
 
   pauseDownloading() async {
-    await downloadManager.pauseTask(_downloadTaskId);
+    await downloadService.pauseTask(_downloadTaskId);
     markDownloadStatus(DownloadTaskStatus.paused);
   }
 
   resumeDownloading() async {
-    _downloadTaskId = await downloadManager.resumeTask(_downloadTaskId);
-    markDownloadStatus(DownloadTaskStatus.enqueued);
+    _downloadTaskId = await downloadService.resumeTask(_downloadTaskId);
+    if (_downloadTaskId == null) {
+      Fluttertoast.showToast(
+        msg: "Download is not resumeable.",
+      );
+      await cancelDownloading();
+      markDownloadStatus(DownloadTaskStatus.undefined);
+    } else {
+      markDownloadStatus(DownloadTaskStatus.enqueued);
+    }
   }
 
   cancelDownloading() async {
-    await downloadManager.cancelTask(_downloadTaskId);
+    try {
+      await downloadService.cancelTask(_downloadTaskId);
+      delete();
+    } catch (_) {}
     markDownloadStatus(DownloadTaskStatus.undefined);
   }
 
@@ -111,8 +115,8 @@ abstract class Downloadable {
     bool hasExisted = await savedDir.exists();
     if (!hasExisted) savedDir.create();
 
-    _downloadTaskId = await downloadManager.startDownload(
-        this.getDownloadUrl(), _localPath, "$documentId.$ext");
+    _downloadTaskId = await downloadService.startDownload(
+        this.downloadUrl, _localPath, "$documentId.$ext");
 
     downloadStatus = DownloadTaskStatus.enqueued;
     notifyModelListeners();

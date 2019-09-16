@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_downloader/flutter_downloader.dart';
 
-class DownloadManager {
+class DownloadService {
   Future<String> startDownload(
       String url, String saveDir, String fileName) async {
     var tasks = await getTasksByUrl(url);

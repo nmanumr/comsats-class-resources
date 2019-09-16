@@ -1,13 +1,19 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
+import 'package:class_resources/models/user.model.dart';
+import 'package:class_resources/pages/dashboard.dart';
+import 'package:class_resources/utils/route-transition.dart';
 import 'package:class_resources/utils/validator.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/services/authentication.dart';
 
 class LoginPage extends StatefulWidget {
-  final AuthService auth = AuthService();
+  final UserModel userModel;
+  final FirebaseAnalyticsObserver observer;
+
+  LoginPage(this.userModel, this.observer);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -22,8 +28,14 @@ class _LoginPageState extends State<LoginPage> {
   bool showPass = false;
   bool isLoading = false;
 
-  void onLogin(ctx) {
-    Navigator.pushNamedAndRemoveUntil(ctx, '/dashboard', (r) => false);
+  void onLogin(UserModel user) {
+    Navigator.pushAndRemoveUntil(
+        context,
+        EnterExitRoute(
+          exitPage: this.widget,
+          enterPage: Dashboard(user, widget.observer),
+        ),
+        (_) => false);
   }
 
   void onError(ctx, err) {
@@ -43,8 +55,8 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
-        await widget.auth.signIn(email, password);
-        onLogin(ctx);
+        var user = await widget.userModel.service.signIn(email, password);
+        onLogin(user);
       } catch (e) {
         onError(ctx, e);
       }

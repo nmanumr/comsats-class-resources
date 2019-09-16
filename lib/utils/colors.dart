@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart' as crypto;
+
 
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
@@ -59,7 +63,14 @@ String hslToHex(List<num> hsl) {
   return rgbToHex(rgb[0], rgb[1], rgb[2]);
 }
 
+String generateMd5(String data) {
+  var content = new Utf8Encoder().convert(data);
+  var md5 = crypto.md5;
+  var digest = md5.convert(content);
+  return hex.encode(digest.bytes);
+}
+
 String generateColor(String text, {s: 80, l: 45}) {
-  var code = text.hashCode;
+  num code = int.parse(generateMd5(text).substring(0, 7), radix: 16);
   return hslToHex([code % 360, s, l]);
 }

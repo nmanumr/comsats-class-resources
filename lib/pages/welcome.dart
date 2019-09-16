@@ -1,14 +1,16 @@
-import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/models/profile.model.dart';
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/utils/route-transition.dart';
 import 'package:flutter/material.dart';
 
-import '../components/bordered-button.dart';
-import '../components/google-button.dart';
+import '../components/buttons.dart';
 import 'auth/update-profile.dart';
 
 class WelcomePage extends StatelessWidget {
-  final AuthService _auth = AuthService();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final UserModel userModel;
+
+  WelcomePage(this.userModel);
 
   final textShadows = [
     Shadow(
@@ -40,9 +42,8 @@ class WelcomePage extends StatelessWidget {
     );
 
     try {
-      var user = await _auth.googleSignIn();
-      var profileExists = await _auth.profileExists(user.uid);
-      _auth.setUserId(user.uid);
+      var user = await userModel.service.signinWithGoogle();
+      var profileExists = await userModel.service.hasProfile(user.uid);
 
       if (profileExists) {
         Navigator.pushNamedAndRemoveUntil(context, "/dashboard", (_) => false);
@@ -53,7 +54,7 @@ class WelcomePage extends StatelessWidget {
             exitPage: this,
             enterPage: UpdateProfile(
               navigateToDashboard: true,
-              name: user.displayName,
+              profile: ProfileModel(user),
             ),
           ),
         );

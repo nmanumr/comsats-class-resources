@@ -23,10 +23,10 @@ class CourseItem extends StatelessWidget {
       child: Material(
         child: ListTile(
           leading: TextAvatar(
-            text: (model.title ?? "") + (model.klassName ?? ""),
+            text: (model.title ?? "") + (model.code ?? ""),
           ),
           title: Text(model.title ?? ""),
-          subtitle: Text("${model.klassName} - ${model.teacher}" ?? ""),
+          subtitle: Text("${model.code} - ${model.teacher}" ?? ""),
           onTap: () {
             Navigator.push(
               context,
@@ -50,7 +50,8 @@ class CourseItem extends StatelessWidget {
       model: model,
       child: ScopedModelDescendant<CourseModel>(
         builder: (context, child, model) {
-          if (model.isLoading) buildLoading();
+          if (model.isLoading) return buildLoading();
+
           return buildLoaded(context);
         },
       ),

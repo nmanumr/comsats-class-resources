@@ -4,7 +4,7 @@ import 'package:class_resources/components/course-item.dart';
 import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
-import 'package:class_resources/models/profile.dart';
+import 'package:class_resources/models/profile.model.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -35,7 +35,9 @@ class CoursesPage extends StatelessWidget {
             appBar: centeredAppBar(context, "Courses"),
             body: Builder(
               builder: (context) {
-                if (model.isSemestersLoading) return Loader();
+                if (model.status == ProfileStatus.LoadingSemesters ||
+                    model.status == ProfileStatus.Loading) return Loader();
+                    
                 if (model.semesters.isEmpty) return getEmptyState();
 
                 List<Widget> children = [];
@@ -56,7 +58,6 @@ class CoursesPage extends StatelessWidget {
               },
             ),
 
-            
             // floatingActionButton: FloatingActionButton(
             //   child: Icon(Icons.edit),
             //   onPressed: () {

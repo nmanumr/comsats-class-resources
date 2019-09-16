@@ -1,33 +1,26 @@
 import 'package:class_resources/components/centered-appbar.dart';
-import 'package:class_resources/services/class.dart';
+import 'package:class_resources/models/profile.model.dart';
+import 'package:class_resources/models/user.model.dart';
+import 'package:class_resources/pages/dashboard.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:class_resources/models/class.model.dart';
-
 class ChangeClass extends StatefulWidget {
-  ChangeClass({this.klass, this.navigateToDashboard = true});
+  ChangeClass(this.profile, {this.navigateToDashboard = true});
 
   final bool navigateToDashboard;
-  final KlassModel klass;
+  final ProfileModel profile;
 
   @override
   _ChangeClassState createState() => _ChangeClassState();
 }
 
 class _ChangeClassState extends State<ChangeClass> {
-  KlassService _klassService = KlassService();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  Stream<QuerySnapshot> _stream;
+  // Stream<QuerySnapshot> _stream;
   String selectedKlass;
   bool isLoading = false;
-
-  @override
-  initState() {
-    _stream = _klassService.getAllClasses();
-    super.initState();
-  }
 
   showError(err) {
     var msg;
@@ -48,13 +41,15 @@ class _ChangeClassState extends State<ChangeClass> {
   }
 
   submit(context) async {
-    // Just close the dialog if klass is not changed
-    if (widget.klass != null && selectedKlass == widget.klass.name)
-      Navigator.of(context).pop();
-
     setState(() => isLoading = true);
+    // Just close the dialog if klass is not changed
+    if (widget.profile.klass != null &&
+        selectedKlass == widget.profile.klass.name) Navigator.of(context).pop();
+
     try {
-      await _klassService.changeClass(selectedKlass);
+      await widget.profile.service.changeClass(selectedKlass);
+      await widget.profile.service.refresh();
+
       setState(() => isLoading = false);
 
       if (widget.navigateToDashboard) {
@@ -63,8 +58,9 @@ class _ChangeClassState extends State<ChangeClass> {
         Navigator.of(context).pop();
     } catch (e) {
       if (_scaffoldKey.currentState != null) showError(e);
-      setState(() => isLoading = false);
     }
+
+    setState(() => isLoading = false);
   }
 
   Widget onSuccess(List<DocumentSnapshot> klasses) {
@@ -74,26 +70,27 @@ class _ChangeClassState extends State<ChangeClass> {
         if (i == 0)
           return isLoading ? LinearProgressIndicator() : SizedBox(height: 6);
         var klassName = klasses[i - 1].data["name"];
+        var id = klasses[i - 1].documentID;
 
-        if (widget.klass != null &&
-            widget.klass.name == klassName &&
+        if (widget.profile.klass != null &&
+            widget.profile.klass.name == klassName &&
             selectedKlass == null) {
-          selectedKlass = widget.klass.name;
+          selectedKlass = widget.profile.klass.ref.documentID;
         }
-        var isSelected = selectedKlass == klassName;
+        var isSelected = selectedKlass == id;
 
         return ListTile(
           leading: CircleAvatar(
             child: Icon(isSelected ? Icons.done : Icons.class_),
             backgroundColor: isSelected
                 ? Theme.of(context).accentColor
-                : HexColor(generateColor(klasses[i-1].data["CR"])),
+                : HexColor(generateColor(klasses[i - 1].data["CR"])),
             foregroundColor: Colors.white,
           ),
           title: Text(klassName),
-          subtitle: Text(klasses[i-1].data["CR"]),
+          subtitle: Text(klasses[i - 1].data["CR"]),
           onTap: () {
-            setState(() => selectedKlass = klassName);
+            setState(() => selectedKlass = id);
           },
         );
       },
@@ -104,9 +101,20 @@ class _ChangeClassState extends State<ChangeClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: centeredAppBar(context, "Select Class"),
+      appBar: centeredAppBar(context, "Select Your Class", actions: [
+        FlatButton(
+          child: Text(widget.navigateToDashboard ? "Skip" : "Cancel"),
+          onPressed: () {
+            if (widget.navigateToDashboard)
+              Navigator.pushNamedAndRemoveUntil(
+                  context, "/dashboard", (_) => false);
+            else
+              Navigator.of(context).pop();
+          },
+        )
+      ]),
       body: StreamBuilder(
-        stream: _stream,
+        stream: Firestore.instance.collection("classes").snapshots(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
             return ListView(
@@ -117,7 +125,7 @@ class _ChangeClassState extends State<ChangeClass> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        label: Text("Done"),
+        label: Text("Select"),
         icon: Icon(Icons.done),
         onPressed: () => submit(context),
       ),

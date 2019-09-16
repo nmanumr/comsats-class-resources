@@ -2,13 +2,17 @@ import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/illustrated-form.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/input.dart';
-import 'package:class_resources/services/authentication.dart';
+import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/utils/validator.dart';
 import 'package:flutter/material.dart';
 
 // TODO: Add re authenticate user before changing the password
 
 class ChangePass extends StatefulWidget {
+  ChangePass(this.user);
+
+  final UserModel user;
+
   @override
   _ChangePassState createState() => _ChangePassState();
 }
@@ -16,7 +20,6 @@ class ChangePass extends StatefulWidget {
 class _ChangePassState extends State<ChangePass> {
   final _formKey = GlobalKey<FormState>();
   PageController _pageController = PageController();
-  AuthService _authService = AuthService();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
 
@@ -28,7 +31,7 @@ class _ChangePassState extends State<ChangePass> {
     _formKey.currentState.save();
     if (_formKey.currentState.validate()) {
       try {
-        await _authService.changePassword(_passwordController.text);
+        await widget.user.service.changePassword(_passwordController.text);
         _pageController.nextPage(
           curve: Curves.easeOutExpo,
           duration: Duration(milliseconds: 700),
