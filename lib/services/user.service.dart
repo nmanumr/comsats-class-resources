@@ -43,6 +43,7 @@ class UserService {
 
   /// Sign in user with google signin provider
   Future<UserModel> signinWithGoogle() async {
+    print("here");
     GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleAuth = await googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.getCredential(

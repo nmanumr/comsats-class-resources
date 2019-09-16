@@ -21,8 +21,8 @@ class UserModel extends Model {
       status = AccountStatus.LoggedOut;
     else {
       status = AccountStatus.Loading;
-      service = UserService(uid, this);
     }
+    service = UserService(uid, this);
   }
 
   UserModel.fromData(FirebaseUser data) {
