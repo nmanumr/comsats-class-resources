@@ -158,16 +158,14 @@ class LibraryPage extends StatelessWidget {
                     //   },
                     // ),
                     ListTile(
-                      title: Text("About App"),
-                      leading: Icon(Icons.info_outline),
-                      onTap: () => showAboutDialog(
-                        context: context,
-                        applicationName: "COMSATS Class Resources",
-                        applicationVersion: "v1.2",
-                        applicationLegalese: "(c) 2019 Nauman Umer",
-                        applicationIcon:
-                            Image.asset("assets/images/logo.png", width: 50),
-                      ),
+                        title: Text("About App"),
+                        leading: Icon(Icons.info_outline),
+                        onTap: () =>
+                            Navigator.pushNamed(context, "/about-app")),
+                    ListTile(
+                      leading: Icon(Icons.group),
+                      title: Text("Authors"),                      
+                      onTap: () => Navigator.pushNamed(context, "/authors"),
                     ),
                   ],
                 ),

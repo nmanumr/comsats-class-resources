@@ -2,6 +2,8 @@ import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/change-email.dart';
 import 'package:class_resources/pages/auth/change-pass.dart';
 import 'package:class_resources/pages/auth/reset-pass.dart';
+import 'package:class_resources/pages/menu/about-app.dart';
+import 'package:class_resources/pages/menu/authors.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:class_resources/pages/courses/add-courses.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -81,7 +83,9 @@ class _AppMainState extends State<AppMain> {
                   navigateToDashboard: true, profile: user.profile),
               '/add-course': (ctx) => AddCourses(),
               '/license': (ctx) => AppLicensePage(),
-              '/privacypolicy': (ctx) => PrivacyPolicyPage()
+              '/privacypolicy': (ctx) => PrivacyPolicyPage(),
+              '/about-app': (ctx) => AboutApp(),
+              '/authors': (ctx) => AuthorsList(),
             },
             navigatorObservers: [observer],
           );
