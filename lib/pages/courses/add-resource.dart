@@ -87,7 +87,7 @@ class _AddResourceState extends State<AddResource> {
         webLink = file.webViewLink;
         contentLink = file.webContentLink;
         extension = file.fileExtension;
-        fileSize = filesize(int.parse(file.size));
+        fileSize = file.size != null ? filesize(int.parse(file.size)) : null;
         isLoading = false;
       });
       _pageController.nextPage(

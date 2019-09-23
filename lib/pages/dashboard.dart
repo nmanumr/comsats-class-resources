@@ -4,6 +4,7 @@ import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
+import 'package:class_resources/pages/home/home.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -61,6 +62,11 @@ class _DashboardState extends State<Dashboard>
     List<BottomNavigationBarItem> bottomNavItems = [];
     tabs = [
       {
+        "name": "Home",
+        "icon": Icons.home,
+        "page": HomePage(userProfile: widget.user.profile)
+      },
+      {
         "name": "Courses",
         "path": "courses",
         "icon": Icons.book,
@@ -72,11 +78,6 @@ class _DashboardState extends State<Dashboard>
         "icon": Icons.calendar_today,
         "page": TimeTablePage(userProfile: widget.user.profile),
       },
-      // {
-      //   "name": "Notifications",
-      //   "icon": Icons.notifications,
-      //   "page": NotificationPage(timetableModel: timeTableModel),
-      // },
       {
         "name": "Menu",
         "path": "menu",
@@ -133,11 +134,10 @@ class _DashboardState extends State<Dashboard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print(widget.user.uid);
     return ScopedModel(
       model: widget.user,
       child: ScopedModelDescendant<UserModel>(
-        builder: (context, child, userModel) {
+        builder: (context, _, userModel) {
           // Model not loaded yet
           if (userModel.status == AccountStatus.Loading) {
             return Loader();

@@ -1,4 +1,5 @@
 import 'package:class_resources/mixins/firestore-service.mixin.dart';
+import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/models/user.model.dart';
@@ -24,6 +25,7 @@ class ProfileService with FirestoreServiceMixin {
     });
   }
 
+  // TODO: to be moved to model
   /// return users lastest semester
   SemesterModel getCurrentSemester() {
     if (model.semesters == null) return null;
@@ -51,16 +53,6 @@ class ProfileService with FirestoreServiceMixin {
     });
   }
 
-  @override
-  Future<void> close() async {
-    for (var semester in model.semesters) {
-      await semester.close();
-    }
-    if (model.klass != null) await model.klass.close();
-    model.klass = null;
-    return await super.close();
-  }
-
   changeClass(String klass) async {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: 'syncUserCourses',
@@ -69,5 +61,15 @@ class ProfileService with FirestoreServiceMixin {
     return await callable.call({
       "class": klass,
     });
+  }
+
+  @override
+  Future<void> close() async {
+    for (var semester in model.semesters) {
+      await semester.close();
+    }
+    if (model.klass != null) await model.klass.close();
+    model.klass = null;
+    return await super.close();
   }
 }
