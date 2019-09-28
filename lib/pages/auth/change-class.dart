@@ -1,7 +1,5 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/models/profile.model.dart';
-import 'package:class_resources/models/user.model.dart';
-import 'package:class_resources/pages/dashboard.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

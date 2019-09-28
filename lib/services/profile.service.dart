@@ -1,5 +1,4 @@
 import 'package:class_resources/mixins/firestore-service.mixin.dart';
-import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/models/user.model.dart';

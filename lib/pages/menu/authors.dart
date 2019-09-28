@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:class_resources/components/text-avatar.dart';
 import 'package:http/http.dart' as http;
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/loader.dart';
