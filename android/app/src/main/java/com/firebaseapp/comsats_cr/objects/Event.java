@@ -1,4 +1,4 @@
-package com.firebaseapp.comsats_cr.Objects;
+package com.firebaseapp.comsats_cr.objects;
 
 public class Event {
     private String sub;
