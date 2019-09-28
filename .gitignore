@@ -71,3 +71,5 @@
 cloud_functions/functions/key.json
 assets/credientials.json
 android/key.properties
+google-services.json
+flutter_export_environment.sh
