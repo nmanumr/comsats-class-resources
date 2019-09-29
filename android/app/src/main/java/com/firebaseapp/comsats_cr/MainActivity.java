@@ -27,9 +27,8 @@ public class MainActivity extends FlutterActivity {
                     TimeTableWidget.timetable.clear();
                     TimeTableWidget.timetable.addAll(Objects.requireNonNull(call.argument("todaysTimetableEvents")));
                     TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
-                    result.success("1");
                 }else
-                    result.notImplemented();
+                    result.error("1", "Null_Exception", "todaysTimetableEvents is contains null value.");
             }else
                 result.notImplemented();
         });
