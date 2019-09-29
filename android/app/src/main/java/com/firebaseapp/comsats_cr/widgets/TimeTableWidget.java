@@ -19,13 +19,7 @@ public class TimeTableWidget extends AppWidgetProvider {
 
     public static final ArrayList<Event> timetable = new ArrayList<>();
 
-    public TimeTableWidget() {
-        this(new ArrayList<Event>());
-    }
-
-    public TimeTableWidget(ArrayList<Event> timetable) {
-        TimeTableWidget.timetable.addAll(timetable);
-    }
+    public TimeTableWidget() { }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);

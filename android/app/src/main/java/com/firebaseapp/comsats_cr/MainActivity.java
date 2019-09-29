@@ -2,16 +2,11 @@ package com.firebaseapp.comsats_cr;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-
-import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.widgets.TimeTableWidget;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
