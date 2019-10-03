@@ -1,5 +1,6 @@
 package com.firebaseapp.comsats_cr;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.firebaseapp.comsats_cr.widgets.TimeTableWidget;
@@ -19,17 +20,11 @@ public class MainActivity extends FlutterActivity {
         super.onCreate(savedInstanceState);
         GeneratedPluginRegistrant.registerWith(this);
 
+        // Method Channel
         new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler((call, result) -> {
             if (call.method.equals("refresh_timetable_widget"))
                 TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
-            else if(call.method.equals("update_timetable_widget")){
-                if(call.argument("todaysTimetableEvents") != null) {
-                    TimeTableWidget.timetable.clear();
-                    TimeTableWidget.timetable.addAll(Objects.requireNonNull(call.argument("todaysTimetableEvents")));
-                    TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
-                }else
-                    result.error("1", "Null_Exception", "todaysTimetableEvents is contains null value.");
-            }else
+            else
                 result.notImplemented();
         });
     }

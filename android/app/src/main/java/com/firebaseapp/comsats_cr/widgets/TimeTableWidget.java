@@ -5,8 +5,11 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
+import com.firebaseapp.comsats_cr.MainActivity;
+import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
 
@@ -14,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class TimeTableWidget extends AppWidgetProvider {
 
@@ -31,6 +36,10 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
+
+        //TODO:: get and update every
+//        Database db = new Database(context);
+//        db.getTimeTable();
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
@@ -50,6 +59,8 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onReceive(final Context context, Intent intent) {
         final String action = intent.getAction();
         if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+            Database db = new Database(context);
+            db.getTimeTable();
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, TimeTableWidget.class);
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.list_item);
