@@ -5,14 +5,18 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
+import com.google.firebase.Timestamp;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -34,8 +38,6 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
-
-        //TODO:: get and update every
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
@@ -50,6 +52,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
     }
+
     @Override
     public void onReceive(final Context context, Intent intent) {
         final String action = intent.getAction();
@@ -62,14 +65,23 @@ public class TimeTableWidget extends AppWidgetProvider {
     }
 
     public static void sendRefreshBroadcast(Context context) {
+        removePastEvents();
         Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
     }
 
-    public static String formatTime(Date time){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("KK:mm a", Locale.getDefault());
-        return dateFormat.format(time);
+    private static void removePastEvents(){
+        for(Event e : timetable){
+            if(Event.isPast(e.getEndTime()))
+                timetable.remove(e);
+        }
+    }
+    private static void hardUpdate(Context context){
+        // Get data from Database
+        // Clear timetable
+        // Add to timetable
+        // call sendRefreshBroadcast
     }
 }
 

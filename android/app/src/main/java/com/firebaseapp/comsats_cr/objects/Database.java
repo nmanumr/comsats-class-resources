@@ -25,19 +25,22 @@ import static android.content.Context.MODE_PRIVATE;
 public class Database{
     private Context context;
     private final FirebaseFirestore ff = FirebaseFirestore.getInstance();
-    private String uid = "temp";
+    private String uid = "";
 
     private final Query query =  ff.collection("users").document(uid).collection("semesters").whereEqualTo("isCurrent", true);
     private ArrayList<DocumentReference> courceReference;
     private ArrayList<Event> timetableevents = new ArrayList<>();
 
-    //TODO:: handle null UID
     public Database(Context context) {
         this.context = context;
         SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
-        uid = prefs.getString("flutter.uid", null);
+        uid = prefs.getString("flutter.uid", "");
+        if(uid.equals("")){
+            //TODO:: handle null UID
+        }
     }
 
+    /*
     public void getTimeTable(){
        query.get().addOnCompleteListener(task -> {
            if((task.isSuccessful()) && (task.getResult() != null)){
@@ -54,7 +57,7 @@ public class Database{
                                x.setSub(task1.getResult().getString("title"));
                            }
                        });
-                       dr.collection("timetable").whereEqualTo("weekday", getWeekDay()).get().addOnCompleteListener(task2 -> {
+                       dr.collection("timetable").whereEqualTo("weekday", Event.getCurrentWeekDay()).get().addOnCompleteListener(task2 -> {
                             if(task2.isSuccessful() && task2.getResult()!=null){
                                for (QueryDocumentSnapshot document: task2.getResult()) {
                                    Event y = new Event();
@@ -75,9 +78,5 @@ public class Database{
            }
        });
     }
-
-    private int getWeekDay(){
-        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1;
-    }
-
+    */
 }

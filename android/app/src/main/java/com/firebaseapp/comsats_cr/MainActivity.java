@@ -21,11 +21,12 @@ public class MainActivity extends FlutterActivity {
         GeneratedPluginRegistrant.registerWith(this);
 
         // Method Channel
-//        new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler((call, result) -> {
-//            if (call.method.equals("refresh_timetable_widget"))
-//                TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
-//            else
-//                result.notImplemented();
-//        });
+        new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler((call, result) -> {
+            if (call.method.equals("refresh_timetable_widget"))
+                TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
+            else if (call.method.equals("update_timetable_widget"))
+                TimeTableWidget.updateTimeTable(getApplicationContext());
+                result.notImplemented();
+        });
     }
 }
