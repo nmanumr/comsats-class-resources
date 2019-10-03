@@ -5,11 +5,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.firebaseapp.comsats_cr.MainActivity;
-import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
 
@@ -18,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import static android.content.Context.MODE_PRIVATE;
+import static android.content.ContentValues.TAG;
 
 public class TimeTableWidget extends AppWidgetProvider {
 
@@ -29,7 +27,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
         Intent intent = new Intent(context, TimeTableWidgetService.class);
-        views.setRemoteAdapter(R.id.list_item, intent);
+        views.setRemoteAdapter(R.id.timetable_list, intent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
@@ -38,8 +36,6 @@ public class TimeTableWidget extends AppWidgetProvider {
         // There may be multiple widgets active, so update all of them
 
         //TODO:: get and update every
-//        Database db = new Database(context);
-//        db.getTimeTable();
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
@@ -54,16 +50,13 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
     }
-
     @Override
     public void onReceive(final Context context, Intent intent) {
         final String action = intent.getAction();
         if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
-            Database db = new Database(context);
-            db.getTimeTable();
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, TimeTableWidget.class);
-            mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.list_item);
+            mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
         }
         super.onReceive(context, intent);
     }

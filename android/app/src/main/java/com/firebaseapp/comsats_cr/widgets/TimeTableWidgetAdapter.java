@@ -37,7 +37,7 @@ public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.time_table_widget);
+        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.list_view_timetable);
         rv.setTextViewText(R.id.events_name, TimeTableWidget.timetable.get(position).getSub());
         rv.setTextViewText(R.id.events_loc, TimeTableWidget.timetable.get(position).getLoc());
         rv.setTextViewText(R.id.events_time, TimeTableWidget.timetable.get(position).getStartTime() + " - " + TimeTableWidget.timetable.get(position).getEndTime());
