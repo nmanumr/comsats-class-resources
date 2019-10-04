@@ -2,10 +2,12 @@ package com.firebaseapp.comsats_cr.widgets;
 
 import android.content.Context;
 import android.os.Binder;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.firebaseapp.comsats_cr.R;
+import com.firebaseapp.comsats_cr.objects.Event;
 
 public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFactory {
 
@@ -37,10 +39,24 @@ public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public RemoteViews getViewAt(int position) {
+
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.list_view_timetable);
-        rv.setTextViewText(R.id.events_name, TimeTableWidget.timetable.get(position).getSub());
-        rv.setTextViewText(R.id.events_loc, TimeTableWidget.timetable.get(position).getLoc());
-        rv.setTextViewText(R.id.events_time, TimeTableWidget.timetable.get(position).getStartTime() + " - " + TimeTableWidget.timetable.get(position).getEndTime());
+
+        boolean isEmpty = TimeTableWidget.timetable.get(position).getSub().equals(Event.NO_EVENT);
+        if(!isEmpty){
+            String startTime = Event.formatTime(TimeTableWidget.timetable.get(position).getStartTime(), true);
+            String endTime = Event.formatTime(TimeTableWidget.timetable.get(position).getEndTime(), true);
+
+            rv.setTextViewText(R.id.events_name, TimeTableWidget.timetable.get(position).getSub());
+            rv.setTextViewText(R.id.events_loc, TimeTableWidget.timetable.get(position).getLoc());
+            rv.setTextViewText(R.id.events_time, startTime + " - " + endTime);
+        }else{
+            rv.setTextViewText(R.id.events_name, Event.NO_EVENT);
+            rv.setViewVisibility(R.id.events_loc, View.GONE);
+            rv.setViewVisibility(R.id.events_time, View.GONE);
+            rv.setViewVisibility(R.id.loc_icon, View.GONE);
+        }
+
         return rv;
     }
 

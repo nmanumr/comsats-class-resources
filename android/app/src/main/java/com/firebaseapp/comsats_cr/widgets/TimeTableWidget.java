@@ -1,5 +1,6 @@
 package com.firebaseapp.comsats_cr.widgets;
 
+import android.app.Application;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -9,6 +10,7 @@ import android.provider.CalendarContract;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
 import com.google.firebase.Timestamp;
@@ -29,6 +31,11 @@ public class TimeTableWidget extends AppWidgetProvider {
     public TimeTableWidget() { }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+
+        updateTimetable(context);
+        removePastEvents();
+
+        // update Views
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
         Intent intent = new Intent(context, TimeTableWidgetService.class);
         views.setRemoteAdapter(R.id.timetable_list, intent);
@@ -65,7 +72,6 @@ public class TimeTableWidget extends AppWidgetProvider {
     }
 
     public static void sendRefreshBroadcast(Context context) {
-        removePastEvents();
         Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
@@ -77,11 +83,22 @@ public class TimeTableWidget extends AppWidgetProvider {
                 timetable.remove(e);
         }
     }
-    private static void hardUpdate(Context context){
+    private static void updateTimetable(Context context){
+
         // Get data from Database
+        Database db = new Database(context);
+        db.updateData(false);
+
         // Clear timetable
+        timetable.clear();
+
         // Add to timetable
-        // call sendRefreshBroadcast
+        timetable.addAll(db.getTodaysEvents());
+
+        // In case of empty Timetable
+        if (timetable.isEmpty()){
+            timetable.add(new Event());
+        }
     }
 }
 

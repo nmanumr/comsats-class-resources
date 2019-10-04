@@ -5,12 +5,16 @@ import android.util.Log;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 
-public class Event {
+public class Event implements Comparator<Event> {
+
+    public static String NO_EVENT = "No Event!";
+
     private String sub;
     private String loc;
     private Date startTime;
@@ -20,6 +24,7 @@ public class Event {
     private Boolean isLab;
 
     public Event() {
+        this(NO_EVENT, "",null, null ,getCurrentWeekDay(),"",false);
     }
 
     public Event(String sub, String loc, Date startTime, Date endTime, int weekday, String teacher, Boolean isLab) {
@@ -72,6 +77,10 @@ public class Event {
         this.weekday = weekday;
     }
 
+    public void setWeekday(Long weekday) {
+        this.weekday = weekday.intValue();
+    }
+
     public String getTeacher() {
         return teacher;
     }
@@ -116,5 +125,10 @@ public class Event {
     public static Boolean isPast(Date d){
         return Integer.parseInt(Event.formatTime(d, false).substring(0, 4).replace(":", ""))
                 <= Integer.parseInt(getCurrentTime(false).substring(0, 4).replace(":", ""));
+    }
+
+    @Override
+    public int compare(Event event, Event t1) {
+        return event.getStartTime().compareTo(t1.getStartTime());
     }
 }
