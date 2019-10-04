@@ -42,7 +42,8 @@ public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFac
 
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.list_view_timetable);
 
-        boolean isEmpty = TimeTableWidget.timetable.get(position).getSub().equals(Event.NO_EVENT);
+        String sub = TimeTableWidget.timetable.get(position).getSub();
+        boolean isEmpty = sub.equals(Event.NO_EVENT) || sub.equals(Event.NO_AUTH);
         if(!isEmpty){
             String startTime = Event.formatTime(TimeTableWidget.timetable.get(position).getStartTime(), true);
             String endTime = Event.formatTime(TimeTableWidget.timetable.get(position).getEndTime(), true);

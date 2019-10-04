@@ -2,8 +2,6 @@ package com.firebaseapp.comsats_cr.objects;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,6 +14,7 @@ import static android.content.ContentValues.TAG;
 public class Event implements Comparator<Event> {
 
     public static String NO_EVENT = "No Event!";
+    public static String NO_AUTH = "LogIn or SignUp First";
 
     private String sub;
     private String loc;
@@ -26,7 +25,11 @@ public class Event implements Comparator<Event> {
     private Boolean isLab;
 
     public Event() {
-        this(NO_EVENT, "",null, null ,getCurrentWeekDay(),"",false);
+        this(NO_EVENT);
+    }
+
+    public Event(String name) {
+        this(name, null,null, null ,getCurrentWeekDay(),null,false);
     }
 
     public Event(String sub, String loc, Date startTime, Date endTime, int weekday, String teacher, Boolean isLab) {
@@ -100,8 +103,14 @@ public class Event implements Comparator<Event> {
     }
 
     public static String formatTime(Date time, Boolean to12){
-        SimpleDateFormat dateFormat = new SimpleDateFormat(to12?"KK:mm a":"HH:mm", Locale.getDefault());
-        return dateFormat.format(time);
+        String T;
+        if(time!=null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(to12 ? "KK:mm a" : "HH:mm", Locale.getDefault());
+            T = dateFormat.format(time);
+        }else{
+            T = null;
+        }
+        return T;
     }
 
     private static Date formatTime(String time, Boolean frm12){
@@ -124,12 +133,12 @@ public class Event implements Comparator<Event> {
         return Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1;
     }
 
-    public static Boolean isPast(Date d){
+    public static boolean isPast(Date d){
         if(d!=null)
             return Integer.parseInt(Event.formatTime(d, false).substring(0, 4).replace(":", ""))
                     <= Integer.parseInt(getCurrentTime(false).substring(0, 4).replace(":", ""));
         else
-            return null;
+            return false;
     }
 
     @Override
