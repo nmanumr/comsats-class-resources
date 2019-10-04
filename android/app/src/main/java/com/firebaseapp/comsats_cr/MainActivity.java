@@ -1,11 +1,8 @@
 package com.firebaseapp.comsats_cr;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.firebaseapp.comsats_cr.widgets.TimeTableWidget;
-
-import java.util.Objects;
+import com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;

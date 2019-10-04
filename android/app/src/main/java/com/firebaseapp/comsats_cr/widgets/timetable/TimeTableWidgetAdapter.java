@@ -1,4 +1,4 @@
-package com.firebaseapp.comsats_cr.widgets;
+package com.firebaseapp.comsats_cr.widgets.timetable;
 
 import android.content.Context;
 import android.os.Binder;
@@ -50,6 +50,10 @@ public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFac
             rv.setTextViewText(R.id.events_name, TimeTableWidget.timetable.get(position).getSub());
             rv.setTextViewText(R.id.events_loc, TimeTableWidget.timetable.get(position).getLoc());
             rv.setTextViewText(R.id.events_time, startTime + " - " + endTime);
+
+            rv.setViewVisibility(R.id.events_loc, View.VISIBLE);
+            rv.setViewVisibility(R.id.events_time, View.VISIBLE);
+            rv.setViewVisibility(R.id.loc_icon, View.VISIBLE);
         }else{
             rv.setTextViewText(R.id.events_name, Event.NO_EVENT);
             rv.setViewVisibility(R.id.events_loc, View.GONE);

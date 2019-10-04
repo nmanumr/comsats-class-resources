@@ -2,6 +2,8 @@ package com.firebaseapp.comsats_cr.objects;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -123,8 +125,11 @@ public class Event implements Comparator<Event> {
     }
 
     public static Boolean isPast(Date d){
-        return Integer.parseInt(Event.formatTime(d, false).substring(0, 4).replace(":", ""))
-                <= Integer.parseInt(getCurrentTime(false).substring(0, 4).replace(":", ""));
+        if(d!=null)
+            return Integer.parseInt(Event.formatTime(d, false).substring(0, 4).replace(":", ""))
+                    <= Integer.parseInt(getCurrentTime(false).substring(0, 4).replace(":", ""));
+        else
+            return null;
     }
 
     @Override

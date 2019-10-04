@@ -1,4 +1,4 @@
-package com.firebaseapp.comsats_cr.widgets;
+package com.firebaseapp.comsats_cr.widgets.timetable;
 
 
 import android.content.Intent;

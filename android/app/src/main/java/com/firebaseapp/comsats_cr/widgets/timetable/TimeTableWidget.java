@@ -1,39 +1,50 @@
-package com.firebaseapp.comsats_cr.widgets;
+package com.firebaseapp.comsats_cr.widgets.timetable;
 
-import android.app.Application;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.CalendarContract;
-import android.util.Log;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
+import com.firebaseapp.comsats_cr.interfaces.onCompleted;
 import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
-import com.google.firebase.Timestamp;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
-import static android.content.ContentValues.TAG;
+import static android.content.Context.MODE_PRIVATE;
 
 public class TimeTableWidget extends AppWidgetProvider {
 
     public static final ArrayList<Event> timetable = new ArrayList<>();
+    private static Database db;
 
     public TimeTableWidget() { }
+
+    private static Database getDbInstance(Context context){
+        if(db==null)
+            db = new Database(getUID(context));
+        return db;
+    }
+
+    private static String getUID(Context context){
+        SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+        String uid = prefs.getString("flutter.uid", "");
+        //if(uid.equals(""))
+        //TODO:: handle null UID
+
+        //TEMP
+        uid = "NEJaBszMj7cK86PTPD7rmmyZyYV2";
+        return uid;
+    }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         updateTimetable(context);
-        removePastEvents();
+        //removePastEvents();
 
         // update Views
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
@@ -53,6 +64,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
+        getDbInstance(context);
     }
 
     @Override
@@ -79,21 +91,19 @@ public class TimeTableWidget extends AppWidgetProvider {
 
     private static void removePastEvents(){
         for(Event e : timetable){
-            if(Event.isPast(e.getEndTime()))
-                timetable.remove(e);
+            if(e.getEndTime()!=null)
+                if(Event.isPast(e.getEndTime()))
+                    timetable.remove(e);
         }
     }
     private static void updateTimetable(Context context){
 
         // Get data from Database
-        Database db = new Database(context);
-        db.updateData(false);
-
-        // Clear timetable
-        timetable.clear();
-
-        // Add to timetable
-        timetable.addAll(db.getTodaysEvents());
+        db.updateData(true, timetable -> {
+            TimeTableWidget.timetable.clear();
+            TimeTableWidget.timetable.addAll(timetable);
+            TimeTableWidget.sendRefreshBroadcast(context);
+        });
 
         // In case of empty Timetable
         if (timetable.isEmpty()){

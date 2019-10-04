@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.firebaseapp.comsats_cr.interfaces.onCompleted;
+import com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,25 +13,20 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
 public class Database{
 
-    private Context context;
     private final FirebaseFirestore ff;
-    private String uid;
     private Query query;
 
     private static final ArrayList<DocumentReference> courseReference = new ArrayList<>(); // Static Variable to hold Reference of Courses
     private static final ArrayList<Event> timetableevents = new ArrayList<>(); // Static Timetable Holder for all Events
 
-
-    public Database(Context context) {
-        this.context = context;
-
-        SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+    public Database(String uid) {
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
@@ -37,25 +34,30 @@ public class Database{
         ff = FirebaseFirestore.getInstance();
         ff.setFirestoreSettings(settings);
 
-        uid = prefs.getString("flutter.uid", "");
-        if(uid.equals("")){
-            //TODO:: handle null UID
-        }else{
-            query =  ff.collection("users").document(uid).collection("semesters").whereEqualTo("isCurrent", true);
-        }
+        query =  ff.collection("users").document(uid).collection("semesters").whereEqualTo("isCurrent", true);
     }
 
-    public ArrayList<Event> getTodaysEvents(){
+    private ArrayList<Event> getTodaysEvents(){
         ArrayList<Event> events = new ArrayList<>();
         for (Event e: timetableevents)
             if (e.getWeekday() == Event.getCurrentWeekDay())
                 events.add(e);
         return events;
     }
-    private void syncCourses(){
-
+    private void syncAndUpdate(onCompleted listener){
+        query.get().addOnCompleteListener(task -> {
+            if(task.isSuccessful() && task.getResult()!=null){
+                courseReference.clear();
+                for(DocumentSnapshot documentSnapshot: task.getResult()){
+                    courseReference.addAll((ArrayList<DocumentReference>) documentSnapshot.get("courses"));
+                    break;
+                }
+                getTimeTable(listener);
+            }else
+                Log.i(TAG, "syncCourses: Error Loading Courses");
+        });
     }
-    private void getTimeTable(){
+    private void getTimeTable(onCompleted listener){
         if(!courseReference.isEmpty()) {
             timetableevents.clear();
             for (DocumentReference DR : courseReference) {
@@ -74,6 +76,7 @@ public class Database{
                                     event.setWeekday(documentSnapshot.getLong("weekday"));
                                     timetableevents.add(event);
                                     Collections.sort(timetableevents, new Event());
+                                    listener.timetableRecieved(getTodaysEvents());
                                 }
                             }
                         });
@@ -83,12 +86,12 @@ public class Database{
         } else
             Log.i(TAG, "getTimeTable: No data in CourseReference");
     }
-    public void updateData(Boolean hard){
+    public void updateData(Boolean hard, onCompleted listener){
         if(hard){
             //Get data from Server
             ff.enableNetwork().addOnCompleteListener(task -> {
                 if (task.isSuccessful()){
-                    getTimeTable();
+                    syncAndUpdate(listener);
                 }else
                     Log.i(TAG, "updateData: EnableNetwork Failed!");
             });
@@ -96,7 +99,7 @@ public class Database{
             // Get Cached Data
             ff.disableNetwork().addOnCompleteListener(task -> {
                if (task.isSuccessful()){
-                    getTimeTable();
+                    syncAndUpdate(listener);
                }else{
                    Log.i(TAG, "updateData: DisableNetwork Failed!");
                }

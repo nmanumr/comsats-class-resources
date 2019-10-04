@@ -34,10 +34,10 @@
         </activity>
 
         <service
-            android:name=".widgets.TimeTableWidgetService"
+            android:name=".widgets.timetable.TimeTableWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <receiver android:name=".widgets.TimeTableWidget">
+        <receiver android:name=".widgets.timetable.TimeTableWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
