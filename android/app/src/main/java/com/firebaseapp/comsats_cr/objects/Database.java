@@ -17,11 +17,16 @@ import static android.content.ContentValues.TAG;
 
 public class Database{
 
-    private Query query;
+    private static String uid;
+    private static Query query;
     private static final ArrayList<DocumentReference> courseReference = new ArrayList<>(); // Static Variable to hold Reference of Courses
     private static final ArrayList<Event> timetableevents = new ArrayList<>(); // Static Timetable Holder for all Events
 
+    public Database(){
+        this(uid);
+    }
     public Database(String uid) {
+        Database.uid = uid;
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
@@ -70,9 +75,10 @@ public class Database{
                                     event.setEndTime(documentSnapshot.getString("endTime"));
                                     event.setLab(documentSnapshot.getBoolean("isLab"));
                                     event.setWeekday(documentSnapshot.getLong("weekday"));
+                                    event.setTeacher(documentSnapshot.getString("teacher"));
                                     timetableevents.add(event);
                                     Collections.sort(timetableevents, new Event());
-                                    listener.timetableRecieved(getTodaysEvents());
+                                    listener.timetableReceived(getTodaysEvents());
                                 }
                             }
                         });

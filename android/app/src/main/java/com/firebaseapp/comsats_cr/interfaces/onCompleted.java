@@ -5,5 +5,5 @@ import com.firebaseapp.comsats_cr.objects.Event;
 import java.util.ArrayList;
 
 public interface onCompleted {
-    void timetableRecieved(ArrayList<Event> timetable);
+    void timetableReceived(ArrayList<Event> timetable);
 }
