@@ -6,4 +6,5 @@ import java.util.ArrayList;
 
 public interface onCompleted {
     void timetableReceived(ArrayList<Event> timetable);
+
 }

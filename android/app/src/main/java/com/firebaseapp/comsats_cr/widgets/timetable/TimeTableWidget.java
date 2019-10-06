@@ -5,11 +5,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.firebaseapp.comsats_cr.interfaces.onCompleted;
 import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
@@ -24,7 +22,6 @@ public class TimeTableWidget extends AppWidgetProvider {
 
     public static final ArrayList<Event> timetable = new ArrayList<>();
     private static Database db;
-
 
     public static void sendRefreshBroadcast(Context context) {
         Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -74,12 +71,15 @@ public class TimeTableWidget extends AppWidgetProvider {
             timetable.add(new Event(Event.NO_AUTH));
             sendRefreshBroadcast(context);
         }else
-            getDbInstance(context).updateData( timetable -> {
+            getDbInstance(context).updateData( timetable-> {
                 TimeTableWidget.timetable.clear();
                 TimeTableWidget.timetable.addAll(timetable);
                 removePastEvents();
                 TimeTableWidget.sendRefreshBroadcast(context);
             }, hard);
+    }
+    private static void setNextUpdateAlarm(){
+
     }
 
     @Override
@@ -95,7 +95,7 @@ public class TimeTableWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the first widget is created
         if(getDbInstance(context) == null){
             timetable.clear();
-            timetable.add(new Event("Login to show Events"));
+            timetable.add(new Event(Event.NO_AUTH));
             sendRefreshBroadcast(context);
         }
     }

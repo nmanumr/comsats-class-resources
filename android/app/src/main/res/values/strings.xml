@@ -4,4 +4,5 @@
     <string name="add_widget">Add widget</string>
     <string name="app_name">WidgetApp</string>
     <string name="appwidget_text">EXAMPLE</string>
+    <string name="iv_school_icon_detail">ic_school for widget</string>
 </resources>
