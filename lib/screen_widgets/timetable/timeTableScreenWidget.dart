@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 
-class CallNative{
+class TimeTableScreenWidget{
   static const platform = const MethodChannel('com.firebaseapp.comsats_cr/timetable_widget');
 
-  void refreshWidget() {
+  static void refreshWidget() {
     try {
       platform.invokeMethod('refresh_timetable_widget');
     } on PlatformException catch (e) {
