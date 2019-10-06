@@ -40,6 +40,8 @@
         <receiver android:name=".widgets.timetable.TimeTableWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget.SOFT_UPDATE_WIDGET" />
+                <action android:name="com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget.HARD_UPDATE_WIDGET" />
             </intent-filter>
 
             <meta-data

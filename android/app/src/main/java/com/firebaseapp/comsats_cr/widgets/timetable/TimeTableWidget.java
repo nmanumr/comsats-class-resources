@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -14,6 +15,7 @@ import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -35,7 +37,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     /**
      * Sends Update Signal to the widget when called
      * @param context Application Context
-     * @param hard show weather cache is required or fresh data from Firestore
+     * @param hard show weather cache is required or fresh data from Fire-store
      */
     public static void sendRefreshBroadcast(Context context, boolean hard) {
         Intent intent = new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET);
@@ -43,6 +45,11 @@ public class TimeTableWidget extends AppWidgetProvider {
         context.sendBroadcast(intent);
     }
 
+    /**
+     * Initialize and returns Database Instance
+     * @param context Application Context
+     * @return Database Instance to send update calls and receive data
+     */
     private static Database getDbInstance(Context context){
         if(db==null)
             if(getUID(context)==null)
@@ -71,6 +78,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         updateTimetable(context, false);
+        setNextUpdateAlarm(context);
 
         // update Views
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
@@ -84,12 +92,12 @@ public class TimeTableWidget extends AppWidgetProvider {
      * to ensure upcoming events displayed only
      */
     private static void removePastEvents(){
-        Iterator<Event> iter = timetable.iterator();
-        while(iter.hasNext()){
-            Event x = iter.next();
+        Iterator<Event> iterator = timetable.iterator();
+        while(iterator.hasNext()){
+            Event x = iterator.next();
             if(x.getEndTime()!=null)
                 if(Event.isPast(x.getEndTime()))
-                    iter.remove();
+                    iterator.remove();
         }
 
         if (timetable.isEmpty()){
@@ -121,26 +129,47 @@ public class TimeTableWidget extends AppWidgetProvider {
     /**
      * sets alarm service to trigger updates at certain time
      * @param context Application Context
-     * @param time Should be in 24 hrs Format
      */
-    private static void setNextUpdateAlarm(Context context, String time){
+    private static void setNextUpdateAlarm(Context context){
+        Log.i(TAG, "setNextUpdateAlarm: called");
         Calendar calendar = Calendar.getInstance();
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent, 0);
         assert alarmManager != null;
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), convertToMillis(time), pendingIntent);
-        if(time.equals("inf")){
-            // schedule update for next day
-        }else{
-            // schedule for time
 
+        Intent intent;
+        long delay;
+
+        if(timetable.size() == 1){
+            // schedule update for next day
+            long millisPast = (
+                    calendar.get(Calendar.HOUR_OF_DAY)*60*60*1000
+                            + calendar.get(Calendar.MINUTE)*60*1000
+                            + calendar.get(Calendar.SECOND)*1000
+                            + calendar.get(Calendar.MILLISECOND)
+            );
+            delay = (24*60*60*1000) - millisPast;
+            intent = new Intent(HARD_UPDATE_WIDGET);
+        }else{
+            // schedule for event's end time
+            delay = convertToMillis(Event.formatTime(timetable.get(0).getEndTime(), false));
+            intent = new Intent(SOFT_UPDATE_WIDGET);
         }
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent, 0);
+        alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
+
+        alarmManager.setRepeating(
+                AlarmManager.RTC,
+                calendar.getTimeInMillis(),
+                delay,
+                pendingIntent
+        );
+        Log.i(TAG, "setNextUpdateAlarm: Alarm will trigger in > " + (float) delay/1000/60/60 + " Hour");
     }
 
     /**
      * Converts the time to milli Seconds
-     * @param time 24 Hour Formatted time in String Format as received from Firestore
+     * @param time 24 Hour Formatted time in String Format as received from Fire-store
      * @return Time in MilliSeconds in type ling
      */
     private static long convertToMillis(String time){
@@ -161,7 +190,7 @@ public class TimeTableWidget extends AppWidgetProvider {
         if(getDbInstance(context) == null){
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
-            sendRefreshBroadcast(context, true);
+            sendRefreshBroadcast(context, false);
         }
     }
 
@@ -180,7 +209,6 @@ public class TimeTableWidget extends AppWidgetProvider {
                     mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
                 } else if (action.equals(HARD_UPDATE_WIDGET)) {
                     updateTimetable(context, true);
-                    sendRefreshBroadcast(context, false);
                 }
         }
         super.onReceive(context, intent);

@@ -9,7 +9,7 @@ import android.widget.RemoteViewsService;
 import com.firebaseapp.comsats_cr.R;
 import com.firebaseapp.comsats_cr.objects.Event;
 
-class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFactory {
+public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFactory {
 
     private Context mContext;
 

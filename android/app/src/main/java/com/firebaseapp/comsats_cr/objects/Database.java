@@ -18,13 +18,11 @@ import static android.content.ContentValues.TAG;
 
 public class Database{
 
-    private static String uid;
     private static Query query;
     private static final ArrayList<DocumentReference> courseReference = new ArrayList<>(); // Static Variable to hold Reference of Courses
-    private static final ArrayList<Event> timetableevents = new ArrayList<>(); // Static Timetable Holder for all Events
+    private static final ArrayList<Event> timeTableEvents = new ArrayList<>(); // Static Timetable Holder for all Events
 
     public Database(String uid) {
-        Database.uid = uid;
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
@@ -36,11 +34,11 @@ public class Database{
     }
 
     /**
-     * Public Interface to trigger Firestore Actions
+     * Public Interface to trigger Fire-store Actions
      * @param listener Interface that notifies when action is completed
      * @param hard Notifies if cache is sufficient or New data should be fetched
      */
-    @SuppressWarnings({"LoopStatementThatDoesntLoop", "unchecked"})
+    @SuppressWarnings({"LoopStatementThatDoesntLoop", "unchecked"}) //Because There is nothing Wrong with the Code
     public void updateData(onCompleted listener, boolean hard){
         query.get(hard? Source.SERVER: Source.DEFAULT).addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult()!=null){
@@ -59,9 +57,9 @@ public class Database{
      * returns Events that are going to occur today
      * @return timetable of current day
      */
-    private ArrayList<Event> getTodaysEvents(){
+    private ArrayList<Event> getTodayEvents(){
         ArrayList<Event> events = new ArrayList<>();
-        for (Event e: timetableevents)
+        for (Event e: timeTableEvents)
             if (e.getWeekday() == Event.getCurrentWeekDay())
                 events.add(e);
         return events;
@@ -74,7 +72,7 @@ public class Database{
      */
     private void getTimeTable(onCompleted listener){
         if(!courseReference.isEmpty()) {
-            timetableevents.clear();
+            timeTableEvents.clear();
             for (DocumentReference DR : courseReference) {
                 DR.get().addOnCompleteListener(_task -> {
                     if (_task.isSuccessful() && _task.getResult() != null) {
@@ -90,9 +88,9 @@ public class Database{
                                     event.setLab(documentSnapshot.getBoolean("isLab"));
                                     event.setWeekday(Objects.requireNonNull(documentSnapshot.getLong("weekday")));
                                     event.setTeacher(documentSnapshot.getString("teacher"));
-                                    timetableevents.add(event);
-                                    Collections.sort(timetableevents, new Event());
-                                    listener.timetableReceived(getTodaysEvents());
+                                    timeTableEvents.add(event);
+                                    Collections.sort(timeTableEvents, new Event());
+                                    listener.timetableReceived(getTodayEvents());
                                 }
                             }
                         });
