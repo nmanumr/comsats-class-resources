@@ -37,10 +37,6 @@
             android:name=".widgets.timetable.TimeTableWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <service
-            android:name=".services.updateWidgetAlarmService"
-            android:enabled="true"/>
-
         <receiver android:name=".widgets.timetable.TimeTableWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

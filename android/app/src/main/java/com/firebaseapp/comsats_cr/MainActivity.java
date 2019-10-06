@@ -20,7 +20,7 @@ public class MainActivity extends FlutterActivity {
         // Method Channel
         new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler((call, result) -> {
             if (call.method.equals("refresh_timetable_widget"))
-                TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
+                TimeTableWidget.sendRefreshBroadcast(getApplicationContext(), true);
             else
                 result.notImplemented();
         });

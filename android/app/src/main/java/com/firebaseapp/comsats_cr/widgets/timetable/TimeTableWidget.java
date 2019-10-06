@@ -20,11 +20,14 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TimeTableWidget extends AppWidgetProvider {
 
+    public static final String SOFT_UPDATE_WIDGET = "soft_update";
+    public static final String HARD_UPDATE_WIDGET = "hard_update";
+
     public static final ArrayList<Event> timetable = new ArrayList<>();
     private static Database db;
 
-    public static void sendRefreshBroadcast(Context context) {
-        Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+    public static void sendRefreshBroadcast(Context context, boolean hard) {
+        Intent intent = new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
     }
@@ -69,13 +72,13 @@ public class TimeTableWidget extends AppWidgetProvider {
         if(getDbInstance(context) == null){
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
-            sendRefreshBroadcast(context);
+            sendRefreshBroadcast(context, false);
         }else
             getDbInstance(context).updateData( timetable-> {
                 TimeTableWidget.timetable.clear();
                 TimeTableWidget.timetable.addAll(timetable);
                 removePastEvents();
-                TimeTableWidget.sendRefreshBroadcast(context);
+                TimeTableWidget.sendRefreshBroadcast(context, false);
             }, hard);
     }
     private static void setNextUpdateAlarm(){
@@ -96,7 +99,7 @@ public class TimeTableWidget extends AppWidgetProvider {
         if(getDbInstance(context) == null){
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
-            sendRefreshBroadcast(context);
+            sendRefreshBroadcast(context, true);
         }
     }
 
@@ -108,10 +111,13 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onReceive(final Context context, Intent intent) {
         final String action = intent.getAction();
-        if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+        if (action.equals(SOFT_UPDATE_WIDGET)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, TimeTableWidget.class);
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
+        }else if(action.equals(HARD_UPDATE_WIDGET)){
+            updateTimetable(context, true);
+            sendRefreshBroadcast(context, false);
         }
         super.onReceive(context, intent);
     }
