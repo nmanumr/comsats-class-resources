@@ -12,6 +12,7 @@ import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
 
@@ -22,9 +23,6 @@ public class Database{
     private static final ArrayList<DocumentReference> courseReference = new ArrayList<>(); // Static Variable to hold Reference of Courses
     private static final ArrayList<Event> timetableevents = new ArrayList<>(); // Static Timetable Holder for all Events
 
-    public Database(){
-        this(uid);
-    }
     public Database(String uid) {
         Database.uid = uid;
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -37,12 +35,18 @@ public class Database{
         query =  ff.collection("users").document(uid).collection("semesters").whereEqualTo("isCurrent", true);
     }
 
+    /**
+     * Public Interface to trigger Firestore Actions
+     * @param listener Interface that notifies when action is completed
+     * @param hard Notifies if cache is sufficient or New data should be fetched
+     */
+    @SuppressWarnings({"LoopStatementThatDoesntLoop", "unchecked"})
     public void updateData(onCompleted listener, boolean hard){
         query.get(hard? Source.SERVER: Source.DEFAULT).addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult()!=null){
                 courseReference.clear();
                 for(DocumentSnapshot documentSnapshot: task.getResult()){
-                    courseReference.addAll((ArrayList<DocumentReference>) documentSnapshot.get("courses"));
+                    courseReference.addAll((ArrayList<DocumentReference>) Objects.requireNonNull(documentSnapshot.get("courses")));
                     break;
                 }
                 getTimeTable(listener);
@@ -51,6 +55,10 @@ public class Database{
         });
     }
 
+    /**
+     * returns Events that are going to occur today
+     * @return timetable of current day
+     */
     private ArrayList<Event> getTodaysEvents(){
         ArrayList<Event> events = new ArrayList<>();
         for (Event e: timetableevents)
@@ -58,6 +66,12 @@ public class Database{
                 events.add(e);
         return events;
     }
+
+    /**
+     * Get all events from CourseReferences that are obtained from Current User logged
+     * @param listener Interface that notifies when action is completed
+     * @see onCompleted
+     */
     private void getTimeTable(onCompleted listener){
         if(!courseReference.isEmpty()) {
             timetableevents.clear();
@@ -74,7 +88,7 @@ public class Database{
                                     event.setStartTime(documentSnapshot.getString("startTime"));
                                     event.setEndTime(documentSnapshot.getString("endTime"));
                                     event.setLab(documentSnapshot.getBoolean("isLab"));
-                                    event.setWeekday(documentSnapshot.getLong("weekday"));
+                                    event.setWeekday(Objects.requireNonNull(documentSnapshot.getLong("weekday")));
                                     event.setTeacher(documentSnapshot.getString("teacher"));
                                     timetableevents.add(event);
                                     Collections.sort(timetableevents, new Event());

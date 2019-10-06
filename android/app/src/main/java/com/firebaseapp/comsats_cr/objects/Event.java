@@ -24,6 +24,8 @@ public class Event implements Comparator<Event> {
     private String teacher;
     private Boolean isLab;
 
+
+    // Constructors
     public Event() {
         this(NO_EVENT);
     }
@@ -41,6 +43,8 @@ public class Event implements Comparator<Event> {
         this.teacher = teacher;
         this.isLab = isLab;
     }
+
+    // Getter Setters
 
     public String getSub() {
         return sub;
@@ -101,6 +105,8 @@ public class Event implements Comparator<Event> {
     public void setLab(Boolean lab) {
         isLab = lab;
     }
+
+    // Methods
 
     public static String formatTime(Date time, Boolean to12){
         String T;
