@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:class_resources/components/buttons.dart';
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/components/empty-state.dart';
+import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/components/text-avatar.dart';
@@ -35,12 +36,31 @@ class _HomePageState extends State<HomePage> {
 
   bool isLoading = true;
 
+  @override
+  void dispose() {
+    for (var sub in this.subscriptions) {
+      sub.cancel();
+    }
+    tasks = [];
+    hashs = [];
+    super.dispose();
+  }
+
+  void loadData() {
+    var semester = widget.userProfile.service.getCurrentSemester();
+    if (semester != null) {
+      if (todayEvents.isEmpty && tomorrowEvents.isEmpty)
+        _fetchLectures(semester);
+      if (tasks.isEmpty) _fetchTasks(semester);
+    }
+  }
+
   _fetchTasks(SemesterModel semester) {
     for (var course in semester.courses) {
       subscriptions.add(
         course.service.getCourseTasks().listen((data) {
-          isLoading = false;
           setState(() {
+            isLoading = false;
             for (var task in data) {
               if (hashs.contains(task.title)) continue;
 
@@ -65,15 +85,14 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             isLoading = false;
             for (var event in data) {
-              if (hashs.contains(event.title)) continue;
+              if (hashs.contains(event.hashCode)) continue;
 
               var now = DateTime.now();
-              hashs.add(event.title);
+              hashs.add(event.hashCode);
 
-              if (event.weekday == now.weekday &&
-                  dateTimeFromTime(event.startTime).isAfter(now))
+              if (event.weekday == now.weekday)
                 todayEvents.add(event);
-              else if (event.weekday - 1 == now.weekday)
+              else if (event.weekday == now.add(Duration(days: 1)).weekday)
                 tomorrowEvents.add(event);
             }
           });
@@ -136,7 +155,7 @@ class _HomePageState extends State<HomePage> {
     return t1.dueDate.isBefore(t2.dueDate) ? -1 : 1;
   }
 
-  Widget getEmptyState() {
+  Widget noSubjectView() {
     return EmptyState(
       icon: Icons.library_books,
       text: "No course added",
@@ -144,6 +163,14 @@ class _HomePageState extends State<HomePage> {
         child: Text("Add Courses"),
         onPressed: () {},
       ),
+    );
+  }
+
+  Widget noEventView() {
+    return IllustartedPage(
+      imagePath: "assets/images/chore_list.png",
+      headingText: "All Set",
+      subheadingText: "No task pending",
     );
   }
 
@@ -161,13 +188,19 @@ class _HomePageState extends State<HomePage> {
                 if (model.status == ProfileStatus.LoadingSemesters ||
                     model.status == ProfileStatus.Loading) return Loader();
 
-                if (model.semesters.isEmpty) return getEmptyState();
+                if (model.semesters.isEmpty) return noSubjectView();
 
-                var semester = widget.userProfile.service.getCurrentSemester();
-                if (semester != null) {
-                  if (todayEvents.isEmpty && tomorrowEvents.isEmpty)
-                    _fetchLectures(semester);
-                  if (tasks.isEmpty) _fetchTasks(semester);
+                if (tomorrowEvents.isEmpty &&
+                    tasks.isEmpty &&
+                    todayEvents.isEmpty &&
+                    !isLoading) return noEventView();
+
+                if (tomorrowEvents.isEmpty &&
+                    tasks.isEmpty &&
+                    todayEvents.isEmpty &&
+                    isLoading) {
+                  loadData();
+                  return Loader();
                 }
 
                 return ListView(
