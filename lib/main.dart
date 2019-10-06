@@ -6,7 +6,6 @@ import 'package:class_resources/pages/menu/about-app.dart';
 import 'package:class_resources/pages/menu/authors.dart';
 import 'package:class_resources/pages/menu/privacy-policy.dart';
 import 'package:class_resources/pages/courses/add-courses.dart';
-import 'package:class_resources/screen_widgets/timetable/timeTableScreenWidget.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -32,8 +31,6 @@ void main() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     uid = prefs.getString('uid') ?? "";
   } catch (_) {}
-
-  TimeTableScreenWidget.refreshWidget();
 
   return runApp(AppMain(uid));
 }

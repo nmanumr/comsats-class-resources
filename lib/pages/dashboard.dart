@@ -5,6 +5,7 @@ import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:class_resources/pages/home/home.dart';
+import 'package:class_resources/screen_widgets/timetable/timeTableScreenWidget.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -15,7 +16,9 @@ import './timetable/timetable.dart';
 import './menu/library.dart';
 
 class Dashboard extends StatefulWidget {
-  Dashboard(this.user, this.observer);
+  Dashboard(this.user, this.observer){
+    TimeTableScreenWidget.refreshWidget();
+  }
 
   final UserModel user;
   final FirebaseAnalyticsObserver observer;

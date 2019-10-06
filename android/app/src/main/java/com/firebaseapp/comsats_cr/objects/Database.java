@@ -28,7 +28,7 @@ public class Database{
                 .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
                 .build();
         FirebaseFirestore ff = FirebaseFirestore.getInstance();
-        ff.setFirestoreSettings(settings);
+        //ff.setFirestoreSettings(settings);
 
         query =  ff.collection("users").document(uid).collection("semesters").whereEqualTo("isCurrent", true);
     }
@@ -40,7 +40,7 @@ public class Database{
      */
     @SuppressWarnings({"LoopStatementThatDoesntLoop", "unchecked"}) //Because There is nothing Wrong with the Code
     public void updateData(onCompleted listener, boolean hard){
-        query.get(hard? Source.SERVER: Source.DEFAULT).addOnCompleteListener(task -> {
+        query.get(hard? Source.DEFAULT: Source.CACHE).addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult()!=null){
                 courseReference.clear();
                 for(DocumentSnapshot documentSnapshot: task.getResult()){
