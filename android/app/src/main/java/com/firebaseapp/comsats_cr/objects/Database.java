@@ -89,9 +89,9 @@ public class Database{
                                     event.setWeekday(Objects.requireNonNull(documentSnapshot.getLong("weekday")));
                                     event.setTeacher(documentSnapshot.getString("teacher"));
                                     timeTableEvents.add(event);
-                                    Collections.sort(timeTableEvents, new Event());
-                                    listener.timetableReceived(getTodayEvents());
                                 }
+                                Collections.sort(timeTableEvents, new Event());
+                                listener.timetableReceived(getTodayEvents());
                             }
                         });
                     }

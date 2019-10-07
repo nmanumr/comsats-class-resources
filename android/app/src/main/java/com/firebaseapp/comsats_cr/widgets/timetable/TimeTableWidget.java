@@ -39,7 +39,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param hard show weather cache is required or fresh data from Fire-store
      */
     public static void sendRefreshBroadcast(Context context, boolean hard) {
-        Logger.write("> Broadcast sent, isHard : " + hard);
+        Logger.write(context, "> Broadcast sent, isHard : " + hard);
         Intent intent = new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
@@ -76,7 +76,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param appWidgetId App Widget Id - id of certain widget
      */
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        Logger.write("> update App Widget Called");
+        Logger.write(context, "> update App Widget Called");
         setNextUpdateAlarm(context);
 
         // update Views
@@ -90,8 +90,8 @@ public class TimeTableWidget extends AppWidgetProvider {
      * Remove events from the timetable static variable
      * to ensure upcoming events displayed only
      */
-    private static void removePastEvents(){
-        Logger.write("> remove Past Events called: previous date : " + timetable.toString());
+    private static void removePastEvents(Context context){
+        Logger.write(context, "> remove Past Events called: previous date : " + timetable.toString());
         Iterator<Event> iterator = timetable.iterator();
         while(iterator.hasNext()){
             Event x = iterator.next();
@@ -99,7 +99,7 @@ public class TimeTableWidget extends AppWidgetProvider {
                 if(Event.isPast(x.getEndTime()))
                     iterator.remove();
         }
-        Logger.write("after removing, new data: " + timetable.toString());
+        Logger.write(context, "after removing, new data: " + timetable.toString());
 
         if (timetable.isEmpty()){
             timetable.add(new Event());
@@ -112,19 +112,19 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param hard Checks weather Content needs to be fetched from Database or cache
      */
     private static void updateTimetable(Context context, boolean hard){
-        Logger.write("> update Time Table Called, isHard : " + hard);
+        Logger.write(context,"> update Time Table Called, isHard : " + hard);
         // Get data from Database
         if(getDbInstance(context) == null){
-            Logger.write("db Instance is null => UID is null");
+            Logger.write(context, "db Instance is null => UID is null");
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
-            sendRefreshBroadcast(context, false);
+//            sendRefreshBroadcast(context, false);
         }else
             Objects.requireNonNull(getDbInstance(context)).updateData(timetable-> {
-                Logger.write("DB.updateData Called => updated Timetable : " + timetable.toString());
+                Logger.write(context, "DB.updateData Called => updated Timetable : " + timetable.toString());
                 TimeTableWidget.timetable.clear();
                 TimeTableWidget.timetable.addAll(timetable);
-                removePastEvents();
+                removePastEvents(context);
 //                TimeTableWidget.sendRefreshBroadcast(context, false);
             }, hard);
     }
@@ -134,9 +134,9 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param context Application Context
      */
     private static void setNextUpdateAlarm(Context context){
-        Logger.write("> set Next Update Alarm called");
+        Logger.write(context, "> set Next Update Alarm called");
         Calendar calendar = Calendar.getInstance();
-        Logger.write("current time : " + calendar.getTime());
+        Logger.write(context, "current time : " + calendar.getTime());
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
 
@@ -156,11 +156,11 @@ public class TimeTableWidget extends AppWidgetProvider {
         }else{
             // schedule for event's end time
             delay = convertToMillis(Event.formatTime(timetable.get(0).getEndTime(), false));
-            Logger.write("current events end time : " + Event.formatTime(timetable.get(0).getEndTime(), false));
+            Logger.write(context, "current events end time : " + Event.formatTime(timetable.get(0).getEndTime(), false));
             intent = new Intent(SOFT_UPDATE_WIDGET);
         }
 
-        Logger.write("next Alarm Update after: " + delay + " ms");
+        Logger.write(context, "next Alarm Update after: " + delay + " ms");
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent, 0);
         alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
@@ -193,7 +193,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
-        Logger.write("> On Enabled: new widget created");
+        Logger.write(context, "> On Enabled: new widget created");
         if(getDbInstance(context) == null) {
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
@@ -204,12 +204,12 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
-        Logger.write("> on disabled");
+        Logger.write(context, "> on disabled");
     }
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Logger.write("> Broadcast Received, action : " + intent.getAction());
+        Logger.write(context, "> Broadcast Received, action : " + intent.getAction());
         final String action = intent.getAction();
         if (action != null) {
             switch (action) {
