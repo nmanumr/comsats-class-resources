@@ -39,7 +39,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param hard show weather cache is required or fresh data from Fire-store
      */
     public static void sendRefreshBroadcast(Context context, boolean hard) {
-        Logger.write("Broadcast sent, isHard : " + hard);
+        Logger.write("> Broadcast sent, isHard : " + hard);
         Intent intent = new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
@@ -193,6 +193,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
+        Logger.write("> On Enabled: new widget created");
         if(getDbInstance(context) == null){
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
@@ -205,11 +206,12 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
+        Logger.write("> on disabled");
     }
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Logger.write("Broadcast Received, action : " + intent.getAction());
+        Logger.write("> Broadcast Received, action : " + intent.getAction());
         final String action = intent.getAction();
         if (action != null) {
             switch (action) {
