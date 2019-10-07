@@ -7,15 +7,14 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.firebaseapp.comsats_cr.objects.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
+import com.firebaseapp.comsats_cr.objects.Logger;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -40,6 +39,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param hard show weather cache is required or fresh data from Fire-store
      */
     public static void sendRefreshBroadcast(Context context, boolean hard) {
+        Logger.write("Broadcast sent, isHard : " + hard);
         Intent intent = new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
@@ -76,7 +76,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param appWidgetId App Widget Id - id of certain widget
      */
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-
+        Logger.write("> update App Widget Called");
         updateTimetable(context, false);
         setNextUpdateAlarm(context);
 
@@ -92,6 +92,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * to ensure upcoming events displayed only
      */
     private static void removePastEvents(){
+        Logger.write("> remove Past Events called: previous date : " + timetable.toString());
         Iterator<Event> iterator = timetable.iterator();
         while(iterator.hasNext()){
             Event x = iterator.next();
@@ -99,6 +100,7 @@ public class TimeTableWidget extends AppWidgetProvider {
                 if(Event.isPast(x.getEndTime()))
                     iterator.remove();
         }
+        Logger.write("after removing, new data: " + timetable.toString());
 
         if (timetable.isEmpty()){
             timetable.add(new Event());
@@ -111,14 +113,16 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param hard Checks weather Content needs to be fetched from Database or cache
      */
     private static void updateTimetable(Context context, boolean hard){
-        Log.i(TAG, "updateTimetable: called");
+        Logger.write("> update Time Table Called, isHard : " + hard);
         // Get data from Database
         if(getDbInstance(context) == null){
+            Logger.write("db Instance is null => UID is null");
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
             sendRefreshBroadcast(context, false);
         }else
             Objects.requireNonNull(getDbInstance(context)).updateData(timetable-> {
+                Logger.write("DB.updateData Called => updated Timetable : " + timetable.toString());
                 TimeTableWidget.timetable.clear();
                 TimeTableWidget.timetable.addAll(timetable);
                 removePastEvents();
@@ -131,7 +135,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @param context Application Context
      */
     private static void setNextUpdateAlarm(Context context){
-        Log.i(TAG, "setNextUpdateAlarm: called");
+        Logger.write("> set Next Update Alarm called");
         Calendar calendar = Calendar.getInstance();
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
@@ -152,8 +156,11 @@ public class TimeTableWidget extends AppWidgetProvider {
         }else{
             // schedule for event's end time
             delay = convertToMillis(Event.formatTime(timetable.get(0).getEndTime(), false));
+            Logger.write("current events end time : " + Event.formatTime(timetable.get(0).getEndTime(), false));
             intent = new Intent(SOFT_UPDATE_WIDGET);
         }
+
+        Logger.write("delay: " + delay/1000/60 + " minutes");
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent, 0);
         alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
@@ -164,7 +171,6 @@ public class TimeTableWidget extends AppWidgetProvider {
                 delay,
                 pendingIntent
         );
-        Log.i(TAG, "setNextUpdateAlarm: Alarm will trigger in > " + (float) delay/1000/60/60 + " Hour");
     }
 
     /**
@@ -191,6 +197,8 @@ public class TimeTableWidget extends AppWidgetProvider {
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
             sendRefreshBroadcast(context, false);
+        }else{
+            sendRefreshBroadcast(context, false);
         }
     }
 
@@ -201,15 +209,22 @@ public class TimeTableWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        Logger.write("Broadcast Received, action : " + intent.getAction());
         final String action = intent.getAction();
         if (action != null) {
-            if (action.equals(SOFT_UPDATE_WIDGET)) {
+            switch (action) {
+                case AppWidgetManager.ACTION_APPWIDGET_UPDATE:
                     AppWidgetManager mgr = AppWidgetManager.getInstance(context);
                     ComponentName cn = new ComponentName(context, TimeTableWidget.class);
                     mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
-                } else if (action.equals(HARD_UPDATE_WIDGET)) {
+                    break;
+                case HARD_UPDATE_WIDGET:
                     updateTimetable(context, true);
-                }
+                    break;
+                case SOFT_UPDATE_WIDGET:
+                    updateTimetable(context, false);
+                    break;
+            }
         }
         super.onReceive(context, intent);
     }
