@@ -12,7 +12,7 @@ import java.util.Calendar;
 public class Logger {
 
 
-    private static final String path = getInternalStoragePath() + "/CR/log.txt";
+    private static final String path = getInternalStoragePath() + "/crlog.txt";
 
     public static void write(String text)
     {

@@ -77,7 +77,7 @@ public class TimeTableWidget extends AppWidgetProvider {
      */
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Logger.write("> update App Widget Called");
-        updateTimetable(context, false);
+        //updateTimetable(context, false);
         setNextUpdateAlarm(context);
 
         // update Views
@@ -194,13 +194,11 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
         Logger.write("> On Enabled: new widget created");
-        if(getDbInstance(context) == null){
+        if(getDbInstance(context) == null) {
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
-            sendRefreshBroadcast(context, false);
-        }else{
-            sendRefreshBroadcast(context, false);
         }
+        sendRefreshBroadcast(context, false);
     }
 
     @Override
@@ -216,9 +214,7 @@ public class TimeTableWidget extends AppWidgetProvider {
         if (action != null) {
             switch (action) {
                 case AppWidgetManager.ACTION_APPWIDGET_UPDATE:
-                    AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-                    ComponentName cn = new ComponentName(context, TimeTableWidget.class);
-                    mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
+                    updateTimetable(context, false);
                     break;
                 case HARD_UPDATE_WIDGET:
                     updateTimetable(context, true);
@@ -227,6 +223,9 @@ public class TimeTableWidget extends AppWidgetProvider {
                     updateTimetable(context, false);
                     break;
             }
+            AppWidgetManager mgr = AppWidgetManager.getInstance(context);
+            ComponentName cn = new ComponentName(context, TimeTableWidget.class);
+            mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
         }
         super.onReceive(context, intent);
     }

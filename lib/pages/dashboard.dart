@@ -17,6 +17,8 @@ import './menu/library.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard(this.user, this.observer){
+
+    // Call native screen-widget to hard update
     TimeTableScreenWidget.refreshWidget();
   }
 
