@@ -77,7 +77,6 @@ public class TimeTableWidget extends AppWidgetProvider {
      */
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Logger.write("> update App Widget Called");
-        //updateTimetable(context, false);
         setNextUpdateAlarm(context);
 
         // update Views
@@ -126,7 +125,7 @@ public class TimeTableWidget extends AppWidgetProvider {
                 TimeTableWidget.timetable.clear();
                 TimeTableWidget.timetable.addAll(timetable);
                 removePastEvents();
-                TimeTableWidget.sendRefreshBroadcast(context, false);
+//                TimeTableWidget.sendRefreshBroadcast(context, false);
             }, hard);
     }
 
@@ -137,6 +136,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     private static void setNextUpdateAlarm(Context context){
         Logger.write("> set Next Update Alarm called");
         Calendar calendar = Calendar.getInstance();
+        Logger.write("current time : " + calendar.getTime());
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
 
@@ -160,13 +160,13 @@ public class TimeTableWidget extends AppWidgetProvider {
             intent = new Intent(SOFT_UPDATE_WIDGET);
         }
 
-        Logger.write("delay: " + delay/1000/60 + " minutes");
+        Logger.write("next Alarm Update after: " + delay + " ms");
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, intent, 0);
         alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
 
         alarmManager.setRepeating(
-                AlarmManager.RTC,
+                AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(),
                 delay,
                 pendingIntent
@@ -198,7 +198,7 @@ public class TimeTableWidget extends AppWidgetProvider {
             timetable.clear();
             timetable.add(new Event(Event.NO_AUTH));
         }
-        sendRefreshBroadcast(context, false);
+        sendRefreshBroadcast(context, true);
     }
 
     @Override
@@ -214,13 +214,11 @@ public class TimeTableWidget extends AppWidgetProvider {
         if (action != null) {
             switch (action) {
                 case AppWidgetManager.ACTION_APPWIDGET_UPDATE:
+                case SOFT_UPDATE_WIDGET:
                     updateTimetable(context, false);
                     break;
                 case HARD_UPDATE_WIDGET:
                     updateTimetable(context, true);
-                    break;
-                case SOFT_UPDATE_WIDGET:
-                    updateTimetable(context, false);
                     break;
             }
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
