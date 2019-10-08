@@ -9,6 +9,7 @@ import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/models/task.model.dart';
+import 'package:class_resources/pages/home/task-detail.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
 
               hashs.add(task.title);
               events.add(task);
+              print(task.getAnnoucmentTemplate());
             }
           });
         }),
@@ -67,26 +69,34 @@ class _HomePageState extends State<HomePage> {
     return DateTime(now.year, now.month, now.day, t.hour, t.minute);
   }
 
-  _humanize(TimeOfDay t) {
-    return """
-      ${t.hour % 12}:
-      ${t.minute < 10 ? (t.minute.toString() + "0") : t.minute}
-      ${t.hour > 12 ? "PM" : "AM"}
-    """
-        .replaceAll("\n", " ")
-        .replaceAll(RegExp(r'\s+'), " ");
-  }
-
   Widget _taskTile(TaskModel model) {
     return ListTile(
-      leading: CircleAvatar(
-          child: Icon(model.getIcon()),
-          backgroundColor: HexColor(generateColor(model.title)).withAlpha(130),
-          foregroundColor: Colors.white),
-      title: Text(model.title),
+      leading: Hero(
+        tag: "${model.hashCode}-c",
+        child: Material(
+          child: CircleAvatar(
+              child: Icon(model.getIcon()),
+              backgroundColor:
+                  HexColor(generateColor(model.title)).withAlpha(130),
+              foregroundColor: Colors.white),
+        ),
+      ),
+      title: Hero(
+        tag: model.hashCode,
+        child: Material(
+          child: Text(model.title),
+        ),
+      ),
       subtitle:
           Text(DateFormat("EEE, MMMM d, yyyy (h:m a)").format(model.dueDate)),
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TaskDetail(model),
+          ),
+        );
+      },
     );
   }
 
