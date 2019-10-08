@@ -56,7 +56,6 @@ class _HomePageState extends State<HomePage> {
 
               hashs.add(task.title);
               events.add(task);
-              print(task.getAnnoucmentTemplate());
             }
           });
         }),

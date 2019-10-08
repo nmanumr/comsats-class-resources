@@ -50,6 +50,7 @@ ThemeData defaultDarkTheme() {
           borderRadius: BorderRadius.all(Radius.circular(6))),
     ),
     textSelectionHandleColor: Color(0xFF61A9E1),
+    cardColor: Color(0xFF222E3C)
   );
 }
 
