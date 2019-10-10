@@ -72,17 +72,16 @@ class _HomePageState extends State<HomePage> {
     return ListTile(
       leading: Hero(
         tag: "${model.hashCode}-c",
-        child: Material(
-          child: CircleAvatar(
+        child: CircleAvatar(
               child: Icon(model.getIcon()),
               backgroundColor:
                   HexColor(generateColor(model.title)).withAlpha(130),
               foregroundColor: Colors.white),
         ),
-      ),
       title: Hero(
         tag: model.hashCode,
         child: Material(
+          color: Colors.transparent,
           child: Text(model.title),
         ),
       ),
