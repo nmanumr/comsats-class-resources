@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import './courses/courses.dart';
-// import './notifications.dart';
 import './timetable/timetable.dart';
 import './menu/library.dart';
 
@@ -40,6 +39,8 @@ class _DashboardState extends State<Dashboard>
   final wantKeepAlive = true;
 
   final FirebaseAnalyticsObserver observer;
+
+  bool timeTableServiceStarted = false;
 
   // TimeTableModel timeTableModel;
   int _cIndex = 0;
@@ -112,6 +113,11 @@ class _DashboardState extends State<Dashboard>
   Widget buildDashboard(BuildContext context) {
     var bottomNavItems = initTabs();
 
+    if(!timeTableServiceStarted){
+      timeTableServiceStarted = true;
+      widget.user.service.timeTableService.update();
+    }
+
     return Scaffold(
       key: PageStorageKey('BottomNavigationBar'),
       body: Builder(
@@ -124,7 +130,7 @@ class _DashboardState extends State<Dashboard>
         selectedItemColor: Theme.of(context).accentColor,
         items: bottomNavItems,
         onTap: (index) {
-          if(_cIndex == index) return;
+          if (_cIndex == index) return;
           setState(() {
             _cIndex = index;
           });
@@ -149,6 +155,7 @@ class _DashboardState extends State<Dashboard>
           }
 
           if (userModel.status == AccountStatus.AuthError) {
+            widget.user.service.timeTableService.update();
             return Scaffold(
               appBar: centeredAppBar(context, ""),
               body: IllustartedPage(
@@ -177,6 +184,7 @@ class _DashboardState extends State<Dashboard>
                 }
 
                 if (profileModel.status == ProfileStatus.Error) {
+                  widget.user.service.timeTableService.update();
                   return Scaffold(
                     appBar: centeredAppBar(context, ""),
                     body: Center(
