@@ -1,4 +1,5 @@
 import 'package:class_resources/models/user.model.dart';
+import 'package:class_resources/services/timetable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,7 +11,11 @@ class UserService {
   Firestore _firestore = Firestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  // Serivce to save timetable data in a local file for android widget
+  TimeTableService timeTableService;
+
   UserService(String uid, this.model) {
+    timeTableService = TimeTableService(model);
     if (uid != "") {
       getCurrentUser().then((data) {
         model.loadData(data);
@@ -31,13 +36,14 @@ class UserService {
 
   /// signup user with email and password
   Future<UserModel> signUp(String email, String password) async {
-    FirebaseUser user = (await _firebaseAuth.createUserWithEmailAndPassword(
+    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    )).user;
+    );
     saveUserId(user.uid);
 
     this.model.loadData(user);
+    this.timeTableService.update();
     return this.model;
   }
 
@@ -50,17 +56,18 @@ class UserService {
       idToken: googleAuth.idToken,
     );
     final FirebaseUser user =
-        (await _firebaseAuth.signInWithCredential(credential)).user;
+        await _firebaseAuth.signInWithCredential(credential);
 
     saveUserId(user.uid);
     this.model.loadData(user);
+    this.timeTableService.update();
     return this.model;
   }
 
   /// Sign user with email, password
   Future<UserModel> signIn(String email, String password) async {
-    FirebaseUser user = (await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password)).user;
+    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
 
     saveUserId(user.uid);
     this.model.loadData(user);
@@ -72,6 +79,8 @@ class UserService {
     await this.close();
     _firebaseAuth.signOut();
     saveUserId(null);
+    this.model.setStatus(AccountStatus.LoggedOut);
+    this.timeTableService.update();
   }
 
   /// get current user instance
@@ -104,5 +113,6 @@ class UserService {
 
   Future<void> close() async {
     await this.model.profile.service.close();
+    this.timeTableService.dispose();
   }
 }
