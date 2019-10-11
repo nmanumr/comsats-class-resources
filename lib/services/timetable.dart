@@ -29,6 +29,7 @@ import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:class_resources/app_widgets/timetable/timeTableAppWidget.dart';
 
 
 class TimeTableService {
@@ -92,7 +93,7 @@ class TimeTableService {
     file.writeAsString(eventsJson);
     print("wrote");
 
-    // TODO: call android widget to hard reload
+    TimeTableAppWidget.refreshWidget();
   }
 
   void saveLoggedOut() async {
@@ -103,7 +104,7 @@ class TimeTableService {
     final file = await _localFile;
     file.writeAsString(eventsJson);
 
-    // TODO: call android widget to hard reload
+    TimeTableAppWidget.refreshWidget();
   }
 
   void saveError(String error) async {
@@ -115,6 +116,6 @@ class TimeTableService {
     final file = await _localFile;
     file.writeAsString(eventsJson);
 
-    // TODO: call android widget to hard reload
+    TimeTableAppWidget.refreshWidget();
   }
 }

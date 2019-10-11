@@ -15,10 +15,16 @@ import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
 import com.firebaseapp.comsats_cr.objects.Logger;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
@@ -48,15 +54,6 @@ public class TimeTableWidget extends AppWidgetProvider {
         context.sendBroadcast(intent);
     }
 
-    synchronized private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-
-        // update Views
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
-        Intent intent = new Intent(context, TimeTableWidgetService.class);
-        views.setRemoteAdapter(R.id.timetable_list, intent);
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-    }
-
     /**
      * sets alarm service to trigger updates at certain time
      * @param context Application Context
@@ -66,35 +63,29 @@ public class TimeTableWidget extends AppWidgetProvider {
         Calendar calendar = Calendar.getInstance();
         Logger.write(context, "current time : " + calendar.getTime());
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        assert alarmManager != null;
         long delay;
-
+        long currentTimeInMilli = (calendar.get(Calendar.HOUR_OF_DAY)*60*60*1000 + calendar.get(Calendar.MINUTE)*60*1000 + calendar.get(Calendar.SECOND)*1000 + calendar.get(Calendar.MILLISECOND));
         if(!timetable.isEmpty() && timetable.get(0).getEndTime() == null){
             // schedule update for next day
-            long millisPast = (
-                    calendar.get(Calendar.HOUR_OF_DAY)*60*60*1000
-                            + calendar.get(Calendar.MINUTE)*60*1000
-                            + calendar.get(Calendar.SECOND)*1000
-                            + calendar.get(Calendar.MILLISECOND)
-            );
-            delay = (24*60*60*1000) - millisPast;
+            delay = (24*60*60*1000) - currentTimeInMilli;
         }else{
             // schedule for event's end time
-            delay = convertToMillis(Event.formatTime(timetable.get(0).getEndTime(), false));
+            delay = convertToMillis(Event.formatTime(timetable.get(0).getEndTime(), false)) - currentTimeInMilli;
             Logger.write(context, "current events end time : " + Event.formatTime(timetable.get(0).getEndTime(), false));
         }
 
         Logger.write(context, "next Alarm Update after: " + delay + " ms");
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE), 0);
-        alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
-
-        alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
-                delay,
-                pendingIntent
-        );
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
+            alarmManager.setRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis(),
+                    delay,
+                    pendingIntent
+            );
+        }
     }
 
     /**
@@ -103,19 +94,33 @@ public class TimeTableWidget extends AppWidgetProvider {
      * @return Time in MilliSeconds in type ling
      */
     synchronized private static long convertToMillis(String time){
-        return (long) Double.parseDouble(time.trim().replace(":", ".")) * 1000;
+        Date date = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = sdf.parse("1970-01-01 " + time + ":00.000");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        assert date != null;
+        return date.getTime();
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
 
-        timetable.addAll(getDBInstance(context).getTodayEvents());
+        timetable.clear();
+        timetable.addAll(getDBInstance(context).getEvents());
+
         Logger.write(context,"> onUpdate, new Data:" + timetable.toString());
         setNextUpdateAlarm(context);
 
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
+            Intent intent = new Intent(context, TimeTableWidgetService.class);
+            views.setRemoteAdapter(R.id.timetable_list, intent);
+            appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 

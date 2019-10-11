@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 
-class TimeTableScreenWidget{
+class TimeTableAppWidget{
   static const platform = const MethodChannel('com.firebaseapp.comsats_cr/timetable_widget');
 
   static void refreshWidget() {
