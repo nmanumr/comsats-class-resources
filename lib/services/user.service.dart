@@ -36,10 +36,10 @@ class UserService {
 
   /// signup user with email and password
   Future<UserModel> signUp(String email, String password) async {
-    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
+    FirebaseUser user = (await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    );
+    )).user;
     saveUserId(user.uid);
 
     this.model.loadData(user);
@@ -56,7 +56,7 @@ class UserService {
       idToken: googleAuth.idToken,
     );
     final FirebaseUser user =
-        await _firebaseAuth.signInWithCredential(credential);
+    (await _firebaseAuth.signInWithCredential(credential)).user;
 
     saveUserId(user.uid);
     this.model.loadData(user);
@@ -66,8 +66,8 @@ class UserService {
 
   /// Sign user with email, password
   Future<UserModel> signIn(String email, String password) async {
-    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+    FirebaseUser user = (await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password)).user;
 
     saveUserId(user.uid);
     this.model.loadData(user);
