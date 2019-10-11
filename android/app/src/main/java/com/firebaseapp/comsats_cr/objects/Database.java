@@ -1,121 +1,84 @@
 package com.firebaseapp.comsats_cr.objects;
 
-import android.util.Log;
+import android.content.Context;
 
-import com.firebaseapp.comsats_cr.interfaces.OnCompleted;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.Source;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
-
-import static android.content.ContentValues.TAG;
+import java.util.Iterator;
 
 public class Database{
 
-    private static Query query;
-    private static final ArrayList<DocumentReference> courseReference = new ArrayList<>(); // Static Variable to hold Reference of Courses
-    private static final ArrayList<Event> timeTableEvents = new ArrayList<>(); // Static Timetable Holder for all Events
+    private final ArrayList<Event> timeTableEvents;
+    private Context context;
 
-    public Database(String uid) {
-        /*
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
-                .build();
-         */
-        FirebaseFirestore ff = FirebaseFirestore.getInstance();
-        //ff.setFirestoreSettings(settings);
-
-        query =  ff.collection("users").document(uid).collection("semesters").whereEqualTo("isCurrent", true);
-    }
-
-    /**
-     * Public Interface to trigger Fire-store Actions
-     * @param listener Interface that notifies when action is completed
-     * @param hard Notifies if cache is sufficient or New data should be fetched
-     */
-    synchronized public void updateData(OnCompleted listener, boolean hard){
-        getCourseReferences(hard, () -> {
-            if(!courseReference.isEmpty()) {
-                timeTableEvents.clear();
-                for (int i = 0, courseReferenceSize = courseReference.size(); i < courseReferenceSize; i++) {
-                    DocumentReference DR = courseReference.get(i);
-                    int finalI = i;
-                    getName(DR, hard, subName ->
-                            getEvents(DR, subName, hard, () -> {
-                                if(finalI == courseReferenceSize-1)
-                                    listener.timetableReceived(getTodayEvents());
-                            })
-                    );
-                }
-            } else
-                Log.i(TAG, "getTimeTable: No data in CourseReference");
-        });
+    public Database(Context context) {
+        this.context = context;
+        timeTableEvents = new ArrayList<>();
     }
 
     /**
      * returns Events that are going to occur today
      * @return timetable of current day
      */
-    synchronized private ArrayList<Event> getTodayEvents(){
+    synchronized public ArrayList<Event> getTodayEvents(){
         ArrayList<Event> events = new ArrayList<>();
         for (Event e: timeTableEvents)
             if (e.getWeekday() == Event.getCurrentWeekDay())
                 events.add(e);
+
+        removePastEvents();
         return events;
     }
 
-    @SuppressWarnings("unchecked")
-    synchronized private void getCourseReferences(boolean hard, UpdateListener listener){
-        query.get(hard? Source.DEFAULT: Source.CACHE).addOnCompleteListener(task -> {
-            if(task.isSuccessful() && task.getResult()!=null){
-                courseReference.addAll(
-                        (ArrayList<DocumentReference>) Objects.requireNonNull(
-                                task.getResult().getDocuments().get(0).get("courses")));
-                listener.onUpdate();
-            }
-        });
-    }
-    synchronized private void saveData(String subName ,DocumentSnapshot DS){
-        Event event = new Event();
-        event.setSub(subName);
-        event.setLoc(DS.getString("location"));
-        event.setStartTime(DS.getString("startTime"));
-        event.setEndTime(DS.getString("endTime"));
-        event.setLab(DS.getBoolean("isLab"));
-        event.setWeekday(Objects.requireNonNull(DS.getLong("weekday")));
-        event.setTeacher(DS.getString("teacher"));
-        timeTableEvents.add(event);
-    }
-    synchronized private void getName(DocumentReference DR, boolean hard , NameListener listener){
-        DR.get(hard? Source.DEFAULT: Source.CACHE).addOnCompleteListener(task ->{
-            if (task.isSuccessful() && task.getResult() != null) {
-                String subName = task.getResult().getString("title");
-                listener.onNameReceived(subName);
-            }
-        });
-    }
-    synchronized private void getEvents(DocumentReference DR, String subName, boolean hard, UpdateListener listener){
-        DR.collection("timetable").get(hard? Source.DEFAULT: Source.CACHE).addOnCompleteListener(task ->{
-            if(task.isSuccessful() && task.getResult()!=null){
-                for (DocumentSnapshot DS : task.getResult().getDocuments()) {
-                    saveData(subName, DS);
-                }
-                Collections.sort(timeTableEvents, new Event());
-                listener.onUpdate();
-            }
-        });
+    synchronized private void getEvents(){
+        // Get All Events from File if available and update the variable
+
     }
 
-    private interface UpdateListener {
-        void onUpdate();
+    /**
+     * Remove events from the timetable static variable
+     * to ensure upcoming events displayed only
+     */
+    synchronized private void removePastEvents(){
+        Logger.write(context, "> remove Past Events called");
+        Iterator<Event> iterator = timeTableEvents.iterator();
+        while(iterator.hasNext()){
+            Event x = iterator.next();
+            if(x.getEndTime()!=null)
+                if(Event.isPast(x.getEndTime()))
+                    iterator.remove();
+        }
+        Logger.write(context, "after removing, new data: " + timeTableEvents.toString());
+
+        if (timeTableEvents.isEmpty())
+            timeTableEvents.add(new Event(Event.NO_EVENT));
     }
-    private interface NameListener {
-        void onNameReceived(String subName);
+
+    public JSONObject loadJSONFromFile() {
+        String json = null;
+        JSONObject jsonObject  = null;
+        try {
+            File timeTableFile = new File(context.getExternalFilesDir(null), "timetable.json");
+            if(timeTableFile.exists()){
+                InputStream is = new FileInputStream(timeTableFile);
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+                json = new String(buffer, StandardCharsets.UTF_8);
+                jsonObject = new JSONObject(json);
+            }
+        } catch (IOException | JSONException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return jsonObject;
     }
 }

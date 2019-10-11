@@ -25,108 +25,36 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TimeTableWidget extends AppWidgetProvider {
 
-    public static final String SOFT_UPDATE_WIDGET = "soft_update";
-    public static final String HARD_UPDATE_WIDGET = "hard_update";
-
     private static final int ALARM_REQUEST_CODE = 0;
 
     public static final ArrayList<Event> timetable = new ArrayList<>();
-    private static Database db;
+
+    private Database DB = null;
+
+    private Database getDBInstance(Context context){
+        if(DB == null)
+            DB = new Database(context);
+        return DB;
+    }
 
     /**
      * Sends Update Signal to the widget when called
      * @param context Application Context
-     * @param hard show weather cache is required or fresh data from Fire-store
      */
-    synchronized public static void sendRefreshBroadcast(Context context, boolean hard) {
-        Logger.write(context, "> Broadcast sent, isHard : " + hard);
-        Intent intent = new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET);
+    synchronized public static void sendRefreshBroadcast(Context context) {
+        Logger.write(context, "> Broadcast sent");
+        Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.setComponent(new ComponentName(context, TimeTableWidget.class));
         context.sendBroadcast(intent);
     }
 
-    /**
-     * Initialize and returns Database Instance
-     * @param context Application Context
-     * @return Database Instance to send update calls and receive data
-     */
-    synchronized private static Database getDbInstance(Context context){
-        if(db==null)
-            if(getUID(context)==null)
-                return null;
-            else
-                db = new Database(getUID(context));
-        return db;
-    }
-
-    /**
-     * Returns User ID saved in shared preferences by flutter Application
-     * @param context Application Context
-     * @return UID from Shared Preferences
-     * @see android.content.SharedPreferences
-     */
-    synchronized private static String getUID(Context context){
-        //return  context.getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE).getString("flutter.uid", null);
-        return "kB3Vn2LHXPXVOamG53uz4R9MLG33";
-    }
-
-    /**
-     * perform certain tasks when update is called
-     * @param context Application Context
-     * @param appWidgetManager App Widget Manager - responsible for Managing all Widgets
-     * @param appWidgetId App Widget Id - id of certain widget
-     */
     synchronized private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        Logger.write(context, "> update App Widget Called");
 
         // update Views
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.time_table_widget);
         Intent intent = new Intent(context, TimeTableWidgetService.class);
         views.setRemoteAdapter(R.id.timetable_list, intent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
-    }
-
-    /**
-     * Remove events from the timetable static variable
-     * to ensure upcoming events displayed only
-     */
-    synchronized private static void removePastEvents(Context context){
-        Logger.write(context, "> remove Past Events called: previous date : " + timetable.toString());
-        Iterator<Event> iterator = timetable.iterator();
-        while(iterator.hasNext()){
-            Event x = iterator.next();
-            if(x.getEndTime()!=null)
-                if(Event.isPast(x.getEndTime()))
-                    iterator.remove();
-        }
-        Logger.write(context, "after removing, new data: " + timetable.toString());
-
-        if (timetable.isEmpty()){
-            timetable.add(new Event(Event.NO_EVENT));
-        }
-    }
-
-    /**
-     * Updates static Timetable variable with new event values
-     * @param context Application Context
-     * @param hard Checks weather Content needs to be fetched from Database or cache
-     */
-    synchronized private static void updateTimetable(Context context, boolean hard){
-        Logger.write(context,"> update Time Table Called, isHard : " + hard);
-        // Get data from Database
-        if(getDbInstance(context) == null){
-            Logger.write(context, "db Instance is null => UID is null");
-            timetable.clear();
-            timetable.add(new Event(Event.NO_AUTH));
-//            sendRefreshBroadcast(context, false);
-        }else
-            Objects.requireNonNull(getDbInstance(context)).updateData(timetable-> {
-                Logger.write(context, "DB.updateData Called => updated Timetable : " + timetable.toString());
-                TimeTableWidget.timetable.clear();
-                TimeTableWidget.timetable.addAll(timetable);
-                removePastEvents(context);
-//                TimeTableWidget.sendRefreshBroadcast(context, false);
-            }, hard);
     }
 
     /**
@@ -139,11 +67,9 @@ public class TimeTableWidget extends AppWidgetProvider {
         Logger.write(context, "current time : " + calendar.getTime());
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
-
-        boolean hard;
         long delay;
 
-        if(timetable.size() <= 1){
+        if(!timetable.isEmpty() && timetable.get(0).getEndTime() == null){
             // schedule update for next day
             long millisPast = (
                     calendar.get(Calendar.HOUR_OF_DAY)*60*60*1000
@@ -152,17 +78,15 @@ public class TimeTableWidget extends AppWidgetProvider {
                             + calendar.get(Calendar.MILLISECOND)
             );
             delay = (24*60*60*1000) - millisPast;
-            hard = true;
         }else{
             // schedule for event's end time
             delay = convertToMillis(Event.formatTime(timetable.get(0).getEndTime(), false));
             Logger.write(context, "current events end time : " + Event.formatTime(timetable.get(0).getEndTime(), false));
-            hard = false;
         }
 
         Logger.write(context, "next Alarm Update after: " + delay + " ms");
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, new Intent(hard?HARD_UPDATE_WIDGET:SOFT_UPDATE_WIDGET), 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE), 0);
         alarmManager.cancel(pendingIntent); // Cancel every previous Alarm Set
 
         alarmManager.setRepeating(
@@ -185,6 +109,8 @@ public class TimeTableWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
+
+        timetable.addAll(getDBInstance(context).getTodayEvents());
         Logger.write(context,"> onUpdate, new Data:" + timetable.toString());
         setNextUpdateAlarm(context);
 
@@ -197,7 +123,7 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
         Logger.write(context, "> On Enabled: new widget created");
-        sendRefreshBroadcast(context, true);
+        sendRefreshBroadcast(context);
     }
 
     @Override
@@ -205,7 +131,6 @@ public class TimeTableWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
         Logger.write(context, "> on disabled");
         timetable.clear();
-        db = null;
     }
 
     @Override
@@ -215,24 +140,13 @@ public class TimeTableWidget extends AppWidgetProvider {
 
         if(timetable.isEmpty())
             timetable.add(new Event(Event.NO_EVENT));
-        else if(getDbInstance(context) == null)
-            timetable.add(new Event(Event.NO_AUTH));
 
         if (action != null) {
-
-            switch (action) {
-                case AppWidgetManager.ACTION_APPWIDGET_UPDATE:
-                case SOFT_UPDATE_WIDGET:
-                    updateTimetable(context, false);
-                    break;
-                case HARD_UPDATE_WIDGET:
-                    updateTimetable(context, true);
-                    break;
+            if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+                AppWidgetManager mgr = AppWidgetManager.getInstance(context);
+                ComponentName cn = new ComponentName(context, TimeTableWidget.class);
+                mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
             }
-
-            AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-            ComponentName cn = new ComponentName(context, TimeTableWidget.class);
-            mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);
         }
         super.onReceive(context, intent);
     }
