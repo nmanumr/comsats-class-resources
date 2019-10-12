@@ -1,23 +1,23 @@
-package com.firebaseapp.comsats_cr.objects;
+package com.firebaseapp.comsats_cr.Helpers;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.firebaseapp.comsats_cr.objects.Event;
+import com.firebaseapp.comsats_cr.objects.JSONTimetable;
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
 public class Database{
     private Context context;
@@ -29,7 +29,7 @@ public class Database{
     synchronized public ArrayList<Event> getEvents(){
         // Get All Events from File if available and update the variable
         ArrayList<Event> timetable = new ArrayList<>();
-        String jsongString = readFromFile();
+        String jsongString = readFromJsonFile();
         JSONArray jarray;
         try {
             jarray = new JSONArray(jsongString);
@@ -38,7 +38,10 @@ public class Database{
         }
         if(jsongString!=null){
             // TODO:: get Timetable from JSON and update
-
+            Gson gson = new Gson();
+            JSONTimetable jsonTimetable = gson.fromJson(readFromJsonFile(), JSONTimetable.class);
+            if(jsonTimetable.getStatus().equals("success"))
+                timetable = jsonTimetable.getEvents();
         }
         return getTodayEvents(timetable);
     }
@@ -69,7 +72,7 @@ public class Database{
         return timeTableEvents;
     }
 
-    private String readFromFile() {
+    private String readFromJsonFile() {
 
         String ret = "";
         InputStream inputStream = null;
@@ -91,10 +94,10 @@ public class Database{
             }
         }
         catch (FileNotFoundException e) {
-            Log.e("readFromFile", "File not found: " + e.toString());
+            Log.e("readFromJsonFile", "File not found: " + e.toString());
             Logger.write(context, "File not found: " + e.toString());
         } catch (IOException e) {
-            Log.e("readFromFile", "Can not read file: " + e.toString());
+            Log.e("readFromJsonFile", "Can not read file: " + e.toString());
             Logger.write(context, "Can not read file: " + e.toString());
         }
         finally {

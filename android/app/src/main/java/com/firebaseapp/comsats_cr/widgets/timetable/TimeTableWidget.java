@@ -7,27 +7,20 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.firebaseapp.comsats_cr.objects.Database;
+import com.firebaseapp.comsats_cr.Helpers.Database;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.R;
-import com.firebaseapp.comsats_cr.objects.Logger;
+import com.firebaseapp.comsats_cr.Helpers.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
-
-import static android.content.ContentValues.TAG;
-import static android.content.Context.MODE_PRIVATE;
 
 public class TimeTableWidget extends AppWidgetProvider {
 
@@ -112,6 +105,8 @@ public class TimeTableWidget extends AppWidgetProvider {
 
         timetable.clear();
         timetable.addAll(getDBInstance(context).getEvents());
+        if(timetable.isEmpty())
+            timetable.add(new Event(Event.NO_EVENT));
 
         Logger.write(context,"> onUpdate, new Data:" + timetable.toString());
         setNextUpdateAlarm(context);
@@ -142,9 +137,6 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onReceive(final Context context, Intent intent) {
         Logger.write(context, "> Broadcast Received, action : " + intent.getAction());
         final String action = intent.getAction();
-
-        if(timetable.isEmpty())
-            timetable.add(new Event(Event.NO_EVENT));
 
         if (action != null) {
             if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {

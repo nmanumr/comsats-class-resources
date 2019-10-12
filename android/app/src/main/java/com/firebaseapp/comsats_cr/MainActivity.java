@@ -2,7 +2,7 @@ package com.firebaseapp.comsats_cr;
 
 import android.os.Bundle;
 
-import com.firebaseapp.comsats_cr.objects.Logger;
+import com.firebaseapp.comsats_cr.Helpers.Logger;
 import com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget;
 
 import io.flutter.app.FlutterActivity;

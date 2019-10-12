@@ -1,4 +1,4 @@
-package com.firebaseapp.comsats_cr.objects;
+package com.firebaseapp.comsats_cr.Helpers;
 
 import android.content.Context;
 import android.util.Log;
