@@ -28,15 +28,8 @@ class Dashboard extends StatefulWidget {
   _DashboardState createState() => _DashboardState(observer);
 }
 
-class _DashboardState extends State<Dashboard>
-    with
-        AutomaticKeepAliveClientMixin,
-        SingleTickerProviderStateMixin,
-        RouteAware {
+class _DashboardState extends State<Dashboard> with RouteAware {
   _DashboardState(this.observer);
-
-  @override
-  final wantKeepAlive = true;
 
   final FirebaseAnalyticsObserver observer;
 
@@ -142,9 +135,7 @@ class _DashboardState extends State<Dashboard>
     );
   }
 
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     return ScopedModel(
       model: widget.user,
       child: ScopedModelDescendant<UserModel>(
@@ -179,7 +170,8 @@ class _DashboardState extends State<Dashboard>
             child: ScopedModelDescendant<ProfileModel>(
               builder: (context, child, profileModel) {
                 if (profileModel == null ||
-                    profileModel.status == ProfileStatus.Loading) {
+                    profileModel.status == ProfileStatus.Loading ||
+                    profileModel.status == ProfileStatus.LoadingSemesters) {
                   return Loader();
                 }
 
