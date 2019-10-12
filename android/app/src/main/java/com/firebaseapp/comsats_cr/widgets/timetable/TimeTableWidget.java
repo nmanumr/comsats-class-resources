@@ -103,11 +103,6 @@ public class TimeTableWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
 
-        timetable.clear();
-        timetable.addAll(getDBInstance(context).getEvents());
-        if(timetable.isEmpty())
-            timetable.add(new Event(Event.NO_EVENT));
-
         Logger.write(context,"> onUpdate, new Data:" + timetable.toString());
         setNextUpdateAlarm(context);
 
@@ -140,6 +135,11 @@ public class TimeTableWidget extends AppWidgetProvider {
 
         if (action != null) {
             if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+                timetable.clear();
+                timetable.addAll(getDBInstance(context).getEvents());
+                if(timetable.isEmpty())
+                    timetable.add(new Event());
+
                 AppWidgetManager mgr = AppWidgetManager.getInstance(context);
                 ComponentName cn = new ComponentName(context, TimeTableWidget.class);
                 mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.timetable_list);

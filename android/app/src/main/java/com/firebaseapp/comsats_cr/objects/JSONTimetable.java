@@ -3,20 +3,16 @@ package com.firebaseapp.comsats_cr.objects;
 import java.util.ArrayList;
 
 public class JSONTimetable {
+
+    public final static String STATUS_SUCCESS = "success";
+    public final static String STATUS_LOGGED_OUT = "loggedOut";
+    public final static String STATUS_ERROR = "error";
+
     private String status;
+    private String error;
     private String lastUpdate;
     private int eventLength;
     private ArrayList<JSONEvent> events;
-
-    public JSONTimetable(String status, String lastUpdate, int eventLength, ArrayList<JSONEvent> events) {
-        this.status = status;
-        this.lastUpdate = lastUpdate;
-        this.eventLength = eventLength;
-        this.events = events;
-    }
-
-    public JSONTimetable() {
-    }
 
     public String getStatus() {
         return status;
@@ -62,7 +58,15 @@ public class JSONTimetable {
         this.events = events;
     }
 
-    private class JSONEvent {
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    class JSONEvent {
         private String location;
         private String teacher;
         private int eventSlot;

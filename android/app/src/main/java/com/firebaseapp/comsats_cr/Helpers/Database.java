@@ -6,16 +6,19 @@ import android.util.Log;
 import com.firebaseapp.comsats_cr.objects.Event;
 import com.firebaseapp.comsats_cr.objects.JSONTimetable;
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -29,20 +32,31 @@ public class Database{
     synchronized public ArrayList<Event> getEvents(){
         // Get All Events from File if available and update the variable
         ArrayList<Event> timetable = new ArrayList<>();
-        String jsongString = readFromJsonFile();
-        JSONArray jarray;
-        try {
-            jarray = new JSONArray(jsongString);
-        } catch (JSONException e) {
-            Logger.write(context, "Can't Fetch JSON from file");
+        Gson gson = new Gson();
+
+        String json = readFromJsonFile();
+        JSONTimetable jsonTimetable;
+
+        if(json!=null) {
+            JsonReader result = new JsonReader(new StringReader(json));
+            result.setLenient(true);
+
+            jsonTimetable = gson.fromJson(result, JSONTimetable.class);
+
+            if(jsonTimetable != null)
+                switch(jsonTimetable.getStatus()){
+                    case JSONTimetable.STATUS_SUCCESS:
+                        timetable = jsonTimetable.getEvents();
+                        break;
+                    case JSONTimetable.STATUS_LOGGED_OUT:
+                        timetable.add(new Event(Event.NO_AUTH));
+                        break;
+                    case JSONTimetable.STATUS_ERROR:
+                        break;
+                }
         }
-        if(jsongString!=null){
-            // TODO:: get Timetable from JSON and update
-            Gson gson = new Gson();
-            JSONTimetable jsonTimetable = gson.fromJson(readFromJsonFile(), JSONTimetable.class);
-            if(jsonTimetable.getStatus().equals("success"))
-                timetable = jsonTimetable.getEvents();
-        }
+
+        Logger.write(context, "> getEvents, all events:" + timetable);
         return getTodayEvents(timetable);
     }
 
@@ -77,21 +91,19 @@ public class Database{
         String ret = "";
         InputStream inputStream = null;
         try {
-            File timeTableFile = new File(context.getExternalFilesDir(null), "timetable.json");
-            inputStream = context.openFileInput(timeTableFile.getAbsolutePath());
+            File timeTableFile = new File(context.getExternalFilesDir(null), "timetable.enc");
+            inputStream = new FileInputStream(timeTableFile);
 
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            StringBuilder stringBuilder = new StringBuilder();
 
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                ret = stringBuilder.toString();
+            while ( (receiveString = bufferedReader.readLine()) != null ) {
+                stringBuilder.append(receiveString);
             }
+
+            ret = stringBuilder.toString();
         }
         catch (FileNotFoundException e) {
             Log.e("readFromJsonFile", "File not found: " + e.toString());
@@ -108,7 +120,6 @@ public class Database{
                 e.printStackTrace();
             }
         }
-
         return ret;
     }
 }

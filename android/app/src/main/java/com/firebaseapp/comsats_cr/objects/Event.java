@@ -2,6 +2,8 @@ package com.firebaseapp.comsats_cr.objects;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -150,5 +152,11 @@ public class Event implements Comparator<Event> {
     @Override
     public int compare(Event event, Event t1) {
         return event.getStartTime().compareTo(t1.getStartTime());
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return sub + "," + loc + "," + startTime + "," + endTime;
     }
 }
