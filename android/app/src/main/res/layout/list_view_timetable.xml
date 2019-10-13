@@ -4,30 +4,32 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="1dp"
+        android:layout_marginEnd="12dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="16dp"
         android:src="@android:color/white"
         tools:ignore="ContentDescription" />
 
 
     <LinearLayout
+        android:id="@+id/timetableAWLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="4dp"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/events_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:textColor="@android:color/white"
             android:textStyle="bold"/>
 
@@ -53,16 +55,22 @@
 
                 <ImageView
                     android:id="@+id/loc_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"
                     android:src="@drawable/ic_location"
                     android:tint="@android:color/white"
                     tools:ignore="ContentDescription" />
 
                 <TextView
+                    android:textSize="14sp"
                     android:id="@+id/events_loc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"
                     android:gravity="end"
                     android:textColor="@android:color/white"/>
 
