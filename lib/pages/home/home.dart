@@ -6,10 +6,13 @@ import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/illustrated-page.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
+import 'package:class_resources/components/text-avatar.dart';
+import 'package:class_resources/models/event.model.dart';
 import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/semester.model.dart';
 import 'package:class_resources/models/task.model.dart';
 import 'package:class_resources/pages/home/task-detail.dart';
+import 'package:class_resources/pages/timetable/event-detail.dart';
 import 'package:class_resources/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +31,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List hashs = [];
   List<TaskModel> events = [];
+  List<EventModel> todayEvents = [];
+  List<EventModel> tomorrowEvents = [];
   List<StreamSubscription> subscriptions = [];
   bool isLoading = true;
 
@@ -42,7 +47,13 @@ class _HomePageState extends State<HomePage> {
 
   void loadData() {
     var semester = widget.userProfile.service.getCurrentSemester();
-    if (semester != null && events.isEmpty) _fetchTasks(semester);
+    if (semester != null &&
+        events.isEmpty &&
+        todayEvents.isEmpty &&
+        tomorrowEvents.isEmpty) {
+      _fetchTasks(semester);
+      _fetchLectures(semester);
+    }
   }
 
   _fetchTasks(SemesterModel semester) {
@@ -63,6 +74,29 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  _fetchLectures(SemesterModel semester) {
+    for (var course in semester.courses) {
+      subscriptions.add(course.service.getTimetable().listen(
+        (data) {
+          setState(() {
+            isLoading = false;
+            for (var event in data) {
+              if (hashs.contains(event.hashCode)) continue;
+
+              var now = DateTime.now();
+              hashs.add(event.hashCode);
+
+              if (event.weekday == now.weekday)
+                todayEvents.add(event);
+              else if (event.weekday - 1 == now.weekday)
+                tomorrowEvents.add(event);
+            }
+          });
+        },
+      ));
+    }
+  }
+
   DateTime dateTimeFromTime(TimeOfDay t) {
     var now = DateTime.now();
     return DateTime(now.year, now.month, now.day, t.hour, t.minute);
@@ -73,11 +107,11 @@ class _HomePageState extends State<HomePage> {
       leading: Hero(
         tag: "${model.hashCode}-c",
         child: CircleAvatar(
-              child: Icon(model.getIcon()),
-              backgroundColor:
-                  HexColor(generateColor(model.title)).withAlpha(130),
-              foregroundColor: Colors.white),
-        ),
+            child: Icon(model.getIcon()),
+            backgroundColor:
+                HexColor(generateColor(model.title)).withAlpha(130),
+            foregroundColor: Colors.white),
+      ),
       title: Hero(
         tag: model.hashCode,
         child: Material(
@@ -98,8 +132,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _eventTile(EventModel model) {
+    var now = DateTime.now();
+    var passed = dateTimeFromTime(model.startTime).isBefore(now) &&
+        model.weekday == now.weekday;
+    return Opacity(
+      opacity: passed ? 0.6 : 1,
+      child: ListTile(
+        leading: TextAvatar(
+            text: model.title.replaceAll(RegExp(r"^\s*\(\w+\)\s*"), "")),
+        title: Text(model.title ?? ""),
+        subtitle: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+                "${_humanize(model.startTime)} -- ${_humanize(model.endTime)}"),
+            Text(model.location ?? ''),
+          ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EventDetails(model: model),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   int _compareTasks(TaskModel t1, TaskModel t2) {
     return t1.dueDate.isBefore(t2.dueDate) ? -1 : 1;
+  }
+
+  int _compareClasses(EventModel e1, EventModel e2) {
+    return e1.startTime.hour < e2.startTime.hour ? -1 : 1;
   }
 
   List<Widget> getDayEventTiles(int i) {
@@ -129,6 +197,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  _humanize(TimeOfDay t) {
+    return """
+      ${t.hour % 12}:
+      ${t.minute < 10 ? (t.minute.toString() + "0") : t.minute}
+      ${t.hour > 12 ? "PM" : "AM"}
+    """
+        .replaceAll("\n", " ")
+        .replaceAll(RegExp(r'\s+'), " ");
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScopedModel(
@@ -153,28 +231,34 @@ class _HomePageState extends State<HomePage> {
                 }
 
                 var sortedEvents = events..sort(_compareTasks);
-                return ListView.builder(
-                  itemCount: sortedEvents.last.dueDate
-                          .difference(DateTime.now())
-                          .inDays +
-                      3,
-                  itemBuilder: (ctx, i) {
-                    if (i == 0) {
-                      return isLoading
-                          ? LinearProgressIndicator()
-                          : SizedBox(height: 6);
-                    }
-
-                    var events = getDayEventTiles(i - 1);
-                    if (events.isEmpty) return SizedBox();
-
-                    return Column(children: [
-                      ListHeader(
-                          text: DateFormat("EEEE, MMM d").format(
-                              DateTime.now().add(Duration(days: i - 1)))),
-                      ...events
-                    ]);
-                  },
+                return ListView(
+                  children: [
+                    isLoading ? LinearProgressIndicator() : SizedBox(height: 6),
+                    ...(events.isNotEmpty
+                        ? [
+                            ListHeader(text: "My Tasks"),
+                            ...(events..sort(_compareTasks))
+                                .map(_taskTile)
+                                .toList(),
+                          ]
+                        : []),
+                    ...(todayEvents.isNotEmpty
+                        ? [
+                            ListHeader(text: "Today Classes"),
+                            ...(todayEvents..sort(_compareClasses))
+                                .map(_eventTile)
+                                .toList()
+                          ]
+                        : []),
+                    ...(tomorrowEvents.isNotEmpty
+                        ? [
+                            ListHeader(text: "Tommorrow Classes"),
+                            ...(tomorrowEvents..sort(_compareClasses))
+                                .map(_eventTile)
+                                .toList()
+                          ]
+                        : []),
+                  ],
                 );
               },
             ),
