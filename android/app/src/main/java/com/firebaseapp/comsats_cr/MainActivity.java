@@ -1,6 +1,7 @@
 package com.firebaseapp.comsats_cr;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.firebaseapp.comsats_cr.Helpers.Logger;
 import com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget;
@@ -21,7 +22,7 @@ public class MainActivity extends FlutterActivity {
         // Method Channel
         new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler((call, result) -> {
             if (call.method.equals("refresh_timetable_widget")) {
-                Logger.write(this,"> update call from Flutter Application");
+                Log.i("CALLS", "upgrade call from Application");
                 TimeTableWidget.sendRefreshBroadcast(getApplicationContext());
             }
             else

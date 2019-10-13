@@ -20,7 +20,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class Database{
     private Context context;
@@ -56,7 +59,6 @@ public class Database{
                 }
         }
 
-        Logger.write(context, "> getEvents, all events:" + timetable);
         return getTodayEvents(timetable);
     }
 
@@ -70,7 +72,6 @@ public class Database{
     }
 
     synchronized private ArrayList<Event> removePastEvents(ArrayList<Event> timeTableEvents){
-        Logger.write(context, "> remove Past Events called");
         Iterator<Event> iterator = timeTableEvents.iterator();
         while(iterator.hasNext()){
             Event x = iterator.next();
@@ -78,11 +79,10 @@ public class Database{
                 if(Event.isPast(x.getEndTime()))
                     iterator.remove();
         }
-        Logger.write(context, "after removing, new data: " + timeTableEvents.toString());
 
         if (timeTableEvents.isEmpty())
-            timeTableEvents.add(new Event(Event.NO_EVENT));
-
+            timeTableEvents.add(new Event());
+        Collections.sort(timeTableEvents, new Event());
         return timeTableEvents;
     }
 
@@ -107,10 +107,8 @@ public class Database{
         }
         catch (FileNotFoundException e) {
             Log.e("readFromJsonFile", "File not found: " + e.toString());
-            Logger.write(context, "File not found: " + e.toString());
         } catch (IOException e) {
             Log.e("readFromJsonFile", "Can not read file: " + e.toString());
-            Logger.write(context, "Can not read file: " + e.toString());
         }
         finally {
             try {
