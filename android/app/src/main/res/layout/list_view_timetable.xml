@@ -7,13 +7,12 @@
     android:paddingStart="16dp"
     android:paddingEnd="16dp">
 
-
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="1dp"
-        android:layout_marginEnd="12dp"
+        android:layout_width="28dp"
+        android:layout_marginEnd="16dp"
         android:layout_height="match_parent"
-        android:src="@android:color/white"
+        android:src="@drawable/ic_book"
         tools:ignore="ContentDescription" />
 
 
@@ -26,9 +25,12 @@
         android:orientation="vertical">
 
         <TextView
+            android:textSize="15sp"
             android:id="@+id/events_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="3pt" 
+            android:paddingBottom="1pt"
             android:gravity="center_vertical"
             android:textColor="@android:color/white"
             android:textStyle="bold"/>
@@ -40,11 +42,14 @@
             android:gravity="start">
 
             <TextView
+                android:textSize="14sp"
                 android:id="@+id/events_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="1pt" 
+                android:paddingBottom="3pt"
                 android:gravity="start"
-                android:textColor="@android:color/white"/>
+                android:textColor="#AAFFFFFF"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,20 +58,11 @@
                 android:gravity="end"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
-                    android:id="@+id/loc_icon"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_gravity="center"
-                    android:foregroundGravity="center"
-                    android:src="@drawable/ic_location"
-                    android:tint="@android:color/white"
-                    tools:ignore="ContentDescription" />
-
                 <TextView
                     android:textSize="14sp"
                     android:id="@+id/events_loc"
+                    android:layout_marginStart="16sp"
+                    android:layout_marginEnd="10sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -75,6 +71,7 @@
                     android:textColor="@android:color/white"/>
 
             </LinearLayout>
+            
         </LinearLayout>
 
     </LinearLayout>

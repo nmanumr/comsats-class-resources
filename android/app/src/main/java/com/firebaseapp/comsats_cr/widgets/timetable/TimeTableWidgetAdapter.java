@@ -54,12 +54,10 @@ public class TimeTableWidgetAdapter implements RemoteViewsService.RemoteViewsFac
 
             rv.setViewVisibility(R.id.events_loc, View.VISIBLE);
             rv.setViewVisibility(R.id.events_time, View.VISIBLE);
-            rv.setViewVisibility(R.id.loc_icon, View.VISIBLE);
         }else{
             rv.setTextViewText(R.id.events_name, Event.NO_EVENT);
             rv.setViewVisibility(R.id.events_loc, View.GONE);
             rv.setViewVisibility(R.id.events_time, View.GONE);
-            rv.setViewVisibility(R.id.loc_icon, View.GONE);
         }
 
         return rv;
