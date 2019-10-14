@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--TODO:: Add Preview Image-->
+<selector xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/timetable_widget_preview" tools:ignore="ResourceCycle" />
 </selector>
