@@ -42,7 +42,8 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver
-            android:name=".widgets.timetable.TimeTableWidget">
+            android:name=".widgets.timetable.TimeTableWidget"
+            android:label="Timetable">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.firebaseapp.comsats_cr.widgets.timetable.TimeTableWidget.SOFT_UPDATE_WIDGET" />
