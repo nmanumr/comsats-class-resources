@@ -5,17 +5,21 @@ import 'package:class_resources/models/profile.model.dart';
 import 'package:class_resources/models/user.model.dart';
 import 'package:class_resources/pages/auth/update-profile.dart';
 import 'package:class_resources/pages/home/home.dart';
+import 'package:class_resources/app_widgets/timetable/timeTableAppWidget.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import './courses/courses.dart';
-// import './notifications.dart';
 import './timetable/timetable.dart';
 import './menu/library.dart';
 
 class Dashboard extends StatefulWidget {
-  Dashboard(this.user, this.observer);
+  Dashboard(this.user, this.observer){
+
+    // Call native screen-widget to hard update
+    TimeTableAppWidget.refreshWidget();
+  }
 
   final UserModel user;
   final FirebaseAnalyticsObserver observer;
@@ -24,17 +28,12 @@ class Dashboard extends StatefulWidget {
   _DashboardState createState() => _DashboardState(observer);
 }
 
-class _DashboardState extends State<Dashboard>
-    with
-        AutomaticKeepAliveClientMixin,
-        SingleTickerProviderStateMixin,
-        RouteAware {
+class _DashboardState extends State<Dashboard> with RouteAware {
   _DashboardState(this.observer);
 
-  @override
-  final wantKeepAlive = true;
-
   final FirebaseAnalyticsObserver observer;
+
+  bool timeTableServiceStarted = false;
 
   // TimeTableModel timeTableModel;
   int _cIndex = 0;
@@ -107,6 +106,11 @@ class _DashboardState extends State<Dashboard>
   Widget buildDashboard(BuildContext context) {
     var bottomNavItems = initTabs();
 
+    if(!timeTableServiceStarted){
+      timeTableServiceStarted = true;
+      widget.user.service.timeTableService.update();
+    }
+
     return Scaffold(
       key: PageStorageKey('BottomNavigationBar'),
       body: Builder(
@@ -119,7 +123,7 @@ class _DashboardState extends State<Dashboard>
         selectedItemColor: Theme.of(context).accentColor,
         items: bottomNavItems,
         onTap: (index) {
-          if(_cIndex == index) return;
+          if (_cIndex == index) return;
           setState(() {
             _cIndex = index;
           });
@@ -131,9 +135,7 @@ class _DashboardState extends State<Dashboard>
     );
   }
 
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     return ScopedModel(
       model: widget.user,
       child: ScopedModelDescendant<UserModel>(
@@ -144,6 +146,7 @@ class _DashboardState extends State<Dashboard>
           }
 
           if (userModel.status == AccountStatus.AuthError) {
+            widget.user.service.timeTableService.update();
             return Scaffold(
               appBar: centeredAppBar(context, ""),
               body: IllustartedPage(
@@ -167,11 +170,13 @@ class _DashboardState extends State<Dashboard>
             child: ScopedModelDescendant<ProfileModel>(
               builder: (context, child, profileModel) {
                 if (profileModel == null ||
-                    profileModel.status == ProfileStatus.Loading) {
+                    profileModel.status == ProfileStatus.Loading ||
+                    profileModel.status == ProfileStatus.LoadingSemesters) {
                   return Loader();
                 }
 
                 if (profileModel.status == ProfileStatus.Error) {
+                  widget.user.service.timeTableService.update();
                   return Scaffold(
                     appBar: centeredAppBar(context, ""),
                     body: Center(

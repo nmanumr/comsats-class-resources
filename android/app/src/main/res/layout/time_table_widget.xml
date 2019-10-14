@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:padding="@dimen/widget_margin"
+    android:orientation="horizontal">
+
+    <ListView
+        android:id="@+id/timetable_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:divider="@null">
+
+    </ListView>
+</LinearLayout>
