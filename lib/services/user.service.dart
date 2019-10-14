@@ -56,7 +56,7 @@ class UserService {
       idToken: googleAuth.idToken,
     );
     final FirebaseUser user =
-    (await _firebaseAuth.signInWithCredential(credential)).user;
+        (await _firebaseAuth.signInWithCredential(credential)).user;
 
     saveUserId(user.uid);
     this.model.loadData(user);

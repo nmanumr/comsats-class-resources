@@ -36,7 +36,7 @@ class CourseService with FirestoreServiceMixin {
         .where("dueDate", isGreaterThan: Timestamp.now())
         .snapshots()
         .map((data) => data.documents
-            .map((task) => TaskModel.fromJson(task.data))
+            .map((task) => TaskModel.fromJson(task.data, this.model))
             .toList());
   }
 

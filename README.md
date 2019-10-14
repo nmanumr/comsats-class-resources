@@ -37,9 +37,7 @@ keytool -list -v -keystore path/key.jks -alias key
 ## TODO
 
 - [ ] Improve README
-- [ ] Implement custom timetable widget
 - [ ] Improve user profile related tasks
 - [ ] Implement in-app theme switcher
 - [ ] Implement user roles and privileges
 - [ ] Implement tasks and push notifications
-- [ ] Add license, privacy policies, about and more apps pages

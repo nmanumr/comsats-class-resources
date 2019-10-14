@@ -72,8 +72,8 @@ class ThreeDaysView extends StatelessWidget {
   }
 
   buildCalederDay(index, width) {
-    var date =
-        DateTime.now().subtract(Duration(days: DateTime.now().weekday - index - 1));
+    var date = DateTime.now()
+        .subtract(Duration(days: DateTime.now().weekday - index - 1));
     var dayEvents = events.where((e) => e.weekday == index + 1).toList();
     return SizedBox(
       width: 150,
@@ -91,8 +91,6 @@ class ThreeDaysView extends StatelessWidget {
         width: 150,
         height: 70,
         child: Material(
-          elevation: 2,
-          color: Theme.of(context).primaryColorLight,
           child: Center(
             child: Container(
               decoration: BoxDecoration(
@@ -116,7 +114,6 @@ class ThreeDaysView extends StatelessWidget {
           SizedBox(
             width: 70,
             child: Material(
-              elevation: 2,
               color: Theme.of(context).primaryColorLight,
             ),
           ),
@@ -125,7 +122,7 @@ class ThreeDaysView extends StatelessWidget {
               controller: calenderLagendScoller,
               scrollDirection: Axis.horizontal,
               physics: NeverScrollableScrollPhysics(),
-              children: dayLagends,
+              children: dayLagends..add(SizedBox(width: 15)),
             ),
           ),
         ],
@@ -149,13 +146,6 @@ class ThreeDaysView extends StatelessWidget {
       width: width,
       child: Column(
         children: <Widget>[
-          Container(
-            height: 50,
-            width: double.infinity,
-            child: Material(
-              color: Theme.of(context).primaryColorLight,
-            ),
-          ),
           buildDayLangends(width, context),
           Expanded(
             child: SingleChildScrollView(
@@ -172,7 +162,8 @@ class ThreeDaysView extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: List<Widget>.generate(
-                            5, (i) => buildCalederDay(i, width)),
+                            5, (i) => buildCalederDay(i, width)).toList()
+                          ..add(SizedBox(width: 15)),
                       ),
                     ),
                   ),

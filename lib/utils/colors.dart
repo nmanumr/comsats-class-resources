@@ -71,6 +71,6 @@ String generateMd5(String data) {
 }
 
 String generateColor(String text, {s: 80, l: 45}) {
-  num code = int.parse(generateMd5(text).substring(0, 7), radix: 16);
+  num code = int.parse(generateMd5(text).substring(0, 3), radix: 16);
   return hslToHex([code % 360, s, l]);
 }

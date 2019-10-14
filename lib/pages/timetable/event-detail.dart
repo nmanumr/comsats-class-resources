@@ -45,62 +45,66 @@ class EventDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: centeredAppBar(context, "", isCloseable: true),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            leading: Container(
-              width: 30,
-              height: 30,
-              decoration: new BoxDecoration(
-                color: model.color,
-                shape: BoxShape.circle,
+    return Hero(
+      tag: model.hashCode,
+      child: Scaffold(
+        appBar: centeredAppBar(context, "", isCloseable: true),
+        body: ListView(
+          children: <Widget>[
+            ListTile(
+              leading: Container(
+                width: 30,
+                height: 30,
+                decoration: new BoxDecoration(
+                  color: model.color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: Text(
+                model.title,
+                style: Theme.of(context)
+                    .textTheme
+                    .title
+                    .copyWith(fontWeight: FontWeight.normal),
               ),
             ),
-            title: Text(
-              model.title,
-              style: Theme.of(context)
-                  .textTheme
-                  .title
-                  .copyWith(fontWeight: FontWeight.normal),
+            Divider(),
+            SizedBox(height: 20),
+            copyableListItem(
+              context,
+              title: model.location,
+              icon: Icons.location_on,
             ),
-          ),
-          Divider(),
-          SizedBox(height: 20),
-          copyableListItem(
-            context,
-            title: model.location,
-            icon: Icons.location_on,
-          ),
-          copyableListItem(
-            context,
-            title: model.teacher,
-            icon: Icons.person,
-          ),
-          copyableListItem(
-            context,
-            title: "Start Time",
-            subtitle: DateFormat.jm().format(dateTimeFromTime(model.startTime)),
-            icon: Icons.alarm,
-          ),
-          copyableListItem(
-            context,
-            title: "EndTime",
-            subtitle: DateFormat.jm().format(dateTimeFromTime(model.endTime)),
-            icon: Icons.alarm_on,
-          ),
-          ...(model.eventSlot != null
-              ? [
-                  copyableListItem(
-                    context,
-                    title: "Slot",
-                    subtitle: model.eventSlot,
-                    icon: Icons.view_agenda,
-                  )
-                ]
-              : []),
-        ],
+            copyableListItem(
+              context,
+              title: model.teacher,
+              icon: Icons.person,
+            ),
+            copyableListItem(
+              context,
+              title: "Start Time",
+              subtitle:
+                  DateFormat.jm().format(dateTimeFromTime(model.startTime)),
+              icon: Icons.alarm,
+            ),
+            copyableListItem(
+              context,
+              title: "EndTime",
+              subtitle: DateFormat.jm().format(dateTimeFromTime(model.endTime)),
+              icon: Icons.alarm_on,
+            ),
+            ...(model.eventSlot != null
+                ? [
+                    copyableListItem(
+                      context,
+                      title: "Slot",
+                      subtitle: model.eventSlot,
+                      icon: Icons.view_agenda,
+                    )
+                  ]
+                : []),
+          ],
+        ),
       ),
     );
   }

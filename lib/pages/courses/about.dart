@@ -30,7 +30,7 @@ class CourseAbout extends StatelessWidget {
         child: Text(subtitle),
       ),
       onLongPress: () {
-        copyToClipboard(context, model.title);
+        copyToClipboard(context, subtitle);
       },
     );
   }

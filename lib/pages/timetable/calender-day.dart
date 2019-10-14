@@ -9,16 +9,14 @@ class CalendarDay extends StatelessWidget {
 
   CalendarDay({@required this.events, @required this.day});
 
-  Widget paddedText(text, {light = false}) {
+  Widget paddedText(context, text, {light = false}) {
     return Padding(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: light ? 13 : 14.0,
-        ),
-      ),
+      child: Text(text,
+          style: Theme.of(context).textTheme.headline.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: light ? 13 : 14.0,
+              )),
     );
   }
 
@@ -36,32 +34,35 @@ class CalendarDay extends StatelessWidget {
 
     var startPos = startTime.inMinutes / 60 * 80.0 + 4;
     var height = duration.inMinutes / 60 * 80.0 - 8;
-
+    
     return Container(
       margin: EdgeInsets.fromLTRB(4, startPos, 3, 0),
-      child: Material(
-        borderRadius: BorderRadius.circular(5),
-        color: event.color.withAlpha(200),
-        child: InkWell(
+      child: Hero(
+        tag: event.hashCode,
+        child: Material(
           borderRadius: BorderRadius.circular(5),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => EventDetails(model: event),
+          color: event.color.withAlpha(200),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(5),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EventDetails(model: event),
+                ),
+              );
+            },
+            child: SizedBox(
+              height: height,
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  paddedText(context, event.title),
+                  SizedBox(height: 5),
+                  paddedText(context, event.location ?? "", light: true),
+                ],
               ),
-            );
-          },
-          child: SizedBox(
-            height: height,
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                paddedText(event.title),
-                SizedBox(height: 5),
-                paddedText(event.location ?? "", light: true),
-              ],
             ),
           ),
         ),
