@@ -36,7 +36,7 @@ class EventModel extends Model {
     endTime = timeOfDayFromString(data["endTime"]);
 
     isLab = data["isLab"];
-    title = (isLab ? "(Lab) " : "") + this.course.title;
+    title = "${(isLab ?? false) ? "(Lab) " : ""}${this.course.title}";
     color = data["color"] ?? HexColor(generateColor(title));
   }
 
