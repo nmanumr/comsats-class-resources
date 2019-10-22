@@ -1,3 +1,4 @@
+import 'package:class_resources/components/empty-state.dart';
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/components/loader.dart';
 import 'package:class_resources/models/course.model.dart';
@@ -75,6 +76,12 @@ class _CourseTasksState extends State<CourseTasks> {
 
         if (snapshot.connectionState == ConnectionState.waiting)
           return Loader();
+
+        if (snapshot.data.length == 0)
+          return EmptyState(
+            text: "No task pending",
+            icon: Icons.playlist_add_check,
+          );
 
         var sortedEvents = snapshot.data..sort(_compareTasks);
 

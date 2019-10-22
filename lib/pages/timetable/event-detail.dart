@@ -1,7 +1,8 @@
 import 'package:class_resources/components/centered-appbar.dart';
 import 'package:class_resources/models/event.model.dart';
-import 'package:clipboard_manager/clipboard_manager.dart';
+// import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class EventDetails extends StatelessWidget {
@@ -9,13 +10,19 @@ class EventDetails extends StatelessWidget {
 
   final EventModel model;
 
-  copyToClipboard(BuildContext context, String text) {
-    ClipboardManager.copyToClipBoard(text).then((result) {
-      final snackBar = SnackBar(
-        content: Text('Copied to Clipboard'),
-      );
-      Scaffold.of(context).showSnackBar(snackBar);
-    });
+  copyToClipboard(BuildContext context, String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    
+    final snackBar = SnackBar(
+      content: Text('Copied to Clipboard'),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+    // ClipboardManager.copyToClipBoard(text).then((result) {
+    //   final snackBar = SnackBar(
+    //     content: Text('Copied to Clipboard'),
+    //   );
+    //   Scaffold.of(context).showSnackBar(snackBar);
+    // });
   }
 
   copyableListItem(BuildContext context,

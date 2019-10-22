@@ -28,10 +28,12 @@ class Dashboard extends StatefulWidget {
   _DashboardState createState() => _DashboardState(observer);
 }
 
-class _DashboardState extends State<Dashboard> with RouteAware {
+class _DashboardState extends State<Dashboard> with RouteAware, AutomaticKeepAliveClientMixin {
   _DashboardState(this.observer);
 
   final FirebaseAnalyticsObserver observer;
+  @override
+  final wantKeepAlive = true;
 
   bool timeTableServiceStarted = false;
 
@@ -135,7 +137,9 @@ class _DashboardState extends State<Dashboard> with RouteAware {
     );
   }
 
+   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ScopedModel(
       model: widget.user,
       child: ScopedModelDescendant<UserModel>(

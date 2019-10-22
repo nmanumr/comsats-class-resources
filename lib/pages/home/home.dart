@@ -90,6 +90,8 @@ class _HomePageState extends State<HomePage> {
                 todayEvents.add(event);
               else if (event.weekday - 1 == now.weekday)
                 tomorrowEvents.add(event);
+              
+              print(tomorrowEvents);
             }
           });
         },

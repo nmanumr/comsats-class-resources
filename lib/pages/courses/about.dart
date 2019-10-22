@@ -1,7 +1,8 @@
 import 'package:class_resources/components/list-header.dart';
 import 'package:class_resources/models/course.model.dart';
-import 'package:clipboard_manager/clipboard_manager.dart';
+// import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'add-resource.dart';
 
@@ -10,13 +11,19 @@ class CourseAbout extends StatelessWidget {
 
   final CourseModel model;
 
-  copyToClipboard(BuildContext context, String text) {
-    ClipboardManager.copyToClipBoard(text).then((result) {
-      final snackBar = SnackBar(
-        content: Text('Copied to Clipboard'),
-      );
-      Scaffold.of(context).showSnackBar(snackBar);
-    });
+  copyToClipboard(BuildContext context, String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    
+    final snackBar = SnackBar(
+      content: Text('Copied to Clipboard'),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+    // ClipboardManager.copyToClipBoard(text).then((result) {
+    //   final snackBar = SnackBar(
+    //     content: Text('Copied to Clipboard'),
+    //   );
+    //   Scaffold.of(context).showSnackBar(snackBar);
+    // });
   }
 
   copyableListItem(BuildContext context, String title, String subtitle) {
