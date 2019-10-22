@@ -49,7 +49,8 @@ public class Database{
             if(jsonTimetable != null)
                 switch(jsonTimetable.getStatus()){
                     case JSONTimetable.STATUS_SUCCESS:
-                        timetable = jsonTimetable.getEvents();
+                        timetable.clear();
+                        timetable.addAll(jsonTimetable.getEvents());
                         break;
                     case JSONTimetable.STATUS_LOGGED_OUT:
                         timetable.add(new Event(Event.NO_AUTH));
@@ -58,7 +59,6 @@ public class Database{
                         break;
                 }
         }
-
         return getTodayEvents(timetable);
     }
 

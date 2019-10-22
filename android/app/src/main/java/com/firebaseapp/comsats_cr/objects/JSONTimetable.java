@@ -1,5 +1,7 @@
 package com.firebaseapp.comsats_cr.objects;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 public class JSONTimetable {
@@ -8,10 +10,15 @@ public class JSONTimetable {
     public final static String STATUS_LOGGED_OUT = "loggedOut";
     public final static String STATUS_ERROR = "error";
 
+    @SerializedName("status")
     private String status;
+    @SerializedName("error")
     private String error;
+    @SerializedName("lastUpdate")
     private String lastUpdate;
+    @SerializedName("eventLength")
     private int eventLength;
+    @SerializedName("events")
     private ArrayList<JSONEvent> events;
 
     public String getStatus() {
@@ -67,14 +74,23 @@ public class JSONTimetable {
     }
 
     class JSONEvent {
+        @SerializedName("location")
         private String location;
+        @SerializedName("teacher")
         private String teacher;
+        @SerializedName("eventSlot")
         private int eventSlot;
+        @SerializedName("weekday")
         private int weekday;
+        @SerializedName("startTime")
         private String startTime;
+        @SerializedName("endTime")
         private String endTime;
+        @SerializedName("isLab")
         private boolean isLab;
+        @SerializedName("title")
         private String title;
+        @SerializedName("color")
         private String color;
 
         public JSONEvent(String location, String teacher, int eventSlot, int weekday, String startTime, String endTime, boolean isLab, String title, String color) {

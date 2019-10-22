@@ -56,7 +56,9 @@ public class TimeTableWidget extends AppWidgetProvider {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         long delay;
         long currentTimeInMilli = (calendar.get(Calendar.HOUR_OF_DAY)*60*60*1000 + calendar.get(Calendar.MINUTE)*60*1000 + calendar.get(Calendar.SECOND)*1000 + calendar.get(Calendar.MILLISECOND));
-        if(!timetable.isEmpty() && timetable.get(0).getEndTime() == null){
+        if(timetable.isEmpty()){
+            return;
+        } else if(timetable.get(0).getEndTime() == null){
             // schedule update for next day
             delay = (24*60*60*1000) - currentTimeInMilli;
         }else{
